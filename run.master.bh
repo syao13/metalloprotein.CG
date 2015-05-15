@@ -1,0 +1,17 @@
+##!/usr/bash
+
+date
+echo "Start"
+
+../znProtein/zn_protein.pl /mlab/data/databases/PDB/2013_03_18 zn_protein_all.2013_03_18.txt
+date
+echo "done zn_protein_all.2013_03_18.txt"
+echo
+# creat the list of all entries that has ZN in its HETATM
+
+../znProtein/zn_protein_nucleicacid3.pl zn_protein_all.2013_03_18.txt 2013_03_18 >count.protein.na.2013_03_18.txt
+date
+echo "done protein_or_both.2013_03_18.txt"
+echo
+#to get rid of entries that lacks a protein portion
+

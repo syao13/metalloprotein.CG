@@ -1,0 +1,11 @@
+results*
+result*
+*.txt
+.nfs*
+.swp
+*.RData
+.Rhistory
+*.png
+*.pdf
+*.tiff
+test.pl
