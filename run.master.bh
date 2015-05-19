@@ -3,15 +3,35 @@
 date
 echo "Start"
 
+# creat the list of all entries that has ZN in its HETATM
 ../znProtein/zn_protein.pl /mlab/data/databases/PDB/2013_03_18 zn_protein_all.2013_03_18.txt
 date
 echo "done zn_protein_all.2013_03_18.txt"
-echo
-# creat the list of all entries that has ZN in its HETATM
+date
 
+#to get rid of entries that lacks a protein portion
 ../znProtein/zn_protein_nucleicacid3.pl zn_protein_all.2013_03_18.txt 2013_03_18 >count.protein.na.2013_03_18.txt
 date
 echo "done protein_or_both.2013_03_18.txt"
-echo
-#to get rid of entries that lacks a protein portion
+date
 
+## Get sequences
+./znCoordinations.pl protein_or_both.2013_03_18.txt -d -s s s seqs.SEQRES.shell.txt
+./znCoordinations.pl protein_or_both.2013_03_18.txt -d -s a s seqs.ATOM.shell.txt
+./znCoordinations.pl protein_or_both.2013_03_18.txt -d -s s b seqs.SEQRES.bind.txt
+./znCoordinations.pl protein_or_both.2013_03_18.txt -d -s n s seqs.number.shell.txt
+./znCoordinations.pl protein_or_both.2013_03_18.txt -d -s s ss seqs.SEQRES.secondshell.txt
+./znCoordinations.pl protein_or_both.2013_03_18.txt -d -s s c seqs.SEQRES.closest.txt
+echo "Sequences done!"
+date
+
+## Run the IA to get the statistics for each CG
+./znCoordinations.pl protein_or_both.2013_03_18.txt -i c 68 stats.noCompressed >out.noCompressed.txt
+echo "IA process done!"
+date
+
+## Use statistics above to get zinc list, sequences, and relative info for clustering zinc CGs in R. (zinc shell determination via bond-length)
+./znCoordinations.pl protein_or_both.2013_03_18.txt -d stats.chi -r four.chi.txt stats.noCompressed.7.txt
+./znCoordinations.pl protein_or_both.2013_03_18.txt -d stats.chi.leaveOut -r four.chi.leaveOut.txt leaveOut stats.noCompressed.7.txt
+echo "Zinc spreadsheet done!"
+date
