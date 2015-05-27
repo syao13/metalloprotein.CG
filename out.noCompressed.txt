@@ -1,0 +1,91 @@
+Zn: 22397
+Cluster: 493
+Deviation sorted:
+Tetrahedral = 15091
+Trigonal bipyramidal = 2033
+Octahedral = 782
+
+Chi sorted, i = 1:
+Tetrahedral = 11408
+Trigonal bipyramidal = 539
+Octahedral = 339
+Trigonal planar = 458
+Tetrahedral with vacancy = 1670
+Trigonal bipyramidal with vacancy axial = 640
+Trigonal bipyramidal with vanancy planar = 922
+Square pyramidal with vancy = 490
+Square planars = 322
+Square pyramidal = 613
+
+Chi sorted, i = 2:
+Tetrahedral = 10934
+Trigonal bipyramidal = 477
+Octahedral = 275
+Trigonal planar = 363
+Tetrahedral with vacancy = 1268
+Trigonal bipyramidal with vacancy axial = 1108
+Trigonal bipyramidal with vanancy planar = 1064
+Square pyramidal with vancy = 606
+Square planars = 193
+Square pyramidal = 603
+
+Chi sorted, i = 3:
+Tetrahedral = 10923
+Trigonal bipyramidal = 466
+Octahedral = 283
+Trigonal planar = 358
+Tetrahedral with vacancy = 1199
+Trigonal bipyramidal with vacancy axial = 1135
+Trigonal bipyramidal with vanancy planar = 1024
+Square pyramidal with vancy = 613
+Square planars = 208
+Square pyramidal = 595
+
+Chi sorted, i = 4:
+Tetrahedral = 10925
+Trigonal bipyramidal = 465
+Octahedral = 284
+Trigonal planar = 359
+Tetrahedral with vacancy = 1191
+Trigonal bipyramidal with vacancy axial = 1142
+Trigonal bipyramidal with vanancy planar = 1023
+Square pyramidal with vancy = 614
+Square planars = 210
+Square pyramidal = 590
+
+Chi sorted, i = 5:
+Tetrahedral = 10925
+Trigonal bipyramidal = 466
+Octahedral = 286
+Trigonal planar = 361
+Tetrahedral with vacancy = 1189
+Trigonal bipyramidal with vacancy axial = 1142
+Trigonal bipyramidal with vanancy planar = 1021
+Square pyramidal with vancy = 614
+Square planars = 211
+Square pyramidal = 588
+
+Chi sorted, i = 6:
+Tetrahedral = 10925
+Trigonal bipyramidal = 466
+Octahedral = 286
+Trigonal planar = 363
+Tetrahedral with vacancy = 1187
+Trigonal bipyramidal with vacancy axial = 1142
+Trigonal bipyramidal with vanancy planar = 1021
+Square pyramidal with vancy = 614
+Square planars = 211
+Square pyramidal = 588
+
+Chi sorted, i = 7:
+Tetrahedral = 10925
+Trigonal bipyramidal = 466
+Octahedral = 286
+Trigonal planar = 363
+Tetrahedral with vacancy = 1187
+Trigonal bipyramidal with vacancy axial = 1142
+Trigonal bipyramidal with vanancy planar = 1021
+Square pyramidal with vancy = 614
+Square planars = 211
+Square pyramidal = 588
+
