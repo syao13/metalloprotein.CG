@@ -1,0 +1,26 @@
+Entries paths for only nucleic acid: 
+/mlab/data/databases/PDB/2015_02_25/ad/pdb2adw.ent.gz
+/mlab/data/databases/PDB/2015_02_25/g6/pdb1g6d.ent.gz
+/mlab/data/databases/PDB/2015_02_25/hi/pdb4hif.ent.gz
+/mlab/data/databases/PDB/2015_02_25/lo/pdb2loa.ent.gz
+/mlab/data/databases/PDB/2015_02_25/nl/pdb1nlc.ent.gz
+/mlab/data/databases/PDB/2015_02_25/p2/pdb1p26.ent.gz
+/mlab/data/databases/PDB/2015_02_25/pa/pdb3pa0.ent.gz
+/mlab/data/databases/PDB/2015_02_25/rf/pdb2rf3.ent.gz
+/mlab/data/databases/PDB/2015_02_25/yx/pdb1yxp.ent.gz
+
+
+
+Entries paths for neither pro or na:
+/mlab/data/databases/PDB/2015_02_25/hv/pdb1hvn.ent.gz
+/mlab/data/databases/PDB/2015_02_25/hv/pdb1hvo.ent.gz
+/mlab/data/databases/PDB/2015_02_25/k7/pdb4k7t.ent.gz
+/mlab/data/databases/PDB/2015_02_25/l4/pdb2l45.ent.gz
+/mlab/data/databases/PDB/2015_02_25/l4/pdb2l46.ent.gz
+/mlab/data/databases/PDB/2015_02_25/o0/pdb1o06.ent.gz
+/mlab/data/databases/PDB/2015_02_25/ov/pdb3ovl.ent.gz
+/mlab/data/databases/PDB/2015_02_25/pp/pdb3ppd.ent.gz
+/mlab/data/databases/PDB/2015_02_25/s9/pdb1s9z.ent.gz
+/mlab/data/databases/PDB/2015_02_25/yj/pdb1yjo.ent.gz
+/mlab/data/databases/PDB/2015_02_25/ze/pdb1ze9.ent.gz
+/mlab/data/databases/PDB/2015_02_25/zn/pdb2znf.ent.gz

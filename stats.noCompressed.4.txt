@@ -1,0 +1,200 @@
+angle : [
+  octahedral : [
+    180 : [
+      count : 1008
+      mean : 170.080925544561
+      standardDeviation : 5.07789224262186
+      variance : 25.7849896276793
+      ]
+    90 : [
+      count : 4032
+      mean : 89.9501384976192
+      standardDeviation : 6.4122523969867
+      variance : 41.1169808026617
+      ]
+    ]
+  squarePlanar : [
+    180 : [
+      count : 526
+      mean : 161.125710496332
+      standardDeviation : 7.61168071328993
+      variance : 57.9376832810699
+      ]
+    90 : [
+      count : 1052
+      mean : 89.9788971006502
+      standardDeviation : 7.33387093018195
+      variance : 53.7856628205678
+      ]
+    ]
+  squarePyramidal : [
+    180 : [
+      count : 1570
+      mean : 168.896055804312
+      standardDeviation : 6.31355001669437
+      variance : 39.8609138133014
+      ]
+    90a : [
+      count : 3140
+      mean : 91.3688738371744
+      standardDeviation : 6.80928429505856
+      variance : 46.3663526109312
+      ]
+    90p : [
+      count : 3140
+      mean : 89.9089473971189
+      standardDeviation : 7.25757840139591
+      variance : 52.6724442524085
+      ]
+    ]
+  squarePyramidalVacancy : [
+    180 : [
+      count : 780
+      mean : 164.8241487625
+      standardDeviation : 7.84377990608201
+      variance : 61.5248832150559
+      ]
+    90a : [
+      count : 780
+      mean : 94.8426409068382
+      standardDeviation : 7.21285450383648
+      variance : 52.0252700935142
+      ]
+    90p : [
+      count : 3120
+      mean : 91.9065422109321
+      standardDeviation : 8.27799181696724
+      variance : 68.5251485217766
+      ]
+    ]
+  standardDeviation : 9.2504900323057
+  tetrahedral : [
+    109 : [
+      count : 79938
+      mean : 109.137763495827
+      standardDeviation : 8.93632125313466
+      variance : 79.8578375392262
+      ]
+    ]
+  tetrahedralVacancy : [
+    109 : [
+      count : 4098
+      mean : 104.860102207751
+      standardDeviation : 10.7396764518442
+      variance : 115.340650290298
+      ]
+    ]
+  trigonalBipyramidal : [
+    120 : [
+      count : 1692
+      mean : 119.45953371724
+      standardDeviation : 9.2264999860704
+      variance : 85.1283019929571
+      ]
+    180 : [
+      count : 564
+      mean : 167.387839026786
+      standardDeviation : 8.17848675745016
+      variance : 66.8876456417876
+      ]
+    90 : [
+      count : 3384
+      mean : 90.1646113958073
+      standardDeviation : 7.97941708660596
+      variance : 63.6710970420191
+      ]
+    ]
+  trigonalBipyramidalVacancyAxial : [
+    120 : [
+      count : 3831
+      mean : 118.549271141298
+      standardDeviation : 14.9820138585617
+      variance : 224.460739258135
+      ]
+    90 : [
+      count : 3831
+      mean : 94.4087436365929
+      standardDeviation : 11.5304832811025
+      variance : 132.952044695784
+      ]
+    ]
+  trigonalBipyramidalVacancyPlanar : [
+    120 : [
+      count : 1260
+      mean : 119.947908124441
+      standardDeviation : 10.6739648485201
+      variance : 113.933525587444
+      ]
+    180 : [
+      count : 1260
+      mean : 159.059500151281
+      standardDeviation : 16.3422998227803
+      variance : 267.070763497646
+      ]
+    90 : [
+      count : 5040
+      mean : 91.8398313029547
+      standardDeviation : 10.7262440789513
+      variance : 115.052312041238
+      ]
+    ]
+  trigonalPlanar : [
+    120 : [
+      count : 1236
+      mean : 115.793757601394
+      standardDeviation : 11.03222346632
+      variance : 121.709954610822
+      ]
+    ]
+  variance : 85.571565837787
+  ]
+distance : [
+  CL : [
+    count : 405
+    max : 3.19422181446436
+    mean : 2.33639518334326
+    min : 1.80942670478801
+    standardDeviation : 0.283264600100606
+    variance : 0.0802388336701564
+    ]
+  N : [
+    count : 25914
+    max : 3.19857999743636
+    mean : 2.12063788584719
+    min : 1.38157916892229
+    standardDeviation : 0.153548256547364
+    variance : 0.0235770670887352
+    ]
+  O : [
+    count : 24265
+    max : 3.19961591444973
+    mean : 2.17114662987103
+    min : 1.3079652136047
+    standardDeviation : 0.242838104466967
+    variance : 0.0589703449811097
+    ]
+  P : [
+    count : 223
+    max : 3.19521282546249
+    mean : 2.96266986135125
+    min : 2.70821897194448
+    standardDeviation : 0.0915960193326809
+    variance : 0.00838983075759285
+    ]
+  S : [
+    count : 30846
+    max : 3.19681310057376
+    mean : 2.33735052883564
+    min : 1.30879868581841
+    standardDeviation : 0.136728088044437
+    variance : 0.0186945700602874
+    ]
+  average : [
+    count : 81707
+    max : 3.19961591444973
+    mean : 2.22115418137852
+    min : 1.3079652136047
+    standardDeviation : 0.20797258432686
+    variance : 0.0432525958315927
+    ]
+  ]
