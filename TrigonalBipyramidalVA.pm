@@ -79,8 +79,10 @@ sub angleTestStatistic
       $varianceOrN90 = $$angleStats{"variance"}; ## overall variance
       $varianceOrN120 = $$angleStats{"variance"};
       }
-    else
+    elsif ($type eq "ownStats")
       {
+      $mean90 = $$angleStats{"trigonalBipyramidalVacancyAxial"}{"90"}{"mean"} ;
+      $mean120 = $$angleStats{"trigonalBipyramidalVacancyAxial"}{"120"}{"mean"} ;
       $varianceOrN90 =  $$angleStats{"trigonalBipyramidalVacancyAxial"}{"90"}{"variance"};
       $varianceOrN120 = $$angleStats{"trigonalBipyramidalVacancyAxial"}{"120"}{"variance"};
       }

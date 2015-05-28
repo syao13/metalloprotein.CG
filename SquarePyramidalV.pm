@@ -83,8 +83,10 @@ sub angleTestStatistic
       $varianceOrN90a = $$angleStats{"variance"}; ## overall variance
       $varianceOrN90p = $$angleStats{"variance"};
       }
-    else
+    elsif ($type eq "ownStats")
       {
+      $mean90a = $$angleStats{"squarePyramidalVacancy"}{"90a"}{"mean"};
+      $mean90p = $$angleStats{"squarePyramidalVacancy"}{"90p"}{"mean"};
       $varianceOrN90a = $$angleStats{"squarePyramidalVacancy"}{"90a"}{"variance"};
       $varianceOrN90p = $$angleStats{"squarePyramidalVacancy"}{"90p"}{"variance"};
       }

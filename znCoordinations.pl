@@ -233,11 +233,11 @@ sub coordProbs
   my $spv = SquarePyramidalV->new(shellObj => $shell);
   my $spl = SquarePlanar->new(shellObj => $shell);
 
-  $th->bestTestStatistic("chi", 0, 0, $leaveOut, $stats);
-  $bva->bestTestStatistic("chi", 0, 0, $leaveOut, $stats);
-  $bvp->bestTestStatistic("chi", 0, 0, $leaveOut, $stats);
-  $spv->bestTestStatistic("chi", 0, 0, $leaveOut, $stats);
-  $spl->bestTestStatistic("chi", 0, 0, $leaveOut, $stats);
+  $th->bestTestStatistic("ownStats", 0, 0, $leaveOut, $stats);
+  $bva->bestTestStatistic("ownStats", 0, 0, $leaveOut, $stats);
+  $bvp->bestTestStatistic("ownStats", 0, 0, $leaveOut, $stats);
+  $spv->bestTestStatistic("ownStats", 0, 0, $leaveOut, $stats);
+  $spl->bestTestStatistic("ownStats", 0, 0, $leaveOut, $stats);
 
   my @probs;
   push @probs, $th->{bestCombo}->{probability};

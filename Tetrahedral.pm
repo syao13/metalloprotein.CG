@@ -66,8 +66,9 @@ sub angleTestStatistic
       #$varianceOrN = ($$angleStats{"tetrahedral"}{"109"}{"variance"})? ($$angleStats{"tetrahedral"}{"109"}{"variance"}) : $$angleStats{"variance"}; ## major variance
       $varianceOrN = $$angleStats{"variance"}; ## overall variance
       }
-    else
+    elsif ($type eq "ownStats")
       {
+      $mean109 = $$angleStats{"tetrahedral"}{"109"}{"mean"};
       $varianceOrN = $$angleStats{"tetrahedral"}{"109"}{"variance"};
       }
 

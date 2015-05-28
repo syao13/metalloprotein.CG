@@ -77,8 +77,10 @@ sub angleTestStatistic
       $varianceOrN90 = $$angleStats{"variance"}; ## ovarall variance
       $varianceOrN180 = $$angleStats{"variance"};
       }
-    else
+    elsif ($type eq "ownStats")
       {
+      $mean90 =  $$angleStats{"squarePlanar"}{"90"}{"mean"};
+      $mean180 = $$angleStats{"squarePlanar"}{"180"}{"mean"};
       $varianceOrN90 =  $$angleStats{"squarePlanar"}{"90"}{"variance"};
       $varianceOrN180 = $$angleStats{"squarePlanar"}{"180"}{"variance"};
       }
