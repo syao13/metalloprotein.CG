@@ -96,9 +96,9 @@ distance : [
   average : [
     count : 90921
     max : 3.19989781086834
-    mean : 2.25241920216833
+    mean : 2.25241920216828
     min : 1.3079652136047
-    standardDeviation : 0.251270968959973
-    variance : 0.0631370998420838
+    standardDeviation : 0.251270968959972
+    variance : 0.0631370998420833
     ]
   ]

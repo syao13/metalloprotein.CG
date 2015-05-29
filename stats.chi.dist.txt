@@ -64,15 +64,15 @@ distance : [
   N : [
     count : 28264
     max : 3.19628925474526
-    mean : 2.14848542557434
+    mean : 2.14848542557436
     min : 1.38157916892229
-    standardDeviation : 0.202652091666455
-    variance : 0.0410678702567891
+    standardDeviation : 0.202652091666454
+    variance : 0.0410678702567887
     ]
   O : [
     count : 29856
     max : 3.19989781086834
-    mean : 2.24363141848721
+    mean : 2.24363141848722
     min : 1.3079652136047
     standardDeviation : 0.317990563789276
     variance : 0.101117998659022
@@ -91,14 +91,14 @@ distance : [
     mean : 2.34159761051709
     min : 1.30879868581841
     standardDeviation : 0.151624547593552
-    variance : 0.0229900034329494
+    variance : 0.0229900034329492
     ]
   average : [
     count : 90921
     max : 3.19989781086834
-    mean : 2.2524192021683
+    mean : 2.25241920216833
     min : 1.3079652136047
-    standardDeviation : 0.251270968959973
-    variance : 0.0631370998420836
+    standardDeviation : 0.25127096895997
+    variance : 0.0631370998420824
     ]
   ]
