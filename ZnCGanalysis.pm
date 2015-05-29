@@ -153,7 +153,7 @@ sub IAcoordination
   my $self = shift @_;
   my $statOutFileName = shift @_;
   my $control = shift @_;
-  my $threshold = shift @_;
+  my $tetreshold = shift @_;
   my $currStats = (@_)? (shift @_) : ($self->{stats});
 
   my $i = 1;
@@ -161,8 +161,8 @@ sub IAcoordination
   while ( $self->compareStats($oldStats) )
     {
     $oldStats = clone($currStats);
-    $self->{coordinations} = $self->calcChiCoordination($control, $threshold);
-    if ($control eq "n") {$self->calNonModel($threshold);}
+    $self->{coordinations} = $self->calcChiCoordination($control, $tetreshold);
+    if ($control eq "n") {$self->calNonModel($tetreshold);}
 
     $currStats = {};
     $$currStats{"angle"} = $self->calcAngleStats();
@@ -188,7 +188,7 @@ sub IAcoordination
 sub calNonModel
   {
   my $self = shift @_;
-  my $threshold = shift @_;
+  my $tetreshold = shift @_;
 
   my $stats;
   $$stats{"angle"} = $self->calcAngleStats();
@@ -208,7 +208,7 @@ sub calNonModel
       ## Seems to be error, leave it here for now.
       #$struct->bestTestStatistic("non", $stats);
     
-      if ($struct->{bestCombo}->{probability} > $threshold)
+      if ($struct->{bestCombo}->{probability} > $tetreshold)
         {
 	push @{$$coordinations{$model}}, $struct;
         push @$shells, $struct->{shellObj}
@@ -239,62 +239,62 @@ sub bindShellViaDist
   my $statOutFileName = (@_)? shift @_: "stats";
   my $stats = (@_)? (shift @_) : ($self->{stats});
 
-  my ($three, $four, $five, $six, $more);
+  my ($tetree, $four, $five, $six, $more);
   foreach my $shell (@{$self->{shells}})
     {
       my $tpl = TrigonalPlanar->new(shellObj => $shell);
-      my $th = Tetrahedral->new(shellObj => $shell);
-      my $tb = TrigonalBipyramidal->new(shellObj => $shell);
-      my $oh = Octahedral->new(shellObj => $shell);
+      my $tet = Tetrahedral->new(shellObj => $shell);
+      my $tbp = TrigonalBipyramidal->new(shellObj => $shell);
+      my $oct = Octahedral->new(shellObj => $shell);
 
       $tpl->bestDistChi($stats);
-      $th->bestDistChi($stats);
-      $tb->bestDistChi($stats);
-      $oh->bestDistChi($stats);
+      $tet->bestDistChi($stats);
+      $tbp->bestDistChi($stats);
+      $oct->bestDistChi($stats);
 
     if (! defined $tpl->{bestCombo}) ## less than 3 ligands
       {
       next;
       }
-    elsif (! defined $th->{bestCombo}) ## 3 ligands
+    elsif (! defined $tet->{bestCombo}) ## 3 ligands
       {
-      push @$three, $tpl;
+      push @$tetree, $tpl;
       }
-    elsif (! defined $tb->{bestCombo}) ## 4 ligands
+    elsif (! defined $tbp->{bestCombo}) ## 4 ligands
       {
-      push @$four, $th;
+      push @$four, $tet;
       }
-    elsif (! defined $oh->{bestCombo}) ## 5 ligands
+    elsif (! defined $oct->{bestCombo}) ## 5 ligands
       {
-      my $bestModel = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($th, $tb)))[0];
+      my $bestModel = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($tet, $tbp)))[0];
       if (ref $bestModel eq "Tetrahedral")
-        { push @$four, $th;}
+        { push @$four, $tet;}
       elsif (ref $bestModel eq "TrigonalBipyramidal")
-        { push @$five, $tb;}
+        { push @$five, $tbp;}
       }
     else
       {
-      my $bestModel = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($th, $tb, $oh)))[0];
+      my $bestModel = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($tet, $tbp, $oct)))[0];
       if (ref $bestModel eq "Tetrahedral")
-        { push @$four, $th;}
+        { push @$four, $tet;}
       elsif (ref $bestModel eq "TrigonalBipyramidal")
-        { push @$five, $tb;}
+        { push @$five, $tbp;}
       elsif (ref $bestModel eq "Octahedral")
-        { push @$six, $oh;}
+        { push @$six, $oct;}
       }
  
     ## print chi probabilities
     #print $shell->znID(), ": ";
-    #print "th, ", $th->{bestCombo}->{probability}, "; ";
-    #print "tb, ", $tb->{bestCombo}->{probability}, "; ";
-    #print "oh, ", $oh->{bestCombo}->{probability}, "; ";
+    #print "th, ", $tet->{bestCombo}->{probability}, "; ";
+    #print "tb, ", $tbp->{bestCombo}->{probability}, "; ";
+    #print "oh, ", $oct->{bestCombo}->{probability}, "; ";
     #print "\n";
     }
 
   &writeTableFile("$statOutFileName.dist.txt", $stats);
 
   my $bestDist = {};
-  %$bestDist = (  "three" => $three,
+  %$bestDist = (  "three" => $tetree,
 		  "four" => $four,
 		  "five" => $five,
 		  "six" => $six );
@@ -463,7 +463,7 @@ sub calcChiCoordination
   {
   my $self = shift @_;
   my $control = shift @_;
-  my $threshold = shift @_;
+  my $tetreshold = shift @_;
   my $stats = (@_)? (shift @_) : ($self->{stats});
 
   my ($tetrahedrals, $trigonalbipyramidals, $octahedrals, $trigonalplanars, $tetrahedralVs, $trigonalbipyramidalVAs, $trigonalbipyramidalVPs, $squareplanars, $squarepyramidalVs, $squarepyramidals, $unusables);
@@ -471,13 +471,13 @@ sub calcChiCoordination
   foreach my $shell (@{$self->{shells}})
     {
     # major coordinations
-    my $th = Tetrahedral->new(shellObj => $shell);
-    my $tb = TrigonalBipyramidal->new(shellObj => $shell);
-    my $oh = Octahedral->new(shellObj => $shell);
+    my $tet = Tetrahedral->new(shellObj => $shell);
+    my $tbp = TrigonalBipyramidal->new(shellObj => $shell);
+    my $oct = Octahedral->new(shellObj => $shell);
 
     # 3 ligands
     my $tpl = TrigonalPlanar->new(shellObj => $shell);
-    my $thv = TetrahedralV->new(shellObj => $shell);
+    my $tetv = TetrahedralV->new(shellObj => $shell);
 
     # 4 ligands, trignal bipyramidal related
     my $bva = TrigonalBipyramidalVA->new(shellObj => $shell);
@@ -490,17 +490,17 @@ sub calcChiCoordination
     # 5 ligands
     my $spy = SquarePyramidal->new(shellObj => $shell);
 
-    $th->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-    $tb->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-    $oh->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+    $tet->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
+    $tbp->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
+    $oct->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
 
-    $tpl->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-    $thv->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-    $bva->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-    $bvp->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-    $spv->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-    $spl->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-    $spy->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+    $tpl->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
+    $tetv->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
+    $bva->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
+    $bvp->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
+    $spv->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
+    $spl->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
+    $spy->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
 
 
     if (! defined $tpl->{bestCombo}) ## less than 3 ligands
@@ -508,15 +508,15 @@ sub calcChiCoordination
       $$decisions{"012"}++;
       next;
       }
-    elsif (! defined $th->{bestCombo}) ## 3 ligands
+    elsif (! defined $tet->{bestCombo}) ## 3 ligands
       {
-      my $bestModel = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($tpl, $thv)))[0];
+      my $bestModel = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($tpl, $tetv)))[0];
 
       if ($bestModel->{bestCombo}->{probability} > 0.01)
 	{
 	if (ref $bestModel eq "TetrahedralV" && $bestModel)
           {
-          push @$tetrahedralVs, $thv;
+          push @$tetrahedralVs, $tetv;
           $$decisions{"3Thv"} += 1;
           }
         elsif (ref $bestModel eq "TrigonalPlanar")
@@ -529,16 +529,16 @@ sub calcChiCoordination
 	{$$decisions{"3None"} += 1;}
       next;
       }
-    elsif (! defined $tb->{bestCombo}) ## 4 ligands
+    elsif (! defined $tbp->{bestCombo}) ## 4 ligands
       {
-      my @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($th, $bva, $bvp, $spv, $spl)));
+      my @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($tet, $bva, $bvp, $spv, $spl)));
       my $bestModel = $models[0] ;
       my $sceondModel = $models[1] ;
-      my $thirdModel = $models[2] ;
+      my $tetirdModel = $models[2] ;
 
 
       ## set the probability threshold, remove low prob ones from statistics calculation. 
-      if ($control eq "p" && $bestModel->{bestCombo}->{probability} < $threshold) 
+      if ($control eq "p" && $bestModel->{bestCombo}->{probability} < $tetreshold) 
 	{
 	push @$unusables, $bestModel;
         $$decisions{"4Unusable"} += 1;
@@ -547,14 +547,14 @@ sub calcChiCoordination
 
       if (ref $bestModel eq "Tetrahedral")
         { 
-	push @$tetrahedrals, $th; 
+	push @$tetrahedrals, $tet; 
 	$$decisions{"4Th"} += 1;
 	}
       elsif (ref $bestModel eq "TrigonalBipyramidalVA")
         {
 	if (ref $sceondModel eq "Tetrahedral" && ($bestModel->{bestCombo}->{probability} < (2 * $sceondModel->{bestCombo}->{probability})) )
 	  {
-          push @$tetrahedrals, $th;
+          push @$tetrahedrals, $tet;
           $$decisions{"4Th"} += 1;
           }
 	else
@@ -581,15 +581,15 @@ sub calcChiCoordination
 
       next;
       }
-    elsif (! defined $oh->{bestCombo}) ## 5 ligands
+    elsif (! defined $oct->{bestCombo}) ## 5 ligands
       {
-      my @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($th, $tb, $bva, $bvp, $spv, $spl, $spy)));
+      my @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($tet, $tbp, $bva, $bvp, $spv, $spl, $spy)));
       my $bestModel = $models[0] ;
       my $sceondModel = $models[1] ;
-      my $thirdModel = $models[2] ;
+      my $tetirdModel = $models[2] ;
 
       ## Save as 4 ligands above
-      if ($control eq "p" && $bestModel->{bestCombo}->{probability} < $threshold)
+      if ($control eq "p" && $bestModel->{bestCombo}->{probability} < $tetreshold)
         {
         push @$unusables, $bestModel;
         $$decisions{"5Unusable"} += 1;
@@ -598,12 +598,12 @@ sub calcChiCoordination
 
       if (ref $bestModel eq "Tetrahedral")
         { 
-	push @$tetrahedrals, $th; 
+	push @$tetrahedrals, $tet; 
 	$$decisions{"5Th"} += 1;
 	}
       elsif (ref $bestModel eq "TrigonalBipyramidal")
         { 
-	push @$trigonalbipyramidals, $tb; 
+	push @$trigonalbipyramidals, $tbp; 
 	$$decisions{"5Tb"} += 1;
 	}
 
@@ -612,17 +612,17 @@ sub calcChiCoordination
         {
         if (ref $sceondModel eq "TrigonalBipyramidal") 
 	  { 
-  	  push @$trigonalbipyramidals, $tb; 
+  	  push @$trigonalbipyramidals, $tbp; 
 	  $$decisions{"5BvaTb"} += 1;
 	  }
-        elsif (ref $sceondModel eq "TrigonalBipyramidalVP" && ref $thirdModel eq "TrigonalBipyramidal" )
+        elsif (ref $sceondModel eq "TrigonalBipyramidalVP" && ref $tetirdModel eq "TrigonalBipyramidal" )
           {
-          push @$trigonalbipyramidals, $tb;
+          push @$trigonalbipyramidals, $tbp;
           $$decisions{"5BvaBvpTb"} += 1;
           }
 	elsif (ref $sceondModel eq "Tetrahedral" && ($bestModel->{bestCombo}->{probability} < (2 * $sceondModel->{bestCombo}->{probability})) )
           {
-          push @$tetrahedrals, $th;
+          push @$tetrahedrals, $tet;
           $$decisions{"5Th"} += 1;
           }
         else
@@ -635,12 +635,12 @@ sub calcChiCoordination
         {
         if (ref $sceondModel eq "TrigonalBipyramidal")
           {
-          push @$trigonalbipyramidals, $tb;
+          push @$trigonalbipyramidals, $tbp;
           $$decisions{"5BvpTb"} += 1;
           }
-        elsif (ref $sceondModel eq "TrigonalBipyramidalVA" && ref $thirdModel eq "TrigonalBipyramidal" )
+        elsif (ref $sceondModel eq "TrigonalBipyramidalVA" && ref $tetirdModel eq "TrigonalBipyramidal" )
           {
-          push @$trigonalbipyramidals, $tb;
+          push @$trigonalbipyramidals, $tbp;
           $$decisions{"5BvpBvaTb"} += 1;
           }
         else
@@ -663,7 +663,7 @@ sub calcChiCoordination
           push @$squarepyramidals, $spy;
           $$decisions{"5SpvSpy"} += 1;
           }
-        elsif (ref $sceondModel eq "SquarePlanar" && ref $thirdModel eq "SquarePyramidal" )
+        elsif (ref $sceondModel eq "SquarePlanar" && ref $tetirdModel eq "SquarePyramidal" )
           {
           push @$squarepyramidals, $spy;
           $$decisions{"5SpvSplSpy"} += 1;
@@ -681,7 +681,7 @@ sub calcChiCoordination
 	  push @$squarepyramidals, $spy;
 	  $$decisions{"5SplSpy"} += 1;
 	  }
-        elsif (ref $sceondModel eq "SquarePyramidalV" && ref $thirdModel eq "SquarePyramidal" )
+        elsif (ref $sceondModel eq "SquarePyramidalV" && ref $tetirdModel eq "SquarePyramidal" )
           {
           push @$squarepyramidals, $spy;
           $$decisions{"5SplSpvSpy"} += 1;
@@ -698,14 +698,14 @@ sub calcChiCoordination
 
     else ## 6 ligands or more
       { 
-      my @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($th, $tb, $oh, $bva, $bvp, $spv, $spl, $spy)));
+      my @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($tet, $tbp, $oct, $bva, $bvp, $spv, $spl, $spy)));
       my $bestModel = $models[0] ;
       my $sceondModel = $models[1] ;
-      my $thirdModel = $models[2];
+      my $tetirdModel = $models[2];
       my $fourthModel = $models[3];
 
       ## Same as above
-      if ($control eq "p" && $bestModel->{bestCombo}->{probability} < $threshold)
+      if ($control eq "p" && $bestModel->{bestCombo}->{probability} < $tetreshold)
         {
         push @$unusables, $bestModel;
         $$decisions{"6Unusable"} += 1;
@@ -714,17 +714,17 @@ sub calcChiCoordination
 
       if (ref $bestModel eq "Tetrahedral")
         { 
-	push @$tetrahedrals, $th; 
+	push @$tetrahedrals, $tet; 
 	$$decisions{"6Th"} += 1;
 	}
       elsif (ref $bestModel eq "TrigonalBipyramidal")
         { 
-	push @$trigonalbipyramidals, $tb; 
+	push @$trigonalbipyramidals, $tbp; 
 	$$decisions{"6Tb"} += 1;
 	}
       elsif (ref $bestModel eq "Octahedral")
         { 
-	push @$octahedrals, $oh; 
+	push @$octahedrals, $oct; 
 	$$decisions{"6Oh"} += 1;
 	}
 
@@ -733,17 +733,17 @@ sub calcChiCoordination
         {
         if (ref $sceondModel eq "TrigonalBipyramidal")
           {
-          push @$trigonalbipyramidals, $tb;
+          push @$trigonalbipyramidals, $tbp;
           $$decisions{"6BvaTb"} += 1;
           }
-        elsif (ref $sceondModel eq "TrigonalBipyramidalVP" && ref $thirdModel eq "TrigonalBipyramidal" )
+        elsif (ref $sceondModel eq "TrigonalBipyramidalVP" && ref $tetirdModel eq "TrigonalBipyramidal" )
           {
-          push @$trigonalbipyramidals, $tb;
+          push @$trigonalbipyramidals, $tbp;
           $$decisions{"6BvaBvpTb"} += 1;
           }
         elsif (ref $sceondModel eq "Tetrahedral" && ($bestModel->{bestCombo}->{probability} < (2 * $sceondModel->{bestCombo}->{probability})) )
           {
-          push @$tetrahedrals, $th;
+          push @$tetrahedrals, $tet;
           $$decisions{"6Th"} += 1;
           }
         else
@@ -756,12 +756,12 @@ sub calcChiCoordination
         {
         if (ref $sceondModel eq "TrigonalBipyramidal")
           {
-          push @$trigonalbipyramidals, $tb;
+          push @$trigonalbipyramidals, $tbp;
           $$decisions{"6BvpTb"} += 1;
           }
-        elsif (ref $sceondModel eq "TrigonalBipyramidalVA" && ref $thirdModel eq "TrigonalBipyramidal" )
+        elsif (ref $sceondModel eq "TrigonalBipyramidalVA" && ref $tetirdModel eq "TrigonalBipyramidal" )
           {
-          push @$trigonalbipyramidals, $tb;
+          push @$trigonalbipyramidals, $tbp;
           $$decisions{"6BvpBvaTb"} += 1;
           }
         else
@@ -776,7 +776,7 @@ sub calcChiCoordination
         {
         if (ref $sceondModel eq "Octahedral")
           {
-          push @$octahedrals, $oh;
+          push @$octahedrals, $oct;
           $$decisions{"6SpyOh"} += 1;
           }
         else
@@ -789,14 +789,14 @@ sub calcChiCoordination
         {
         if (ref $sceondModel eq "Octahedral")
           {
-          push @$octahedrals, $oh;
+          push @$octahedrals, $oct;
           $$decisions{"6SpvOh"} += 1;
           }
         elsif (ref $sceondModel eq "SquarePyramidal")
           {
-          if (ref $thirdModel eq "Octahedral")
+          if (ref $tetirdModel eq "Octahedral")
             {
-            push @$octahedrals, $oh;
+            push @$octahedrals, $oct;
             $$decisions{"6SpvSpyOh"} += 1;
             }
           else
@@ -805,11 +805,11 @@ sub calcChiCoordination
             $$decisions{"6SpvSpy"} += 1;
             }
           }
-        elsif (ref $sceondModel eq "SquarePlanar" && ref $thirdModel eq "SquarePyramidal" )
+        elsif (ref $sceondModel eq "SquarePlanar" && ref $tetirdModel eq "SquarePyramidal" )
           {
           if (ref $fourthModel eq "Octahedral")
             {
-            push @$octahedrals, $oh;
+            push @$octahedrals, $oct;
             $$decisions{"6SpvSplSpyOh"} += 1;
             }
           else
@@ -828,14 +828,14 @@ sub calcChiCoordination
         {
         if (ref $sceondModel eq "Octahedral")
           {
-          push @$octahedrals, $oh;
+          push @$octahedrals, $oct;
           $$decisions{"6SplOh"} += 1;
           }
         elsif (ref $sceondModel eq "SquarePyramidal")
           {
-          if (ref $thirdModel eq "Octahedral")
+          if (ref $tetirdModel eq "Octahedral")
             {
-            push @$octahedrals, $oh;
+            push @$octahedrals, $oct;
             $$decisions{"6SplSpyOh"} += 1;
             }
           else
@@ -844,11 +844,11 @@ sub calcChiCoordination
             $$decisions{"6SplSpy"} += 1;
             }
           }
-        elsif (ref $sceondModel eq "SquarePyramidalV" && ref $thirdModel eq "SquarePyramidal" )
+        elsif (ref $sceondModel eq "SquarePyramidalV" && ref $tetirdModel eq "SquarePyramidal" )
           {
           if (ref $fourthModel eq "Octahedral")
             {
-            push @$octahedrals, $oh;
+            push @$octahedrals, $oct;
             $$decisions{"6SplSpvSpyOh"} += 1;
             }
           else
@@ -894,21 +894,21 @@ sub calcDeviationCoordination
   my ($tetrahedrals, $trigonalbipyramidals, $octahedrals);
   foreach my $shell (@$shells)
     {
-    my $th = Tetrahedral->new(shellObj => $shell);
-    my $tb = TrigonalBipyramidal->new(shellObj => $shell);
-    my $oh = Octahedral->new(shellObj => $shell);
+    my $tet = Tetrahedral->new(shellObj => $shell);
+    my $tbp = TrigonalBipyramidal->new(shellObj => $shell);
+    my $oct = Octahedral->new(shellObj => $shell);
 
-    $th->bestTestStatistic("dev");
-    $tb->bestTestStatistic("dev");
-    $oh->bestTestStatistic("dev");
+    $tet->bestTestStatistic("dev");
+    $tbp->bestTestStatistic("dev");
+    $oct->bestTestStatistic("dev");
 
-    my $bestModel = (sort {$a->{bestCombo}->{deviation} <=> $b->{bestCombo}->{deviation}} (grep {$_->{bestCombo}->{deviation} != 0;} ($th, $tb, $oh)))[0];
+    my $bestModel = (sort {$a->{bestCombo}->{deviation} <=> $b->{bestCombo}->{deviation}} (grep {$_->{bestCombo}->{deviation} != 0;} ($tet, $tbp, $oct)))[0];
     if (ref $bestModel eq "Tetrahedral")
-      { push @$tetrahedrals, $th; }
+      { push @$tetrahedrals, $tet; }
     elsif (ref $bestModel eq "TrigonalBipyramidal")
-      { push @$trigonalbipyramidals, $tb; }
+      { push @$trigonalbipyramidals, $tbp; }
     elsif (ref $bestModel eq "Octahedral")
-      { push @$octahedrals, $oh; }
+      { push @$octahedrals, $oct; }
 
     }
 
