@@ -153,7 +153,7 @@ sub IAcoordination
   my $self = shift @_;
   my $statOutFileName = shift @_;
   my $control = shift @_;
-  my $tetreshold = shift @_;
+  my $threshold = shift @_;
   my $currStats = (@_)? (shift @_) : ($self->{stats});
 
   my $i = 1;
@@ -161,8 +161,8 @@ sub IAcoordination
   while ( $self->compareStats($oldStats) )
     {
     $oldStats = clone($currStats);
-    $self->{coordinations} = $self->calcChiCoordination($control, $tetreshold);
-    if ($control eq "n") {$self->calNonModel($tetreshold);}
+    $self->{coordinations} = $self->calcChiCoordination($control, $threshold);
+    if ($control eq "n") {$self->calNonModel($threshold);}
 
     $currStats = {};
     $$currStats{"angle"} = $self->calcAngleStats();
@@ -188,7 +188,7 @@ sub IAcoordination
 sub calNonModel
   {
   my $self = shift @_;
-  my $tetreshold = shift @_;
+  my $threshold = shift @_;
 
   my $stats;
   $$stats{"angle"} = $self->calcAngleStats();
@@ -208,7 +208,7 @@ sub calNonModel
       ## Seems to be error, leave it here for now.
       #$struct->bestTestStatistic("non", $stats);
     
-      if ($struct->{bestCombo}->{probability} > $tetreshold)
+      if ($struct->{bestCombo}->{probability} > $threshold)
         {
 	push @{$$coordinations{$model}}, $struct;
         push @$shells, $struct->{shellObj}
@@ -458,16 +458,29 @@ sub compareStats
   return 0;
   }
 
+our $cgRelations = [
+  {"name" => "Tetrahedral", "num" => 4, "parents" => [], "children" => ["TetrahedralV"], "siblings" => []},
+  {"name" => "TrigonalBipyramidal", "num" => 5, "parents" => [], "children" => ["TrigonalBipyramidalVA", "TrigonalBipyramidalVP", "TrigonalPlanar"], , "siblings" => []},
+  {"name" => "Octahedral", "num" => 6, "parents" => [], "children" => ["SquarePyramidalV", "SquarePlanar", "SquarePyramidal"], "siblings" => []},
+  {"name" => "TrigonalPlanar", "num" => 3, "parents" => ["TrigonalBipyramidalVA", "TrigonalBipyramidal"], "children" => [], "siblings" => []},
+  {"name" => "TetrahedralV", "num" => 3, "parents" => ["Tetrahedral"], "children" => [], "siblings" => []},
+  {"name" => "TrigonalBipyramidalVA", "num" => 4, "parents" => ["TrigonalBipyramidal"], "children" => ["TrigonalPlanar"], "siblings" => ["TrigonalBipyramidalVP"]},
+  {"name" => "TrigonalBipyramidalVP", "num" => 4, "parents" => ["TrigonalBipyramidal"], "children" => [], "siblings" => ["TrigonalBipyramidalVA"]},
+  {"name" => "SquarePyramidalV", "num" => 4, "parents" => ["SquarePyramidal", "Octahedral"], "children" => [], "siblings" => ["SquarePlanar"]},
+  {"name" => "SquarePlanar", "num" => 4, "parents" => ["SquarePyramidal", "Octahedral"], "children" => [], "siblings" => ["SquarePyramidalV"]},
+  {"name" => "SquarePyramidal", "num" => 5, "parents" => ["Octahedral"], "children" => ["SquarePlanar", "SquarePyramidalV"], "siblings" => []}
+]; 
+
 ## Classify coordination using chi statistics
 sub calcChiCoordination
   {
   my $self = shift @_;
   my $control = shift @_;
-  my $tetreshold = shift @_;
+  my $threshold = shift @_;
   my $stats = (@_)? (shift @_) : ($self->{stats});
 
-  my ($tetrahedrals, $trigonalbipyramidals, $octahedrals, $trigonalplanars, $tetrahedralVs, $trigonalbipyramidalVAs, $trigonalbipyramidalVPs, $squareplanars, $squarepyramidalVs, $squarepyramidals, $unusables);
   my $decisions = {};
+  my $coordinations = {};
   foreach my $shell (@{$self->{shells}})
     {
     # major coordinations
@@ -477,7 +490,7 @@ sub calcChiCoordination
 
     # 3 ligands
     my $tpl = TrigonalPlanar->new(shellObj => $shell);
-    my $tetv = TetrahedralV->new(shellObj => $shell);
+    my $tev = TetrahedralV->new(shellObj => $shell);
 
     # 4 ligands, trignal bipyramidal related
     my $bva = TrigonalBipyramidalVA->new(shellObj => $shell);
@@ -490,395 +503,109 @@ sub calcChiCoordination
     # 5 ligands
     my $spy = SquarePyramidal->new(shellObj => $shell);
 
-    $tet->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
-    $tbp->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
-    $oct->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
+    $tet->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+    $tbp->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+    $oct->bestTestStatistic("chi", $control, $threshold, 0, $stats);
 
-    $tpl->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
-    $tetv->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
-    $bva->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
-    $bvp->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
-    $spv->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
-    $spl->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
-    $spy->bestTestStatistic("chi", $control, $tetreshold, 0, $stats);
+    $tpl->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+    $tev->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+    $bva->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+    $bvp->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+    $spv->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+    $spl->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+    $spy->bestTestStatistic("chi", $control, $threshold, 0, $stats);
 
+    my @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} ($tet, $tbp, $oct, $bva, $bvp, $spv, $spl, $spy)));
 
-    if (! defined $tpl->{bestCombo}) ## less than 3 ligands
+#print "\n", $shell->znID(), "\n";
+#map {print ref $_, ": ", $_->{bestCombo}->{probability}, "\n"} (@models);
+
+    my $maxNum;
+    my $unusables;
+    foreach my $model (@models)
       {
-      $$decisions{"012"}++;
-      next;
-      }
-    elsif (! defined $tet->{bestCombo}) ## 3 ligands
-      {
-      my $bestModel = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($tpl, $tetv)))[0];
-
-      if ($bestModel->{bestCombo}->{probability} > 0.01)
-	{
-	if (ref $bestModel eq "TetrahedralV" && $bestModel)
-          {
-          push @$tetrahedralVs, $tetv;
-          $$decisions{"3Thv"} += 1;
-          }
-        elsif (ref $bestModel eq "TrigonalPlanar")
-          {
-          push (@$trigonalplanars, $tpl) ;
-          $$decisions{"3Tpl"} += 1;
-  	  }
- 	}
-      else
-	{$$decisions{"3None"} += 1;}
-      next;
-      }
-    elsif (! defined $tbp->{bestCombo}) ## 4 ligands
-      {
-      my @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($tet, $bva, $bvp, $spv, $spl)));
-      my $bestModel = $models[0] ;
-      my $sceondModel = $models[1] ;
-      my $tetirdModel = $models[2] ;
-
-
-      ## set the probability threshold, remove low prob ones from statistics calculation. 
-      if ($control eq "p" && $bestModel->{bestCombo}->{probability} < $tetreshold) 
-	{
-	push @$unusables, $bestModel;
-        $$decisions{"4Unusable"} += 1;
-	next;
-	}
-
-      if (ref $bestModel eq "Tetrahedral")
-        { 
-	push @$tetrahedrals, $tet; 
-	$$decisions{"4Th"} += 1;
-	}
-      elsif (ref $bestModel eq "TrigonalBipyramidalVA")
-        {
-	if (ref $sceondModel eq "Tetrahedral" && ($bestModel->{bestCombo}->{probability} < (2 * $sceondModel->{bestCombo}->{probability})) )
-	  {
-          push @$tetrahedrals, $tet;
-          $$decisions{"4Th"} += 1;
-          }
-	else
- 	  {
- 	  push @$trigonalbipyramidalVAs, $bva; 
-	  $$decisions{"4Bva"} += 1;
-	  }
-	}
-      elsif (ref $bestModel eq "TrigonalBipyramidalVP")
-        {
-        push @$trigonalbipyramidalVPs, $bvp;
-        $$decisions{"4Bvp"} += 1;
-        }
-      elsif (ref $bestModel eq "SquarePyramidalV.pm")
-        {
-        push @$squarepyramidalVs, $spv;
-        $$decisions{"4Spv"} += 1;
-        }
-      elsif (ref $bestModel eq "SquarePlanar")
-        { 
-	push @$squareplanars, $spl; 
-	$$decisions{"4Spl"} += 1;
-	}
-
-      next;
-      }
-    elsif (! defined $oct->{bestCombo}) ## 5 ligands
-      {
-      my @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($tet, $tbp, $bva, $bvp, $spv, $spl, $spy)));
-      my $bestModel = $models[0] ;
-      my $sceondModel = $models[1] ;
-      my $tetirdModel = $models[2] ;
-
-      ## Save as 4 ligands above
-      if ($control eq "p" && $bestModel->{bestCombo}->{probability} < $tetreshold)
-        {
-        push @$unusables, $bestModel;
-        $$decisions{"5Unusable"} += 1;
-	next;
-        }
-
-      if (ref $bestModel eq "Tetrahedral")
-        { 
-	push @$tetrahedrals, $tet; 
-	$$decisions{"5Th"} += 1;
-	}
-      elsif (ref $bestModel eq "TrigonalBipyramidal")
-        { 
-	push @$trigonalbipyramidals, $tbp; 
-	$$decisions{"5Tb"} += 1;
-	}
-
-      # trigonal bipyramidal related
-      elsif (ref $bestModel eq "TrigonalBipyramidalVA")
-        {
-        if (ref $sceondModel eq "TrigonalBipyramidal") 
-	  { 
-  	  push @$trigonalbipyramidals, $tbp; 
-	  $$decisions{"5BvaTb"} += 1;
-	  }
-        elsif (ref $sceondModel eq "TrigonalBipyramidalVP" && ref $tetirdModel eq "TrigonalBipyramidal" )
-          {
-          push @$trigonalbipyramidals, $tbp;
-          $$decisions{"5BvaBvpTb"} += 1;
-          }
-	elsif (ref $sceondModel eq "Tetrahedral" && ($bestModel->{bestCombo}->{probability} < (2 * $sceondModel->{bestCombo}->{probability})) )
-          {
-          push @$tetrahedrals, $tet;
-          $$decisions{"5Th"} += 1;
-          }
-        else
-	  { 
-	  push @$trigonalbipyramidalVAs, $bva; 
-	  $$decisions{"5Bva"} += 1;
-	  }
-	}
-      elsif (ref $bestModel eq "TrigonalBipyramidalVP")
-        {
-        if (ref $sceondModel eq "TrigonalBipyramidal")
-          {
-          push @$trigonalbipyramidals, $tbp;
-          $$decisions{"5BvpTb"} += 1;
-          }
-        elsif (ref $sceondModel eq "TrigonalBipyramidalVA" && ref $tetirdModel eq "TrigonalBipyramidal" )
-          {
-          push @$trigonalbipyramidals, $tbp;
-          $$decisions{"5BvpBvaTb"} += 1;
-          }
-        else
-          {
-          push @$trigonalbipyramidalVPs, $bvp;
-          $$decisions{"5Bvp"} += 1;
-          }
-        }
-
-      # square pyramidal related
-      elsif (ref $bestModel eq "SquarePyramidal")
-        {
-        push @$squarepyramidals, $spy;
-        $$decisions{"5Spy"} += 1;
-        }
-      elsif (ref $bestModel eq "SquarePyramidalV")
-        {
-        if (ref $sceondModel eq "SquarePyramidal")
-          {
-          push @$squarepyramidals, $spy;
-          $$decisions{"5SpvSpy"} += 1;
-          }
-        elsif (ref $sceondModel eq "SquarePlanar" && ref $tetirdModel eq "SquarePyramidal" )
-          {
-          push @$squarepyramidals, $spy;
-          $$decisions{"5SpvSplSpy"} += 1;
-	  }
-        else
-          {
-          push @$squarepyramidalVs, $spv;
-          $$decisions{"5Spv"} += 1;
-          }
-        }
-      elsif (ref $bestModel eq "SquarePlanar")
-	{
-        if (ref $sceondModel eq "SquarePyramidal")
-          { 
-	  push @$squarepyramidals, $spy;
-	  $$decisions{"5SplSpy"} += 1;
-	  }
-        elsif (ref $sceondModel eq "SquarePyramidalV" && ref $tetirdModel eq "SquarePyramidal" )
-          {
-          push @$squarepyramidals, $spy;
-          $$decisions{"5SplSpvSpy"} += 1;
-          }
-        else
-          { 
-	  push @$squareplanars, $spl; 
-	  $$decisions{"5Spl"} += 1;
-	  }
-	}
-
-      next;
+      my $relation = (grep {$$_{"name"} eq ref $model} (@$cgRelations))[0];
+      my $num = $$relation{"num"};
+      if ($num > $maxNum) {$maxNum = $num;}
       }
 
-    else ## 6 ligands or more
-      { 
-      my @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($tet, $tbp, $oct, $bva, $bvp, $spv, $spl, $spy)));
-      my $bestModel = $models[0] ;
-      my $sceondModel = $models[1] ;
-      my $tetirdModel = $models[2];
-      my $fourthModel = $models[3];
-
-      ## Same as above
-      if ($control eq "p" && $bestModel->{bestCombo}->{probability} < $tetreshold)
+    if ($maxNum < 4) ## less than 4 ligands
+      {
+      if (! defined $tev->{bestCombo} && ! defined $tpl->{bestCombo}) 
+	{ $$decisions{"012"}++; }
+      else 
         {
-        push @$unusables, $bestModel;
-        $$decisions{"6Unusable"} += 1;
+        my @mods = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} ($tev, $tpl)));
+        if ($mods[0]->{bestCombo}->{probability} > 0.01)
+          {
+          my $modRef = ref $mods[0];
+          push @{$$coordinations{$modRef}}, $mods[0];
+          $$decisions{"3.". $modRef} += 1;
+          }
+        else
+          {$$decisions{"3.None"} += 1;}
         next;
+        }
+      }
+    else ## 4, 5, 6 ligands
+      {
+      ## set the probability threshold, remove low prob ones from statistics calculation. 
+      if ($control eq "p" && $models[0]->{bestCombo}->{probability} < $threshold) 
+	{
+	push @$unusables, $models[0];
+        $$decisions{$maxNum. ".Unusable"} += 1;
+	next;
 	}
 
-      if (ref $bestModel eq "Tetrahedral")
-        { 
-	push @$tetrahedrals, $tet; 
-	$$decisions{"6Th"} += 1;
+      if (ref $models[0] eq "TrigonalBipyramidalVA" && ref $models[1] eq "Tetrahedral" && ($models[0]->{bestCombo}->{probability} < (2 * $models[1]->{bestCombo}->{probability})))
+        {
+        my $modelRef = ref $models[1];
+	push @{$$coordinations{$modelRef}}, $models[1];
+	$$decisions{$maxNum. ".".  $modelRef} += 1;
+#print "model class: $modelRef\n";
 	}
-      elsif (ref $bestModel eq "TrigonalBipyramidal")
-        { 
-	push @$trigonalbipyramidals, $tbp; 
-	$$decisions{"6Tb"} += 1;
-	}
-      elsif (ref $bestModel eq "Octahedral")
-        { 
-	push @$octahedrals, $oct; 
-	$$decisions{"6Oh"} += 1;
-	}
+      else
+	{
+	my $dec = $maxNum;
+	my @track;
+	for (my $i = 0; $i <= $#models; $i++)
+	  {
+          my $modelRef = ref $models[$i];
+	  my $relation = (grep {$$_{"name"} eq $modelRef} (@$cgRelations))[0];
 
-      # trigonal bipyramidal related
-      elsif (ref $bestModel eq "TrigonalBipyramidalVA")
-        {
-        if (ref $sceondModel eq "TrigonalBipyramidal")
-          {
-          push @$trigonalbipyramidals, $tbp;
-          $$decisions{"6BvaTb"} += 1;
-          }
-        elsif (ref $sceondModel eq "TrigonalBipyramidalVP" && ref $tetirdModel eq "TrigonalBipyramidal" )
-          {
-          push @$trigonalbipyramidals, $tbp;
-          $$decisions{"6BvaBvpTb"} += 1;
-          }
-        elsif (ref $sceondModel eq "Tetrahedral" && ($bestModel->{bestCombo}->{probability} < (2 * $sceondModel->{bestCombo}->{probability})) )
-          {
-          push @$tetrahedrals, $tet;
-          $$decisions{"6Th"} += 1;
-          }
-        else
-          {
-          push @$trigonalbipyramidalVAs, $bva;
-          $$decisions{"6Bva"} += 1;
-          }
-        }
-      elsif (ref $bestModel eq "TrigonalBipyramidalVP")
-        {
-        if (ref $sceondModel eq "TrigonalBipyramidal")
-          {
-          push @$trigonalbipyramidals, $tbp;
-          $$decisions{"6BvpTb"} += 1;
-          }
-        elsif (ref $sceondModel eq "TrigonalBipyramidalVA" && ref $tetirdModel eq "TrigonalBipyramidal" )
-          {
-          push @$trigonalbipyramidals, $tbp;
-          $$decisions{"6BvpBvaTb"} += 1;
-          }
-        else
-          {
-          push @$trigonalbipyramidalVPs, $bvp;
-          $$decisions{"6Bvp"} += 1;
-          }
-        }
+	  if ( grep {ref $models[$i+1] eq $_;} (@{$$relation{"parents"}}) )
+	    { push @track, "p"; }
+          elsif ( grep {ref $models[$i+1] eq $_;} (@{$$relation{"siblings"}}, @{$$relation{"children"}}) )
+            { push @track, "s"; }
+	  else
+	    {
+#print "track: ", @track, "\n";
+	    if ($i == 0)
+	      {	
+              push @{$$coordinations{$modelRef}}, $models[$i];
+	      $dec = $dec. ".". $modelRef;
+              $$decisions{$dec} += 1;
+	      }
+	    else
+	      {
+	      while ($track[-1] eq "s") {pop @track;}
+	      my $maxInd = @track;
 
-      # octahedral related
-      elsif (ref $bestModel eq "SquarePyramidal")
-        {
-        if (ref $sceondModel eq "Octahedral")
-          {
-          push @$octahedrals, $oct;
-          $$decisions{"6SpyOh"} += 1;
-          }
-        else
-          {
-          push @$squarepyramidals, $spy;
-          $$decisions{"6Spy"} += 1;
-          }
-        }
-      elsif (ref $bestModel eq "SquarePyramidalV")
-        {
-        if (ref $sceondModel eq "Octahedral")
-          {
-          push @$octahedrals, $oct;
-          $$decisions{"6SpvOh"} += 1;
-          }
-        elsif (ref $sceondModel eq "SquarePyramidal")
-          {
-          if (ref $tetirdModel eq "Octahedral")
-            {
-            push @$octahedrals, $oct;
-            $$decisions{"6SpvSpyOh"} += 1;
-            }
-          else
-            {
-            push @$squarepyramidals, $spy;
-            $$decisions{"6SpvSpy"} += 1;
-            }
-          }
-        elsif (ref $sceondModel eq "SquarePlanar" && ref $tetirdModel eq "SquarePyramidal" )
-          {
-          if (ref $fourthModel eq "Octahedral")
-            {
-            push @$octahedrals, $oct;
-            $$decisions{"6SpvSplSpyOh"} += 1;
-            }
-          else
-            {
-            push @$squarepyramidals, $spy;
-            $$decisions{"6SpvSplSpy"} += 1;
-            }
+	      $modelRef = ref $models[$maxInd];
+              push @{$$coordinations{$modelRef}}, $models[$maxInd];
+
+	      map {$dec = $dec.".".ref $models[$_]} (0..$maxInd) ;
+              $$decisions{$dec} += 1;
+	      }
+#print "track: ", @track, "\n";
+#print "decision: $dec\n";
+#print "model class: $modelRef\n";
+	    last;
+	    }
 	  }
-        else
-          {
-          push @$squarepyramidalVs, $spv;
-          $$decisions{"6Spv"} += 1;
-          }
-        }
-      elsif (ref $bestModel eq "SquarePlanar")
-        {
-        if (ref $sceondModel eq "Octahedral")
-          {
-          push @$octahedrals, $oct;
-          $$decisions{"6SplOh"} += 1;
-          }
-        elsif (ref $sceondModel eq "SquarePyramidal")
-          {
-          if (ref $tetirdModel eq "Octahedral")
-            {
-            push @$octahedrals, $oct;
-            $$decisions{"6SplSpyOh"} += 1;
-            }
-          else
-            {
-            push @$squarepyramidals, $spy;
-            $$decisions{"6SplSpy"} += 1;
-            }
-          }
-        elsif (ref $sceondModel eq "SquarePyramidalV" && ref $tetirdModel eq "SquarePyramidal" )
-          {
-          if (ref $fourthModel eq "Octahedral")
-            {
-            push @$octahedrals, $oct;
-            $$decisions{"6SplSpvSpyOh"} += 1;
-            }
-          else
-            {
-            push @$squarepyramidals, $spy;
-            $$decisions{"6SplSpvSpy"} += 1;
-            }
-          }
-        else
-          {
-          push @$squareplanars, $spl;
-          $$decisions{"6Spl"} += 1;
-          }
-        }
-
-      next;
+	}
       }
     }
-
-  my $coordinations = {};
-  %$coordinations = (   "tetrahedrals" => $tetrahedrals,
-			"trigonalBipyramidals" => $trigonalbipyramidals,
-			"octahedrals" => $octahedrals, 
-			"trigonalPlanars" => $trigonalplanars,
-                        "tetrahedralsVacancy" => $tetrahedralVs,
-                        "trigonalBipyramidalsVacancyAxial" => $trigonalbipyramidalVAs,
-                        "trigonalBipyramidalsVacancyPlanar" => $trigonalbipyramidalVPs,
-                        "squarePyramidalsVacancy" => $squarepyramidalVs,
-			"squarePlanars" => $squareplanars,
-			"squarePyramidals" => $squarepyramidals );
 
   $self->{decisions} = $decisions ;
   $self->{coordinations} = $coordinations ;
@@ -932,17 +659,10 @@ sub printStats
   else
     { print "Chi sorted, i = $i:" ;}
 
-#  print $self->{coordinations}->{tetrahedrals}, "flag\n";
-  print "\nTetrahedral = ", scalar @{$self->{coordinations}->{tetrahedrals}} if $self->{coordinations}->{tetrahedrals}; 
-  print "\nTrigonal bipyramidal = ", scalar @{$self->{coordinations}->{trigonalBipyramidals}} if  $self->{coordinations}->{trigonalBipyramidals};
-  print "\nOctahedral = ", scalar @{$self->{coordinations}->{octahedrals}} if $self->{coordinations}->{octahedrals};
-  print "\nTrigonal planar = ", scalar @{$self->{coordinations}->{trigonalPlanars}} if $self->{coordinations}->{trigonalPlanars};
-  print "\nTetrahedral with vacancy = ", scalar @{$self->{coordinations}->{tetrahedralsVacancy}} if $self->{coordinations}->{tetrahedralsVacancy};
-  print "\nTrigonal bipyramidal with vacancy axial = ", scalar @{$self->{coordinations}->{trigonalBipyramidalsVacancyAxial}} if  $self->{coordinations}->{trigonalBipyramidalsVacancyAxial};
-  print "\nTrigonal bipyramidal with vanancy planar = ", scalar @{$self->{coordinations}->{trigonalBipyramidalsVacancyPlanar}} if  $self->{coordinations}->{trigonalBipyramidalsVacancyPlanar};
-  print "\nSquare pyramidal with vancy = ", scalar @{$self->{coordinations}->{squarePyramidalsVacancy}} if $self->{coordinations}->{squarePyramidalsVacancy};
-  print "\nSquare planars = ", scalar @{$self->{coordinations}->{squarePlanars}} if  $self->{coordinations}->{squarePlanars};
-  print "\nSquare pyramidal = ", scalar @{$self->{coordinations}->{squarePyramidals}} if $self->{coordinations}->{squarePyramidals};
+  foreach my $coord (sort keys %{$self->{coordinations}})
+    {
+    print "\n$coord = ", scalar @{$self->{coordinations}->{$coord}} if $self->{coordinations}->{$coord};
+    }
   print "\n\n";
   }
 
