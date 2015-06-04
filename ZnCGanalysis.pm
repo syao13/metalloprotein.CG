@@ -51,6 +51,8 @@ use Clone 'clone';
 our @defaultDataMembers = (
                           "pathsFile" => 0,  # a file that contains pdb-file paths
 			  "element" => 0,
+			  "majorCGs" => 0,
+			  "minLigNum" => 0,
 			  "shells" => 0,  # ref to AtomShell object
 			  "coordinations" => 0,  
 			  "stats" => 0,
@@ -60,6 +62,19 @@ our @defaultDataMembers = (
 			  "decisions" => 0,
 			  "nonModels" => 0
                           );
+
+our $cgRelations = [
+  {"name" => "Tetrahedral", "num" => 4, "parents" => [], "children" => ["TetrahedralV"], "siblings" => []},
+  {"name" => "TrigonalBipyramidal", "num" => 5, "parents" => [], "children" => ["TrigonalBipyramidalVA", "TrigonalBipyramidalVP", "TrigonalPlanar"], , "siblings" => []},
+  {"name" => "Octahedral", "num" => 6, "parents" => [], "children" => ["SquarePyramidalV", "SquarePlanar", "SquarePyramidal"], "siblings" => []},
+  {"name" => "TrigonalPlanar", "num" => 3, "parents" => ["TrigonalBipyramidalVA", "TrigonalBipyramidal"], "children" => [], "siblings" => []},
+  {"name" => "TetrahedralV", "num" => 3, "parents" => ["Tetrahedral"], "children" => [], "siblings" => []},
+  {"name" => "TrigonalBipyramidalVA", "num" => 4, "parents" => ["TrigonalBipyramidal"], "children" => ["TrigonalPlanar"], "siblings" => ["TrigonalBipyramidalVP"]},
+  {"name" => "TrigonalBipyramidalVP", "num" => 4, "parents" => ["TrigonalBipyramidal"], "children" => [], "siblings" => ["TrigonalBipyramidalVA"]},
+  {"name" => "SquarePyramidalV", "num" => 4, "parents" => ["SquarePyramidal", "Octahedral"], "children" => [], "siblings" => ["SquarePlanar"]},
+  {"name" => "SquarePlanar", "num" => 4, "parents" => ["SquarePyramidal", "Octahedral"], "children" => [], "siblings" => ["SquarePyramidalV"]},
+  {"name" => "SquarePyramidal", "num" => 5, "parents" => ["Octahedral"], "children" => ["SquarePlanar", "SquarePyramidalV"], "siblings" => []}
+]; 
 
 sub new
   {
@@ -160,7 +175,7 @@ sub IAcoordination
   my $oldStats = {};
   while ( $self->compareStats($oldStats) )
     {
-    $oldStats = clone($currStats);
+    $oldStats = clone($currStats); ## a nested copy
     $self->{coordinations} = $self->calcChiCoordination($control, $threshold);
     if ($control eq "n") {$self->calNonModel($threshold);}
 
@@ -239,67 +254,34 @@ sub bindShellViaDist
   my $statOutFileName = (@_)? shift @_: "stats";
   my $stats = (@_)? (shift @_) : ($self->{stats});
 
-  my ($tetree, $four, $five, $six, $more);
+  my %numToLet = ( 2 => "two", 3 => "three", 4 => "four", 5 => "five", 6 => "six", 7 => "seven", 8 => "eight");
+  my $coordinations = {};
   foreach my $shell (@{$self->{shells}})
     {
-      my $tpl = TrigonalPlanar->new(shellObj => $shell);
-      my $tet = Tetrahedral->new(shellObj => $shell);
-      my $tbp = TrigonalBipyramidal->new(shellObj => $shell);
-      my $oct = Octahedral->new(shellObj => $shell);
+    my @models;
+    foreach my $cg (@{$self->{majorCGs}})
+      {
+      my $cgObj = $cg->new(shellObj => $shell);
+      $cgObj->bestDistChi($stats);
+      push @models, $cgObj;
+      }
 
-      $tpl->bestDistChi($stats);
-      $tet->bestDistChi($stats);
-      $tbp->bestDistChi($stats);
-      $oct->bestDistChi($stats);
+    my $bestModel = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} (@models)))[0];
+    next if (! $bestModel);
 
-    if (! defined $tpl->{bestCombo}) ## less than 3 ligands
-      {
-      next;
-      }
-    elsif (! defined $tet->{bestCombo}) ## 3 ligands
-      {
-      push @$tetree, $tpl;
-      }
-    elsif (! defined $tbp->{bestCombo}) ## 4 ligands
-      {
-      push @$four, $tet;
-      }
-    elsif (! defined $oct->{bestCombo}) ## 5 ligands
-      {
-      my $bestModel = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($tet, $tbp)))[0];
-      if (ref $bestModel eq "Tetrahedral")
-        { push @$four, $tet;}
-      elsif (ref $bestModel eq "TrigonalBipyramidal")
-        { push @$five, $tbp;}
-      }
-    else
-      {
-      my $bestModel = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {$_->{bestCombo}->{probability} != 0;} ($tet, $tbp, $oct)))[0];
-      if (ref $bestModel eq "Tetrahedral")
-        { push @$four, $tet;}
-      elsif (ref $bestModel eq "TrigonalBipyramidal")
-        { push @$five, $tbp;}
-      elsif (ref $bestModel eq "Octahedral")
-        { push @$six, $oct;}
-      }
- 
+    my $relation = (grep {$$_{"name"} eq ref $bestModel} (@$cgRelations))[0];
+    my $numLig = $numToLet{$$relation{"num"}};
+    push @{$$coordinations{$numLig}}, $bestModel;
+
     ## print chi probabilities
     #print $shell->znID(), ": ";
-    #print "th, ", $tet->{bestCombo}->{probability}, "; ";
-    #print "tb, ", $tbp->{bestCombo}->{probability}, "; ";
-    #print "oh, ", $oct->{bestCombo}->{probability}, "; ";
+    #map {print $_->{bestCombo}->{probability}, "; "} (@models);
+    #print "\n";
+    #print "$bestModel\n";
     #print "\n";
     }
 
-  &writeTableFile("$statOutFileName.dist.txt", $stats);
-
-  my $bestDist = {};
-  %$bestDist = (  "three" => $tetree,
-		  "four" => $four,
-		  "five" => $five,
-		  "six" => $six );
-
-  $self->{coordinations} = $bestDist ;
+  $self->{coordinations} = $coordinations;
   }
 
 
@@ -458,19 +440,6 @@ sub compareStats
   return 0;
   }
 
-our $cgRelations = [
-  {"name" => "Tetrahedral", "num" => 4, "parents" => [], "children" => ["TetrahedralV"], "siblings" => []},
-  {"name" => "TrigonalBipyramidal", "num" => 5, "parents" => [], "children" => ["TrigonalBipyramidalVA", "TrigonalBipyramidalVP", "TrigonalPlanar"], , "siblings" => []},
-  {"name" => "Octahedral", "num" => 6, "parents" => [], "children" => ["SquarePyramidalV", "SquarePlanar", "SquarePyramidal"], "siblings" => []},
-  {"name" => "TrigonalPlanar", "num" => 3, "parents" => ["TrigonalBipyramidalVA", "TrigonalBipyramidal"], "children" => [], "siblings" => []},
-  {"name" => "TetrahedralV", "num" => 3, "parents" => ["Tetrahedral"], "children" => [], "siblings" => []},
-  {"name" => "TrigonalBipyramidalVA", "num" => 4, "parents" => ["TrigonalBipyramidal"], "children" => ["TrigonalPlanar"], "siblings" => ["TrigonalBipyramidalVP"]},
-  {"name" => "TrigonalBipyramidalVP", "num" => 4, "parents" => ["TrigonalBipyramidal"], "children" => [], "siblings" => ["TrigonalBipyramidalVA"]},
-  {"name" => "SquarePyramidalV", "num" => 4, "parents" => ["SquarePyramidal", "Octahedral"], "children" => [], "siblings" => ["SquarePlanar"]},
-  {"name" => "SquarePlanar", "num" => 4, "parents" => ["SquarePyramidal", "Octahedral"], "children" => [], "siblings" => ["SquarePyramidalV"]},
-  {"name" => "SquarePyramidal", "num" => 5, "parents" => ["Octahedral"], "children" => ["SquarePlanar", "SquarePyramidalV"], "siblings" => []}
-]; 
-
 ## Classify coordination using chi statistics
 sub calcChiCoordination
   {
@@ -483,42 +452,27 @@ sub calcChiCoordination
   my $coordinations = {};
   foreach my $shell (@{$self->{shells}})
     {
-    # major coordinations
-    my $tet = Tetrahedral->new(shellObj => $shell);
-    my $tbp = TrigonalBipyramidal->new(shellObj => $shell);
-    my $oct = Octahedral->new(shellObj => $shell);
+    my @models;
+    my %allCGs;
+    foreach my $major (@{$self->{majorCGs}})
+      {
+      $allCGs{$major} = 1;
 
-    # 3 ligands
-    my $tpl = TrigonalPlanar->new(shellObj => $shell);
-    my $tev = TetrahedralV->new(shellObj => $shell);
+      my $relation = (grep {$$_{"name"} eq $major } (@$cgRelations))[0];
+      map {$allCGs{$_} = 1} (@{$$relation{"children"}});
+      }
+ 
+    foreach my $cg (keys %allCGs)
+      {
+      my $relation = (grep {$$_{"name"} eq $cg } (@$cgRelations))[0];
+      next if ($$relation{"num"} < $self->{minLigNum});
 
-    # 4 ligands, trignal bipyramidal related
-    my $bva = TrigonalBipyramidalVA->new(shellObj => $shell);
-    my $bvp = TrigonalBipyramidalVP->new(shellObj => $shell);
+      my $cgObj = $cg->new(shellObj => $shell);
+      $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+      push @models, $cgObj
+      }
 
-    # 4 ligands, square pyramidal related
-    my $spv = SquarePyramidalV->new(shellObj => $shell);
-    my $spl = SquarePlanar->new(shellObj => $shell);
-
-    # 5 ligands
-    my $spy = SquarePyramidal->new(shellObj => $shell);
-
-    $tet->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-    $tbp->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-    $oct->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-
-    $tpl->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-    $tev->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-    $bva->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-    $bvp->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-    $spv->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-    $spl->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-    $spy->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-
-    my @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} ($tet, $tbp, $oct, $bva, $bvp, $spv, $spl, $spy)));
-
-#print "\n", $shell->znID(), "\n";
-#map {print ref $_, ": ", $_->{bestCombo}->{probability}, "\n"} (@models);
+    @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} (@models)));
 
     my $maxNum;
     my $unusables;
@@ -529,8 +483,13 @@ sub calcChiCoordination
       if ($num > $maxNum) {$maxNum = $num;}
       }
 
-    if ($maxNum < 4) ## less than 4 ligands
+    if ($maxNum < $self->{minLigNum}) ## less than 4 ligands
       {
+      my $tpl = TrigonalPlanar->new(shellObj => $shell);
+      my $tev = TetrahedralV->new(shellObj => $shell);
+      $tpl->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+      $tev->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+
       if (! defined $tev->{bestCombo} && ! defined $tpl->{bestCombo}) 
 	{ $$decisions{"012"}++; }
       else 
@@ -562,7 +521,6 @@ sub calcChiCoordination
         my $modelRef = ref $models[1];
 	push @{$$coordinations{$modelRef}}, $models[1];
 	$$decisions{$maxNum. ".".  $modelRef} += 1;
-#print "model class: $modelRef\n";
 	}
       else
 	{
@@ -579,7 +537,6 @@ sub calcChiCoordination
             { push @track, "s"; }
 	  else
 	    {
-#print "track: ", @track, "\n";
 	    if ($i == 0)
 	      {	
               push @{$$coordinations{$modelRef}}, $models[$i];
@@ -597,9 +554,6 @@ sub calcChiCoordination
 	      map {$dec = $dec.".".ref $models[$_]} (0..$maxInd) ;
               $$decisions{$dec} += 1;
 	      }
-#print "track: ", @track, "\n";
-#print "decision: $dec\n";
-#print "model class: $modelRef\n";
 	    last;
 	    }
 	  }
@@ -617,38 +571,29 @@ sub calcDeviationCoordination
   {
   my $self = shift @_;
 
+  my $coordinations = {};
   my $shells = $self->{shells};
-  my ($tetrahedrals, $trigonalbipyramidals, $octahedrals);
   foreach my $shell (@$shells)
     {
-    my $tet = Tetrahedral->new(shellObj => $shell);
-    my $tbp = TrigonalBipyramidal->new(shellObj => $shell);
-    my $oct = Octahedral->new(shellObj => $shell);
+    my @models;
+    foreach my $major (@{$self->{majorCGs}})
+      {
+      my $cgObj = $major->new(shellObj => $shell);
+      $cgObj->bestTestStatistic("dev");
+      push @models, $cgObj;
+      }
 
-    $tet->bestTestStatistic("dev");
-    $tbp->bestTestStatistic("dev");
-    $oct->bestTestStatistic("dev");
-
-    my $bestModel = (sort {$a->{bestCombo}->{deviation} <=> $b->{bestCombo}->{deviation}} (grep {$_->{bestCombo}->{deviation} != 0;} ($tet, $tbp, $oct)))[0];
-    if (ref $bestModel eq "Tetrahedral")
-      { push @$tetrahedrals, $tet; }
-    elsif (ref $bestModel eq "TrigonalBipyramidal")
-      { push @$trigonalbipyramidals, $tbp; }
-    elsif (ref $bestModel eq "Octahedral")
-      { push @$octahedrals, $oct; }
-
+    my $bestModel = (sort {$a->{bestCombo}->{deviation} <=> $b->{bestCombo}->{deviation}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{deviation} != 0;} (@models)))[0];
+    next if (! $bestModel);
+    my $modelRef = ref $bestModel;
+    push @{$$coordinations{$modelRef}}, $bestModel;
     }
 
-  my $coordinations = {};
-  %$coordinations = ( "tetrahedrals" => $tetrahedrals,
-                     "trigonalBipyramidals" => $trigonalbipyramidals,
-                     "octahedrals" => $octahedrals );
-
   $self->{coordinations} = $coordinations;
-
   }
 
 
+## print out the counts of each CGs on screen
 sub printStats
   {
   my $self = shift @_;
@@ -702,10 +647,10 @@ sub calcAngleStats
 
       $$angleStats{$coordination}{$angle}{"mean"} = $mean;
       $$angleStats{$coordination}{$angle}{"count"} = $count;
-      #$$angleStats{$coordination}{$angle}{"min"} = $stats->min();
-      #$$angleStats{$coordination}{$angle}{"max"} = $stats->max();
       $$angleStats{$coordination}{$angle}{"variance"} = $stats->calcVariance;
       $$angleStats{$coordination}{$angle}{"standardDeviation"} = $stats->calcStd();
+      #$$angleStats{$coordination}{$angle}{"min"} = $stats->min();
+      #$$angleStats{$coordination}{$angle}{"max"} = $stats->max();
       }
     }
  

@@ -172,21 +172,21 @@ while (@ARGV)
 ############# main process #############
 ########################################
 
-my $coord = ZnCGanalysis->new("pathsFile" => $pathsFile, "element" => "ZN");
-print "Zn: ", $coord->{numCenter}, "\n";
-print "Cluster: ", $coord->{numCluster}, "\n";
-$coord->bootstrapCoordination($statOutFileName);
+my $analyzer = ZnCGanalysis->new("pathsFile" => $pathsFile, "element" => "ZN", "majorCGs" => ["Tetrahedral", "TrigonalBipyramidal", "Octahedral"], "minLigNum" => 4);
+print "Zn: ", $analyzer->{numCenter}, "\n";
+print "Cluster: ", $analyzer->{numCluster}, "\n";
+$analyzer->bootstrapCoordination($statOutFileName);
 
 ## required argument defines the workflow
 if ($flow eq "-i") 
-  { $coord->IAcoordination($statOutFileName, $iaControl, $threshold); }
+  { $analyzer->IAcoordination($statOutFileName, $iaControl, $threshold); }
 else 
-  { $coord->bindShellViaDist($statOutFileName); }
+  { $analyzer->bindShellViaDist($statOutFileName); }
 
 ## optional args set what to print out
 if ($seqOpt)
   {
-  $coord->printSequences($seqFile, $seq, $header, "four"); ## four ligands
+  $analyzer->printSequences($seqFile, $seq, $header, "four"); ## four ligands
   }
 
 if ($rInputOpt)
@@ -200,7 +200,7 @@ if ($rInputOpt)
   print FID "Chi_prob_Tet\tChi_prob_Bva\tChi_prob_Bvp\tChi_prob_Spv\tChi_prob_Spl\t" if ($statsFile);
   print FID "\n";
 
-  foreach my $znObj (@{$coord->{coordinations}{"four"}})
+  foreach my $znObj (@{$analyzer->{coordinations}{"four"}})
     {
     print FID $znObj->{shellObj}->znID(), "\t";
     map { print FID "$_  \t";} ($znObj->orderedAngles());
@@ -254,31 +254,31 @@ sub coordProbs
 if ($jsonOpt)
   {
   open (JOUT, '>', $jsonFile);
-  my $jsonObj = JSON->new->allow_blessed->convert_blessed->encode( $coord->{nonModels} );
+  my $jsonObj = JSON->new->allow_blessed->convert_blessed->encode( $analyzer->{nonModels} );
   print JOUT $jsonObj;
   }
 
 if ($dumperOpt)
   {
   open (DOUT, '>', $dumperFile );
-  print DOUT Dumper($coord->{nonModels});
+  print DOUT Dumper($analyzer->{nonModels});
   }
 
 if ($decisionOpt)
   {
-  foreach my $key ( sort keys %{$coord->{decisions}} )
-    { print "$key, ", $coord->{decisions}{$key}, "\n"; }
+  foreach my $key ( sort keys %{$analyzer->{decisions}} )
+    { print "$key, ", $analyzer->{decisions}{$key}, "\n"; }
   }
 
 if ($angleListOpt)
   {
-  foreach my $coordination (keys %{$coord->{coordinations}} )
+  foreach my $analyzerination (keys %{$analyzer->{coordinations}} )
     {
-    next if (! $coord->{coordinations}{$coordination});
+    next if (! $analyzer->{coordinations}{$analyzerination});
 
-    my $fileName = "$coordination.$angleListMid.txt";
+    my $fileName = "$analyzerination.$angleListMid.txt";
     open (FID, ">", $fileName) or die $!;
-    foreach my $znObj (@{$coord->{coordinations}{$coordination}})
+    foreach my $znObj (@{$analyzer->{coordinations}{$analyzerination}})
       {
       map { print FID  "$_  \t";} ($znObj->angleList());
       my $prob = $znObj->{bestCombo}->{probability};
@@ -295,9 +295,9 @@ if ($ECopt)
   $pathToPDB = $1 if ($pathToPDB =~ /^(.+)\/$/);
 
   my $ecUnp = {};
-  foreach my $coordination (keys %{$coord->{coordinations}})
+  foreach my $analyzerination (keys %{$analyzer->{coordinations}})
     {
-    foreach my $znObj (@{$coord->{coordinations}{$coordination}})
+    foreach my $znObj (@{$analyzer->{coordinations}{$analyzerination}})
       {
       my $model = ref $znObj;
       my $znAtom = $znObj->{shellObj}->{center};
@@ -394,9 +394,9 @@ sub getUnpidFromPdbid
 if ($ligandOpt)
   {
   my %ligandCombo;
-  foreach my $coordination (values %{$coord->{coordinations}})
+  foreach my $analyzerination (values %{$analyzer->{coordinations}})
     {
-    foreach my $znObj (@$coordination)
+    foreach my $znObj (@$analyzerination)
       {
       my @residues = map {$_->{residueName};} (@{$znObj->{bestCombo}->{ligands}});
       $ligandCombo{join ".", sort {lc($a) cmp lc($b);} (@residues)}++;
@@ -407,37 +407,37 @@ if ($ligandOpt)
 
 if ($angleBreakDownOpt)
   {
-  foreach my $coordination (keys %{$coord->{rawAngles}})
+  foreach my $analyzerination (keys %{$analyzer->{rawAngles}})
     {
-    foreach my $angel (keys %{$coord->{rawAngles}{$coordination}} )
+    foreach my $angel (keys %{$analyzer->{rawAngles}{$analyzerination}} )
       {
       my $histogram=[];
 
-      push @$histogram, scalar (grep {$_ > 0  && $_ < 15;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 15 && $_ < 25;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 25 && $_ < 35;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 35 && $_ < 45;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 45 && $_ < 55;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 55 && $_ < 65;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 65 && $_ < 75;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 75 && $_ < 85;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 85 && $_ < 95;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 95 && $_ < 105;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 105 && $_ < 115;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 115 && $_ < 125;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 125 && $_ < 135;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 135 && $_ < 145;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 145 && $_ < 155;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 155 && $_ < 165;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 165 && $_ < 175;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 175 && $_ < 180;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 180 ;} (@{$coord->{rawAngles}{$coordination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 0  && $_ < 15;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 15 && $_ < 25;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 25 && $_ < 35;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 35 && $_ < 45;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 45 && $_ < 55;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 55 && $_ < 65;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 65 && $_ < 75;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 75 && $_ < 85;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 85 && $_ < 95;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 95 && $_ < 105;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 105 && $_ < 115;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 115 && $_ < 125;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 125 && $_ < 135;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 135 && $_ < 145;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 145 && $_ < 155;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 155 && $_ < 165;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 165 && $_ < 175;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 175 && $_ < 180;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 180 ;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
  
-      $coord->{rawAngles}{$coordination}{$angel} = $histogram;
+      $analyzer->{rawAngles}{$analyzerination}{$angel} = $histogram;
       }
     }
 
-  &writeTableFile($angleBreakDownFile, $coord->{rawAngles});
+  &writeTableFile($angleBreakDownFile, $analyzer->{rawAngles});
   }
 
 
