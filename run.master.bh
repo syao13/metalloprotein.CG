@@ -4,15 +4,15 @@ date
 echo "Start"
 
 # creat the list of all entries that has ZN in its HETATM
-../znProtein/zn_protein.pl /mlab/data/databases/PDB/2015_02_25 protein_all_zn.2015_02_25.txt
+../znProtein/zn_protein.pl /mlab/data/databases/PDB/2015_02_25 list_all_zn.2015_02_25.txt
 date
-echo "done zn_protein_all.2015_02_25.txt"
+echo "list_all_zn.2015_02_25.txt done!"
 date
 
 #to get rid of entries that lacks a protein portion
 ../znProtein/zn_protein_nucleicacid3.pl protein_all_zn.2015_02_25.txt 2015_02_25 >count.protein.na.2015_02_25.txt
 date
-echo "done protein_or_both.2015_02_25.txt"
+echo "protein_or_both.2015_02_25.txt done!"
 date
 
 ## Get sequences
