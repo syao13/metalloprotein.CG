@@ -158,7 +158,7 @@ sub bootstrapCoordination
   $self->{stats} = $stats;
 
   &writeTableFile("$statOutFileName.0.txt", $stats);
-  $self->printStats();
+#  $self->printStats();
   }
 
 
@@ -184,13 +184,13 @@ sub IAcoordination
     $$currStats{"distance"} = $self->calcDistStats();
 
     $self->{stats} = $currStats;
-    $self->printStats($i);
+#    $self->printStats($i);
 
     &writeTableFile("$statOutFileName.$i.txt", $currStats);
 
-    if ($i == 50)
+    if ($i == 20)
       { 
-      print "Failed to stabilize\n";
+#      print "Failed to stabilize\n";
       last; 
       }
 
@@ -256,10 +256,10 @@ sub bindShellViaDist
 
   my %numToLet = ( 2 => "two", 3 => "three", 4 => "four", 5 => "five", 6 => "six", 7 => "seven", 8 => "eight");
   my $coordinations = {};
-  foreach my $shell (@{$self->{shells}})
+  foreach my $shell (@{$self->{shells}}) 
     {
     my @models;
-    foreach my $cg (@{$self->{majorCGs}})
+    foreach my $cg ("TrigonalPlanar", @{$self->{majorCGs}})
       {
       my $cgObj = $cg->new(shellObj => $shell);
       $cgObj->bestDistChi($stats);
@@ -273,10 +273,10 @@ sub bindShellViaDist
     my $numLig = $numToLet{$$relation{"num"}};
     push @{$$coordinations{$numLig}}, $bestModel;
 
-    ## print chi probabilities
-    #print $shell->znID(), ": ";
-    #map {print $_->{bestCombo}->{probability}, "; "} (@models);
-    #print "\n";
+    # print chi probabilities
+    print $shell->znID(), "; ";
+    map {print $_->{bestCombo}->{probability}, "; "} (@models);
+    print "\n";
     #print "$bestModel\n";
     #print "\n";
     }
@@ -448,20 +448,25 @@ sub calcChiCoordination
   my $threshold = shift @_;
   my $stats = (@_)? (shift @_) : ($self->{stats});
 
+  ## Acquire all CGs from major CGs
+  my %allCGs;
+  foreach my $major (@{$self->{majorCGs}})
+    {
+    $allCGs{$major} = 1;
+
+    my $relation = (grep {$$_{"name"} eq $major } (@$cgRelations))[0];
+    map {$allCGs{$_} = 1} (@{$$relation{"children"}});
+    }
+
+#print "\n\n";
   my $decisions = {};
   my $coordinations = {};
   foreach my $shell (@{$self->{shells}})
     {
-    my @models;
-    my %allCGs;
-    foreach my $major (@{$self->{majorCGs}})
-      {
-      $allCGs{$major} = 1;
+#print "\n", $shell->znID(), "; ";
 
-      my $relation = (grep {$$_{"name"} eq $major } (@$cgRelations))[0];
-      map {$allCGs{$_} = 1} (@{$$relation{"children"}});
-      }
- 
+    ## Create all CG objects 
+    my @models;
     foreach my $cg (keys %allCGs)
       {
       my $relation = (grep {$$_{"name"} eq $cg } (@$cgRelations))[0];
@@ -471,11 +476,11 @@ sub calcChiCoordination
       $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
       push @models, $cgObj
       }
-
     @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} (@models)));
 
     my $maxNum;
     my $unusables;
+    ## Find the maximum number of ligands each metal structure has
     foreach my $model (@models)
       {
       my $relation = (grep {$$_{"name"} eq ref $model} (@$cgRelations))[0];
@@ -491,7 +496,9 @@ sub calcChiCoordination
       $tev->bestTestStatistic("chi", $control, $threshold, 0, $stats);
 
       if (! defined $tev->{bestCombo} && ! defined $tpl->{bestCombo}) 
-	{ $$decisions{"012"}++; }
+	{ 
+#print "0;0;0";
+$$decisions{"012"}++; }
       else 
         {
         my @mods = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} ($tev, $tpl)));
@@ -503,6 +510,7 @@ sub calcChiCoordination
           }
         else
           {$$decisions{"3.None"} += 1;}
+#print $mods[0]->{bestCombo}->{probability}, "; ", $mods[1]->{bestCombo}->{probability}, "; 0";
         next;
         }
       }
@@ -516,11 +524,15 @@ sub calcChiCoordination
 	next;
 	}
 
+#print $models[0]->{bestCombo}->{probability}, "; ";
+
       if (ref $models[0] eq "TrigonalBipyramidalVA" && ref $models[1] eq "Tetrahedral" && ($models[0]->{bestCombo}->{probability} < (2 * $models[1]->{bestCombo}->{probability})))
         {
         my $modelRef = ref $models[1];
 	push @{$$coordinations{$modelRef}}, $models[1];
 	$$decisions{$maxNum. ".".  $modelRef} += 1;
+
+#print $models[1]->{bestCombo}->{probability}, "; 2";
 	}
       else
 	{
@@ -542,6 +554,7 @@ sub calcChiCoordination
               push @{$$coordinations{$modelRef}}, $models[$i];
 	      $dec = $dec. ".". $modelRef;
               $$decisions{$dec} += 1;
+#print $models[0]->{bestCombo}->{probability}, "; 1";
 	      }
 	    else
 	      {
@@ -553,6 +566,7 @@ sub calcChiCoordination
 
 	      map {$dec = $dec.".".ref $models[$_]} (0..$maxInd) ;
               $$decisions{$dec} += 1;
+#print $models[$maxInd]->{bestCombo}->{probability}, "; $modelRef";
 	      }
 	    last;
 	    }
