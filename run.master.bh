@@ -35,3 +35,6 @@ date
 ./znCoordinations.pl protein_or_both.2013_03_18.txt -d stats.chi.leaveOut -r four.chi.leaveOut.txt leaveOut stats.noCompressed.7.txt
 echo "Zinc spreadsheet done!"
 date
+
+## do the atom to seqres alignment using R
+./seq_alignment.R
