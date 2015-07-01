@@ -38,3 +38,12 @@ date
 
 ## do the atom to seqres alignment using R
 ./seq_alignment.R
+
+## Acquire non-redundant set zinc list
+./nonRedundancy.R
+
+## Separate normal vs compressed group using random forest
+./rf.comp.sortedmid.R
+
+## Run k-means with a certain number of repetitions to get two measures vs k 
+./kmeans.mnr.optimalk.R

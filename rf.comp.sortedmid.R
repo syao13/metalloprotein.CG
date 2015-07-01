@@ -1,9 +1,11 @@
+#!/usr/bin/Rscript
+
 #### Load the data
 library(randomForest)
 
 options(stringsAsFactors=FALSE)
-setwd("~/Desktop/zinc.CG.2015")
-rawdata <- read.table("four.chi.txt", header = FALSE)
+#setwd("~/Desktop/zinc.CG.2015")
+rawdata <- read.table("four.chi.txt", header = TRUE)
 
 id <- rawdata[,1]
 orderid <- order(id)
@@ -15,9 +17,9 @@ ligands <- data[,8:11]
 
 ########## ligand Encoding ########### 
 ligs <- c(ligands[,1], ligands[,2], ligands[,3], ligands[,4])
-length(table(ligs))
+#length(table(ligs))
 sort(table(ligs),decreasing=TRUE)[1:100]
-sum(sort(table(ligs),decreasing=TRUE)[9:108])
+#sum(sort(table(ligs),decreasing=TRUE)[9:108])
 
 ligRank <- names(sort(table(ligs),decreasing=TRUE))
 
@@ -43,7 +45,6 @@ lig1cols <- sapply(ligands[,1], function(x) encodeCols(x, ligRank))
 lig2cols <- sapply(ligands[,2], function(x) encodeCols(x, ligRank))
 lig3cols <- sapply(ligands[,3], function(x) encodeCols(x, ligRank))
 lig4cols <- sapply(ligands[,4], function(x) encodeCols(x, ligRank))
-
 
 lig12 <- cbind(lig1cols, lig2cols)
 lig34 <- cbind(lig3cols, lig4cols)

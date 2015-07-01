@@ -348,7 +348,7 @@ sub printSequences
     my @ligId = (map {$_->resID().".".$_->{residueName}.".".$_->{atomName}.".".$_->{element} ;} (@headerLigs)); 
     
     my %chains;
-    foreach my $lig (@headerLigs)
+    foreach my $lig (@{$model->{bestCombo}->{ligands}})
       {
       next if (! &Sequence::_aaCode($lig->{residueName}) ); #non-aa ligands do not count
       $chains{$lig->{chainID}} = 1;
