@@ -19,9 +19,9 @@ date
 ./znCoordinations.pl protein_or_both.2013_03_18.txt -d -s s s seqs.SEQRES.shell.txt
 ./znCoordinations.pl protein_or_both.2013_03_18.txt -d -s a s seqs.ATOM.shell.txt
 ./znCoordinations.pl protein_or_both.2013_03_18.txt -d -s s b seqs.SEQRES.bind.txt
-./znCoordinations.pl protein_or_both.2013_03_18.txt -d -s n s seqs.number.shell.txt
-./znCoordinations.pl protein_or_both.2013_03_18.txt -d -s s ss seqs.SEQRES.secondshell.txt
-./znCoordinations.pl protein_or_both.2013_03_18.txt -d -s s c seqs.SEQRES.closest.txt
+#./znCoordinations.pl protein_or_both.2013_03_18.txt -d -s n s seqs.number.shell.txt
+#./znCoordinations.pl protein_or_both.2013_03_18.txt -d -s s ss seqs.SEQRES.secondshell.txt
+#./znCoordinations.pl protein_or_both.2013_03_18.txt -d -s s c seqs.SEQRES.closest.txt
 echo "Sequences done!"
 date
 
@@ -47,3 +47,27 @@ date
 
 ## Run k-means with a certain number of repetitions to get two measures vs k 
 ./kmeans.mnr.optimalk.R
+
+
+##############################################
+#
+# functional distancs calculation insert here
+#
+##############################################
+
+
+## Calculate structural distances and all four measures vs. k for determining optimal k 
+./measures.vs.k.R
+
+## Graph the four measure on the same plot
+./cluster_metric_graphs.R
+
+## Print the results of cluster centers, counts, and average probabilities
+./cluster.centers.prob.R
+
+## Graph hierarchical clustering of structural and functional cluster distances.
+./hierarchical.clustering.R
+
+
+
+

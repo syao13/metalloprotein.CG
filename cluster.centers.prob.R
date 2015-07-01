@@ -1,5 +1,7 @@
+#!/usr/bin/Rscript
+
 ####################    load data  ####################  
-setwd("~/Desktop/zinc.CG.2015")
+#setwd("~/Desktop/zinc.CG.2015")
 load("normal_cluster_assg.RData")
 load("compressed_cluster_assg.RData")
 load("combined_cluster_assg.RData")
@@ -100,16 +102,16 @@ round(apply(probs.compressed.leaveout, 2, function(x) tapply(x, compressed.clust
 ############## Representative ###################
 #### Find the best examples for clusters
 ## the ids are reordered, and this is only normal or compressed group, so be careful about the ids and row numbers.
-centers
-cen <- centers[8,] ## change the cluster number
-distTOcenter <- apply(abs(t(t(selectAngles)-cen)), 1, sum)
-ord <- order(distTOcenter)
-ord[1:5]
-selectAngles[ord[1:5],]
-data[row.names(selectAngles[ord[1:5],]),]
-cen
+#centers
+#cen <- centers[8,] ## change the cluster number
+#distTOcenter <- apply(abs(t(t(selectAngles)-cen)), 1, sum)
+#ord <- order(distTOcenter)
+#ord[1:5]
+#selectAngles[ord[1:5],]
+#data[row.names(selectAngles[ord[1:5],]),]
+#cen
 
 ## Print out results
-paste(centers, "+/-", centers.sd, sep="")
-matrix( data = paste(centers, "+/-", centers.sd, sep=""), ncol=6, byrow=TRUE)
+#paste(centers, "+/-", centers.sd, sep="")
+#matrix( data = paste(centers, "+/-", centers.sd, sep=""), ncol=6, byrow=TRUE)
 

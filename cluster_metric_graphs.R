@@ -1,3 +1,5 @@
+#!/usr/bin/Rscript
+
 # creating multiple k-graphs
 
 # There is a graph we need examining cluster distances, jaccard similarity, structural vs functional distances rho 
@@ -5,7 +7,7 @@
 
 library(ggplot2)
 library(Cairo)
-load("~/Desktop/zinc.CG.2015/four_measures_over_k.RData")
+load("four_measures_over_k.RData")
 
 level_order <- c("jaccard", "max - sumdiff", "rho", "-1 * log10(p)")
 
@@ -36,7 +38,7 @@ normal_p$value <- -1 * log10(normal_p$value)
 normal_metrics <- do.call(rbind, list(normal_jaccard, normal_sumdiff, normal_rho, normal_p))
 normal_metrics$type <- ordered(normal_metrics$type, levels = level_order)
 
-Cairo(file = "paper_data/normal_metrics.png", type = "png")
+Cairo(file = "normal_metrics.png", type = "png")
 ggplot(normal_metrics, aes(x = cluster, y = value, color = n_lig)) + geom_point() + geom_line() + 
   facet_grid(type ~ ., scales = "free_y") + ggtitle("normal")
 dev.off()
@@ -66,7 +68,7 @@ compressed_p$value <- -1 * log10(compressed_p$value)
 compressed_metrics <- do.call(rbind, list(compressed_jaccard, compressed_sumdiff, compressed_rho, compressed_p))
 compressed_metrics$type <- ordered(compressed_metrics$type, levels = level_order)
 
-Cairo(file = "paper_data/compressed_metrics.png", type = "png")
+Cairo(file = "compressed_metrics.png", type = "png")
 ggplot(compressed_metrics, aes(x = cluster, y = value, color = n_lig)) + geom_point() + geom_line() + 
   facet_grid(type ~ ., scales = "free_y") + ggtitle("Compressed")
 dev.off()
@@ -97,7 +99,7 @@ all_p$value <- -1 * log10(all_p$value)
 all_metrics <- do.call(rbind, list(all_jaccard, all_sumdiff, all_rho, all_p))
 all_metrics$type <- ordered(all_metrics$type, levels = level_order)
 
-Cairo(file = "paper_data/comined_metrics_figS3.png", type = "png")
+Cairo(file = "comined_metrics_figS3.png", type = "png")
 ggplot(all_metrics, aes(x = cluster, y = value, color = n_lig)) + geom_point() + geom_line() + 
   facet_grid(type ~ ., scales = "free_y") + ggtitle("comined")
 dev.off()

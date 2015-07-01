@@ -1,6 +1,8 @@
+#!/usr/bin/Rscript
+
 library(ggplot2)
 options(stringsAsFactors=FALSE)
-setwd("~/Desktop/zinc.CG.2015")
+#setwd("~/Desktop/zinc.CG.2015")
 
 load("dists_struct_normal.RData")
 load("dists_struct_compressed.RData")
@@ -20,6 +22,7 @@ dist.str <- as.dist(struc.dist.norm)
 dist.fun <- funct.dist.norm$dist
 distances <- data.frame(func = as.vector(dist.fun), struc = as.vector(dist.str))
 
+png(file="hierarchical.normal.png", units="in", width=10, height=5, res=300)
 par(mfrow=c(1,2))
 hc.str <- hclust(dist.str)
 plot(hc.str, main = "Normal, k=10", ylab = "Structural Cluster Distances", xlab = "Cluster", 
@@ -40,7 +43,7 @@ ggplot(distances, aes(x = struc, y = func)) +
             label = paste("rho = ", substr(as.character(corVal), 1, 4), " \n ", 
                           "p-value = ", signif(pVal,3), sep = ""), size = 10) + 
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 18), plot.title = element_text(size = 20))
-
+dev.off()
 
 
 ##########################
@@ -56,6 +59,7 @@ dist.str <- as.dist(struc.dist.comp)
 dist.fun <- funct.dist.comp$dist
 distances <- data.frame(func = as.vector(dist.fun), struc = as.vector(dist.str))
 
+png(file="hierarchical.compressed.png", units="in", width=10, height=5, res=300)
 par(mfrow=c(1,2))
 hc.str <- hclust(dist.str)
 plot(hc.str, main = "Compressed, k=8", ylab = "Structural Cluster Distances", xlab = "Cluster", 
@@ -75,4 +79,4 @@ ggplot(distances, aes(x = struc, y = func)) +
             label = paste("rho = ", substr(as.character(corVal), 1, 4), " \n ", 
                           "p-value = ", signif(pVal,3), sep = ""), size = 10) + 
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 18), plot.title = element_text(size = 20))
-
+dev.off()

@@ -1,11 +1,13 @@
+#!/usr/bin/Rscript
+
 ### Load the data
 library(cluster) 
 library(clue)
 
 options(stringsAsFactors=FALSE)
-setwd("~/Desktop/zinc.CG.2015")
+#setwd("~/Desktop/zinc.CG.2015")
 
-rawdata <- read.table("four.chi.txt", header = FALSE)
+rawdata <- read.table("four.chi.txt", header = TRUE)
 
 ############ normal vs. compressed#####################
 ### choose one to operate 
