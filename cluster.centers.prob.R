@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
 
 ####################    load data  ####################  
-#setwd("~/Desktop/zinc.CG.2015")
+setwd("../firstManuscriptOutput")
 load("normal_cluster_assg.RData")
 load("compressed_cluster_assg.RData")
 load("combined_cluster_assg.RData")
@@ -49,6 +49,7 @@ colnames(sortedAngles.normal) <- c("angle1", "mid1", "mid2", "mid3", "mid4","ang
 dim(sortedAngles.normal)
 dim(normal.cluster)
 
+print("Table 5")
 round(apply(sortedAngles.normal, 2, function(x) tapply(x, normal.cluster[,2], mean)), digit=1)
 round(apply(sortedAngles.normal, 2, function(x) tapply(x, normal.cluster[,2], sd)), digit=1)
 round(apply(sortedAngles.normal, 2, function(x) tapply(x, normal.cluster[,2], length))[,1], digit=1)
@@ -60,6 +61,7 @@ colnames(sortedAngles.compressed) <- c("angle1", "mid1", "mid2", "mid3", "mid4",
 dim(sortedAngles.compressed)
 dim(compressed.cluster)
 
+print("Table 6")
 round(apply(sortedAngles.compressed, 2, function(x) tapply(x, compressed.cluster[,2], mean)), digit=1)
 round(apply(sortedAngles.compressed, 2, function(x) tapply(x, compressed.cluster[,2], sd)), digit=1)
 round(apply(sortedAngles.compressed, 2, function(x) tapply(x, compressed.cluster[,2], length))[,1], digit=1)
@@ -71,6 +73,7 @@ colnames(sortedAngles.combined) <- c("angle1", "mid1", "mid2", "mid3", "mid4","a
 dim(sortedAngles.combined)
 dim(combined.cluster)
 
+print("Table S7")
 round(apply(sortedAngles.combined, 2, function(x) tapply(x, combined.cluster[,2], mean)), digit=1)
 round(apply(sortedAngles.combined, 2, function(x) tapply(x, combined.cluster[,2], sd)), digit=1)
 round(apply(sortedAngles.combined, 2, function(x) tapply(x, combined.cluster[,2], length))[,1], digit=1)
@@ -80,21 +83,23 @@ round(apply(sortedAngles.combined, 2, function(x) tapply(x, combined.cluster[,2]
 probs.normal <- data.normal[,34:38]
 dim(probs.normal)
 
+print("Table 7")
 round(apply(probs.normal, 2, function(x) tapply(x, normal.cluster[,2], mean)), digit=3)
 round(apply(probs.normal, 2, function(x) tapply(x, normal.cluster[,2], sd)), digit=3)
 
 #### compressed
-probs.compressed <- data.compressed[,34:38]
-dim(probs.compressed)
+#probs.compressed <- data.compressed[,34:38]
+#dim(probs.compressed)
 
-round(apply(probs.compressed, 2, function(x) tapply(x, compressed.cluster[,2], mean)), digit=3)
-round(apply(probs.compressed, 2, function(x) tapply(x, compressed.cluster[,2], sd)), digit=3)
+#round(apply(probs.compressed, 2, function(x) tapply(x, compressed.cluster[,2], mean)), digit=3)
+#round(apply(probs.compressed, 2, function(x) tapply(x, compressed.cluster[,2], sd)), digit=3)
 
 #### compressed and leaving out the smallest angle
 data.compressed.leaveout <- rawdata2[compressed.cluster[,1],]
 probs.compressed.leaveout <- data.compressed.leaveout[,34:38]
 dim(probs.compressed.leaveout)
 
+print("Table 8")
 round(apply(probs.compressed.leaveout, 2, function(x) tapply(x, compressed.cluster[,2], mean)), digit=3)
 round(apply(probs.compressed.leaveout, 2, function(x) tapply(x, compressed.cluster[,2], sd)), digit=3)
 

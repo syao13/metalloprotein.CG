@@ -4,7 +4,7 @@
 library(randomForest)
 
 options(stringsAsFactors=FALSE)
-#setwd("~/Desktop/zinc.CG.2015")
+setwd("../firstManuscriptOutput")
 rawdata <- read.table("four.chi.txt", header = TRUE)
 
 id <- rawdata[,1]

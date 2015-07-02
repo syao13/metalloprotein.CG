@@ -5,7 +5,7 @@ library(cluster)
 library(clue)
 
 options(stringsAsFactors=FALSE)
-#setwd("~/Desktop/zinc.CG.2015")
+setwd("../firstManuscriptOutput")
 
 rawdata <- read.table("four.chi.txt", header = TRUE)
 

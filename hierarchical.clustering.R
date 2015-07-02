@@ -2,7 +2,7 @@
 
 library(ggplot2)
 options(stringsAsFactors=FALSE)
-#setwd("~/Desktop/zinc.CG.2015")
+setwd("../firstManuscriptOutput")
 
 load("dists_struct_normal.RData")
 load("dists_struct_compressed.RData")
@@ -22,7 +22,7 @@ dist.str <- as.dist(struc.dist.norm)
 dist.fun <- funct.dist.norm$dist
 distances <- data.frame(func = as.vector(dist.fun), struc = as.vector(dist.str))
 
-png(file="hierarchical.normal.png", units="in", width=10, height=5, res=300)
+png(file="Figure9.png", units="in", width=10, height=5, res=300)
 par(mfrow=c(1,2))
 hc.str <- hclust(dist.str)
 plot(hc.str, main = "Normal, k=10", ylab = "Structural Cluster Distances", xlab = "Cluster", 
@@ -59,7 +59,7 @@ dist.str <- as.dist(struc.dist.comp)
 dist.fun <- funct.dist.comp$dist
 distances <- data.frame(func = as.vector(dist.fun), struc = as.vector(dist.str))
 
-png(file="hierarchical.compressed.png", units="in", width=10, height=5, res=300)
+png(file="Figure10.png", units="in", width=10, height=5, res=300)
 par(mfrow=c(1,2))
 hc.str <- hclust(dist.str)
 plot(hc.str, main = "Compressed, k=8", ylab = "Structural Cluster Distances", xlab = "Cluster", 

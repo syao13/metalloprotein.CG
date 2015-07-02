@@ -5,7 +5,7 @@
 ## If the shell ligands spans over multi-chains, consider them all together.
 
 options(stringsAsFactors=FALSE)
-#setwd("~/Desktop/zinc.CG.2015")
+setwd("../firstManuscriptOutput")
 
 library(Biostrings)
 aaCodes <- toupper(AMINO_ACID_CODE)

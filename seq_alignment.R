@@ -28,7 +28,8 @@ names(outNum) <- useNames
 all.equal(outNum, refNum)
 
 ## ----loadData------------------------------------------------------------
-useDir <- "/mlab/data/rmflight/Documents/projects/work/sen/coordination_families"
+#useDir <- "/mlab/data/rmflight/Documents/projects/work/sen/coordination_families"
+setwd("../firstManuscriptOutput")
 
 ## ----read_sequences----------------------------------------
 library(Biostrings)

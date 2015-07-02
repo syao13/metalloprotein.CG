@@ -1,1 +1,0 @@
-/mlab/data/databases/PDB/2013_03_18/aw/pdb4awz.ent.gz

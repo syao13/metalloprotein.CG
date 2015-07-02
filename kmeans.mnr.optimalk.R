@@ -3,7 +3,7 @@
 date()
 ## set anglesU to change between normal and compressed angles group
 ####################    load data  ####################  
-#setwd("~/Desktop/zinc.CG.2015")
+setwd("../firstManuscriptOutput")
 options(stringsAsFactors=FALSE)
 
 load("rf.sorted.RData")
