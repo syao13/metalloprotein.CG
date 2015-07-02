@@ -3,7 +3,7 @@
 date()
 ## set anglesU to change between normal and compressed angles group
 ####################    load data  ####################  
-setwd("../firstManuscriptOutput")
+setwd("../output")
 options(stringsAsFactors=FALSE)
 
 load("rf.sorted.RData")

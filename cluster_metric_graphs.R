@@ -6,7 +6,7 @@
 # and p-values. We want this in a single graphic that makes it easy to compare across num_ligands and metric
 library(ggplot2)
 library(Cairo)
-setwd("../firstManuscriptOutput")
+setwd("../output")
 load("four_measures_over_k.RData")
 
 level_order <- c("jaccard", "max - sumdiff", "rho", "-1 * log10(p)")

@@ -4,30 +4,30 @@ date
 echo "Start"
 
 # Acquire the list of all entries that have ZN in its HETATM
-../znProtein/zn_protein.pl /mlab/data/databases/PDB/2013_03_18 ../firstManuscriptOutput/zn_protein_all.2013_03_18.txt
+../znProtein/zn_protein.pl /mlab/data/databases/PDB/2013_03_18 ../output/zn_protein_all.2013_03_18.txt
 echo "zn_protein_all.2013_03_18.txt done"
 date
 
 # To get rid of entries that lack a protein portion
-../znProtein/zn_protein_nucleicacid.4.pl ../firstManuscriptOutput/zn_protein_all.2013_03_18.txt ../firstManuscriptOutput/na.txt ../firstManuscriptOutput/protein_or_both.2013_03_18.txt
+../znProtein/zn_protein_nucleicacid.4.pl ../output/zn_protein_all.2013_03_18.txt ../output/na.txt ../output/protein_or_both.2013_03_18.txt
 echo "protein_or_both.2013_03_18.txt done"
 date
 
 ## Get zinc binding or shell sequences
-./znCoordinations.pl ../firstManuscriptOutput/protein_or_both.2013_03_18.txt -d ../firstManuscriptOutput/stats -s s s ../firstManuscriptOutput/seqs.SEQRES.shell.txt
-./znCoordinations.pl ../firstManuscriptOutput/protein_or_both.2013_03_18.txt -d ../firstManuscriptOutput/stats -s a s ../firstManuscriptOutput/seqs.ATOM.shell.txt
-./znCoordinations.pl ../firstManuscriptOutput/protein_or_both.2013_03_18.txt -d ../firstManuscriptOutput/stats -s s b ../firstManuscriptOutput/seqs.SEQRES.bind.txt
+./znCoordinations.pl ../output/protein_or_both.2013_03_18.txt -d ../output/stats -s s s ../output/seqs.SEQRES.shell.txt
+./znCoordinations.pl ../output/protein_or_both.2013_03_18.txt -d ../output/stats -s a s ../output/seqs.ATOM.shell.txt
+./znCoordinations.pl ../output/protein_or_both.2013_03_18.txt -d ../output/stats -s s b ../output/seqs.SEQRES.bind.txt
 echo "Sequences done!"
 date
 
 ## Run the IA to get the statistics for each CG
-./znCoordinations.pl ../firstManuscriptOutput/protein_or_both.2013_03_18.txt -i c 68 ../firstManuscriptOutput/stats.noCompressed >../firstManuscriptOutput/out.noCompressed.txt
+./znCoordinations.pl ../output/protein_or_both.2013_03_18.txt -i c 68 ../output/stats.noCompressed >../output/out.noCompressed.txt
 echo "IA process done!"
 date
 
 ## Use statistics above to get zinc list, sequences, and relative info for clustering zinc CGs in R. (zinc shell determination via bond-length)
-./znCoordinations.pl ../firstManuscriptOutput/protein_or_both.2013_03_18.txt -d ../firstManuscriptOutput/stats.chi -r ../firstManuscriptOutput/four.chi.txt ../firstManuscriptOutput/stats.noCompressed.7.txt
-./znCoordinations.pl ../firstManuscriptOutput/protein_or_both.2013_03_18.txt -d ../firstManuscriptOutput/stats.chi.leaveOut -r ../firstManuscriptOutput/four.chi.leaveOut.txt leaveOut ../firstManuscriptOutput/stats.noCompressed.7.txt
+./znCoordinations.pl ../output/protein_or_both.2013_03_18.txt -d ../output/stats.chi -r ../output/four.chi.txt ../output/stats.noCompressed.7.txt
+./znCoordinations.pl ../output/protein_or_both.2013_03_18.txt -d ../output/stats.chi.leaveOut -r ../output/four.chi.leaveOut.txt leaveOut ../output/stats.noCompressed.7.txt
 echo "Zinc spreadsheet done!"
 date
 

@@ -5,7 +5,7 @@
 ## If the shell ligands spans over multi-chains, consider them all together.
 
 options(stringsAsFactors=FALSE)
-setwd("../firstManuscriptOutput")
+setwd("../output")
 
 library(Biostrings)
 aaCodes <- toupper(AMINO_ACID_CODE)

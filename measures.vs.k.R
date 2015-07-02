@@ -5,7 +5,7 @@ library(cluster)
 library(clue)
 
 options(stringsAsFactors=FALSE)
-setwd("../firstManuscriptOutput")
+setwd("../output")
 
 rawdata <- read.table("four.chi.txt", header = TRUE)
 

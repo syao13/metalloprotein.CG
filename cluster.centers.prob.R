@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
 
 ####################    load data  ####################  
-setwd("../firstManuscriptOutput")
+setwd("../output")
 load("normal_cluster_assg.RData")
 load("compressed_cluster_assg.RData")
 load("combined_cluster_assg.RData")

@@ -29,7 +29,7 @@ all.equal(outNum, refNum)
 
 ## ----loadData------------------------------------------------------------
 #useDir <- "/mlab/data/rmflight/Documents/projects/work/sen/coordination_families"
-setwd("../firstManuscriptOutput")
+setwd("../output")
 
 ## ----read_sequences----------------------------------------
 library(Biostrings)

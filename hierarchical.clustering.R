@@ -2,7 +2,7 @@
 
 library(ggplot2)
 options(stringsAsFactors=FALSE)
-setwd("../firstManuscriptOutput")
+setwd("../output")
 
 load("dists_struct_normal.RData")
 load("dists_struct_compressed.RData")

@@ -4,7 +4,7 @@
 library(randomForest)
 
 options(stringsAsFactors=FALSE)
-setwd("../firstManuscriptOutput")
+setwd("../output")
 rawdata <- read.table("four.chi.txt", header = TRUE)
 
 id <- rawdata[,1]
