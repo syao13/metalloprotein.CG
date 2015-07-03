@@ -80,3 +80,4 @@ date
 echo "doing ec and ipr enrichment"
 date
 
+echo "All done! Check ../output for files!"
