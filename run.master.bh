@@ -37,33 +37,46 @@ date
 
 ## Acquire non-redundant set zinc list
 ./nonRedundancy.R
+echo "non redundancy calculations done"
+date
 
 ## Separate normal vs compressed group using random forest
 ./rf.comp.sortedmid.R
+echo "separation using random forest done"
+date
 
 ## Run k-means with a certain number of repetitions to get two measures vs k 
 ./kmeans.mnr.optimalk.R
+echo "kmeans clustering done"
+date
 
-
-##############################################
-#
-# functional distancs calculation insert here
-#
-##############################################
-
+# do functional characterization
+./functional_characterization.R
+echo "functional distances done"
+date
 
 ## Calculate structural distances and all four measures vs. k for determining optimal k 
 ./measures.vs.k.R
+echo "comparing functional and structural distances done"
+date
 
 ## Graph the four measure on the same plot
 ./cluster_metric_graphs.R
+echo "graphing clustering done"
+date
 
 ## Print the results of cluster centers, counts, and average probabilities
 ./cluster.centers.prob.R
+echo "data out"
+date
 
 ## Graph hierarchical clustering of structural and functional cluster distances.
 ./hierarchical.clustering.R
+echo "graphing other stuff"
+date
 
-
-
+## EC and IPR enrichment
+./ec_ipr_enrichment.R
+echo "doing ec and ipr enrichment"
+date
 
