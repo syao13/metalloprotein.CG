@@ -1,4 +1,5 @@
 ##!/usr/bash
+alias interpro=/mlab/data/software/interproscan/interproscan.sh
 
 date
 echo "Start"
