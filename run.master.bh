@@ -33,6 +33,7 @@ date
 
 ## do the atom to seqres alignment using R
 ./seq_alignment.R
+echo "sequence alignment done"
 date
 
 ## Acquire non-redundant set zinc list
