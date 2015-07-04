@@ -52,6 +52,12 @@ date
 echo "kmeans clustering done"
 date
 
+## generating interproscan results
+interpro -i ../output/non_redundant_zinc.fa -f tsv -iprlookup -pa -goterms -o ../output/non_redundant_zinc.ipr.tsv
+echo "interproscan done"
+date
+
+
 # do functional characterization
 ./functional_characterization.R
 echo "functional distances done"
