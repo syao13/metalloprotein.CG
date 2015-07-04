@@ -38,9 +38,24 @@ ec_parse <- function(ec_regex, id, pathway_result){
   unique(ec_out)
 }
 
+collapse_ec <- function(ec_matrix, ec_annotation, ec_loc){
+  out_2_loc <- apply(ec_matrix, 1, function(x){paste(x[1:ec_loc],  collapse = ".")})
+  split_on_loc <- split(rownames(ec_matrix), out_2_loc)
+  collapsed_on_loc <- lapply(split_on_loc, function(x){
+    unique(unlist(ec_annotation[x], use.names = FALSE))
+  })
+  collapsed_on_loc
+}
+
+
 # Load interproscan results
-interproRes <- read.table(file.path(useDir, "non_redundant_zinc.ipr.tsv"), sep="\t", header=FALSE, stringsAsFactors=FALSE, fill=TRUE, quote="", comment.char="")
+interproRes <- read.table("non_redundant_zinc.ipr.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE, fill=TRUE, quote="", comment.char="")
 names(interproRes) <- c("id", "md5", "length", "analysis", "sigAccession", "sigDescription", "start", "stop", "score", "status", "date", "iprAccession", "iprDescription", "GO", "Pathways")
+
+iprData <- unique(interproRes[, c("iprAccession", "iprDescription")])
+rownames(iprData) <- iprData$iprAccession
+
+
 load("non_redundant.RData")
 load("named_clusters.RData")
 
