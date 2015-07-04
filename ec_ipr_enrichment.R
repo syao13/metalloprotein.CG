@@ -1,6 +1,7 @@
 #!/usr/bin/Rscript
 library(rex)
 library(categoryCompareANY)
+library(atom2seq)
 setwd("../output")
 
 #### EC enrichment
