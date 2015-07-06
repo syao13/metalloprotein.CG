@@ -1,4 +1,6 @@
 ##!/usr/bash
+./write_fasta.R
+
 ./seq_alignment.R
 echo "seq alignment done"
 date
