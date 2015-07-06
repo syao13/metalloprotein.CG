@@ -2,7 +2,7 @@
 alias interpro=/mlab/data/software/interproscan/interproscan.sh
 
 ## generating interproscan results
-interpro -i ../output/non_redundant_zinc.fa -f tsv -iprlookup -pa -goterms -o ../output/non_redundant_zinc.ipr.tsv
+interpro -i /mlab/data/rmflight/Projects/work/sen/zincPaperAnalysis/output/non_redundant_zinc.fa -f tsv -iprlookup -pa -goterms -o /mlab/data/rmflight/Projects/work/sen/zincPaperAnalysis/output/non_redundant_zinc.ipr.tsv
 echo "interproscan done"
 date
 
