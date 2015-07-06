@@ -52,8 +52,13 @@ date
 echo "kmeans clustering done"
 date
 
+## Write the fasta file of non-redundant stuff
+./write_fasta.R
+echo "fasta sequences written"
+date
+
 ## generating interproscan results
-interpro -i ../output/non_redundant_zinc.fa -f tsv -iprlookup -pa -goterms -o ../output/non_redundant_zinc.ipr.tsv
+interpro -i /mlab/data/rmflight/Projects/work/sen/zincPaperAnalysis/output/non_redundant_zinc.fa -f tsv -iprlookup -pa -goterms -o /mlab/data/rmflight/Projects/work/sen/zincPaperAnalysis/output/non_redundant_zinc.ipr.tsv
 echo "interproscan done"
 date
 
