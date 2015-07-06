@@ -1,11 +1,13 @@
 ##!/usr/bash
+output_dir=../output
+PDB_dir=/mlab/data/databases/PDB/2013_03_18
 alias interpro=/mlab/data/software/interproscan/interproscan.sh
 
 date
 echo "Start"
 
 # Acquire the list of all entries that have ZN in its HETATM
-../znProtein/zn_protein.pl /mlab/data/databases/PDB/2013_03_18 ../output/zn_protein_all.2013_03_18.txt
+../znProtein/zn_protein.pl $PDB_dir $output_dir/zn_protein_all.2013_03_18.txt
 echo "zn_protein_all.2013_03_18.txt done"
 date
 
