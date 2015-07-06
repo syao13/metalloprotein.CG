@@ -1,4 +1,8 @@
 ##!/usr/bash
+./seq_alignment.R
+echo "seq alignment done"
+date
+
 alias interpro=/mlab/data/software/interproscan/interproscan.sh
 
 ## generating interproscan results
