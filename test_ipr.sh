@@ -1,16 +1,16 @@
 ##!/usr/bash
 ./write_fasta.R
 
-./seq_alignment.R
-echo "seq alignment done"
-date
-
-alias interpro=/mlab/data/software/interproscan/interproscan.sh
-
-## generating interproscan results
-interpro -i /mlab/data/rmflight/Projects/work/sen/zincPaperAnalysis/output/non_redundant_zinc.fa -f tsv -iprlookup -pa -goterms -o /mlab/data/rmflight/Projects/work/sen/zincPaperAnalysis/output/non_redundant_zinc.ipr.tsv
-echo "interproscan done"
-date
+# ./seq_alignment.R
+# echo "seq alignment done"
+# date
+# 
+# alias interpro=/mlab/data/software/interproscan/interproscan.sh
+# 
+# ## generating interproscan results
+# interpro -i /mlab/data/rmflight/Projects/work/sen/zincPaperAnalysis/output/non_redundant_zinc.fa -f tsv -iprlookup -pa -goterms -o /mlab/data/rmflight/Projects/work/sen/zincPaperAnalysis/output/non_redundant_zinc.ipr.tsv
+# echo "interproscan done"
+# date
 
 
 # do functional characterization
