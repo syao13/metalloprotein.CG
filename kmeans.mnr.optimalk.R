@@ -8,7 +8,7 @@ options(stringsAsFactors=FALSE)
 
 load("rf.sorted.RData")
 load("finalZnList.RData")
-rawdata <- read.table("four.chi.txt", header = FALSE)
+rawdata <- read.table("four.chi.txt", header = TRUE)
 znList <- rawdata[rawdata[,1] %in% finalZnList & rawdata[,24] < 3, 1]
 
 id <- rawdata[,1]
