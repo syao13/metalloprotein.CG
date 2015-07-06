@@ -1,4 +1,5 @@
 ##!/usr/bash
+alias interpro=/mlab/data/software/interproscan/interproscan.sh
 
 date
 echo "Start"
@@ -33,6 +34,7 @@ date
 
 ## do the atom to seqres alignment using R
 ./seq_alignment.R
+echo "sequence alignment done"
 date
 
 ## Acquire non-redundant set zinc list
@@ -49,6 +51,12 @@ date
 ./kmeans.mnr.optimalk.R
 echo "kmeans clustering done"
 date
+
+## generating interproscan results
+interpro -i ../output/non_redundant_zinc.fa -f tsv -iprlookup -pa -goterms -o ../output/non_redundant_zinc.ipr.tsv
+echo "interproscan done"
+date
+
 
 # do functional characterization
 ./functional_characterization.R

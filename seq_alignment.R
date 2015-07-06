@@ -65,3 +65,5 @@ names(outNum) <- useNames
 
 save(outNum, file="atom2seq.RData")
 
+
+

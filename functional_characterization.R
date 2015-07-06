@@ -71,13 +71,13 @@ compressed_clusters <- lapply(compressed_cluster_names, function(in_cluster){
 })
 names(compressed_clusters) <- compressed_cluster_names
 
-# load("combined_cluster_assg.RData")
-# combined_cluster_names <- paste("combined", seq(2, 30), "clusters", sep = ".")
-# combined_clusters <- lapply(combined_cluster_names, function(in_cluster){
-#   tmp <- eval(parse(text = in_cluster))
-#   split(tmp[,1], tmp[,2])
-# })
-# names(combined_clusters) <- combined_cluster_names
+load("combined_cluster_assg.RData")
+combined_cluster_names <- paste("combined", seq(2, 30), "clusters", sep = ".")
+combined_clusters <- lapply(combined_cluster_names, function(in_cluster){
+  tmp <- eval(parse(text = in_cluster))
+  split(tmp[,1], tmp[,2])
+})
+names(combined_clusters) <- combined_cluster_names
 
 
 
