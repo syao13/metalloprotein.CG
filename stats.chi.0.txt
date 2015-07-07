@@ -74,7 +74,7 @@ distance : [
     max : 3.19989781086834
     mean : 2.24363141848722
     min : 1.3079652136047
-    standardDeviation : 0.317990563789276
+    standardDeviation : 0.317990563789277
     variance : 0.101117998659022
     ]
   P : [
@@ -96,9 +96,9 @@ distance : [
   average : [
     count : 90921
     max : 3.19989781086834
-    mean : 2.25241920216833
+    mean : 2.25241920216828
     min : 1.3079652136047
-    standardDeviation : 0.25127096895997
-    variance : 0.0631370998420824
+    standardDeviation : 0.251270968959972
+    variance : 0.063137099842083
     ]
   ]

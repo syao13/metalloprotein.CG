@@ -458,12 +458,12 @@ sub calcChiCoordination
     map {$allCGs{$_} = 1} (@{$$relation{"children"}});
     }
 
-#print "\n\n";
+  #print "\n\n";
   my $decisions = {};
   my $coordinations = {};
   foreach my $shell (@{$self->{shells}})
     {
-#print "\n", $shell->znID(), "; ";
+    #print "\n", $shell->znID(), "; ";
 
     ## Create all CG objects 
     my @models;
@@ -497,8 +497,9 @@ sub calcChiCoordination
 
       if (! defined $tev->{bestCombo} && ! defined $tpl->{bestCombo}) 
 	{ 
-#print "0;0;0";
-$$decisions{"012"}++; }
+	#print "0;0;0";
+	$$decisions{"012"}++; 
+	}
       else 
         {
         my @mods = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} ($tev, $tpl)));
@@ -510,7 +511,7 @@ $$decisions{"012"}++; }
           }
         else
           {$$decisions{"3.None"} += 1;}
-#print $mods[0]->{bestCombo}->{probability}, "; ", $mods[1]->{bestCombo}->{probability}, "; 0";
+	#print $mods[0]->{bestCombo}->{probability}, "; ", $mods[1]->{bestCombo}->{probability}, "; 0";
         next;
         }
       }
@@ -524,7 +525,7 @@ $$decisions{"012"}++; }
 	next;
 	}
 
-#print $models[0]->{bestCombo}->{probability}, "; ";
+	#print $models[0]->{bestCombo}->{probability}, "; ";
 
       if (ref $models[0] eq "TrigonalBipyramidalVA" && ref $models[1] eq "Tetrahedral" && ($models[0]->{bestCombo}->{probability} < (2 * $models[1]->{bestCombo}->{probability})))
         {
@@ -532,7 +533,7 @@ $$decisions{"012"}++; }
 	push @{$$coordinations{$modelRef}}, $models[1];
 	$$decisions{$maxNum. ".".  $modelRef} += 1;
 
-#print $models[1]->{bestCombo}->{probability}, "; 2";
+	#print $models[1]->{bestCombo}->{probability}, "; 2";
 	}
       else
 	{
@@ -554,7 +555,7 @@ $$decisions{"012"}++; }
               push @{$$coordinations{$modelRef}}, $models[$i];
 	      $dec = $dec. ".". $modelRef;
               $$decisions{$dec} += 1;
-#print $models[0]->{bestCombo}->{probability}, "; 1";
+		#print $models[0]->{bestCombo}->{probability}, "; 1";
 	      }
 	    else
 	      {
@@ -566,7 +567,7 @@ $$decisions{"012"}++; }
 
 	      map {$dec = $dec.".".ref $models[$_]} (0..$maxInd) ;
               $$decisions{$dec} += 1;
-#print $models[$maxInd]->{bestCombo}->{probability}, "; $modelRef";
+		#print $models[$maxInd]->{bestCombo}->{probability}, "; $modelRef";
 	      }
 	    last;
 	    }
