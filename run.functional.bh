@@ -4,7 +4,7 @@
 #
 # edit these variables to their appropriate values before running!
 #
-output_dir=/mlab/data/rmflight/Projects/work/testIPRDir/output # should correspond to ../output
+output_dir=/mlab/data/rmflight/Projects/work/sen/zincPaperAnalysis/output # should correspond to ../output
 PDB_dir=/mlab/data/databases/PDB/2013_03_18
 alias interpro=/mlab/data/software/interproscan/interproscan.sh
 
