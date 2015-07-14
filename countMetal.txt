@@ -1,0 +1,331 @@
+Sun Jul 12 21:56:45 EDT 2015
+Zn
+Zn: 26788
+Cluster: 572
+Usable: 21638
+Unusable: 4578
+
+Sun Jul 12 23:06:16 EDT 2015
+Mg
+Mg: 53896
+Cluster: 691
+Usable: 33229
+Unusable: 19976
+
+Mon Jul 13 03:08:09 EDT 2015
+Ca
+Ca: 24335
+Cluster: 196
+Usable: 20855
+Unusable: 3284
+
+Mon Jul 13 04:05:21 EDT 2015
+Na
+Na: 16527
+Cluster: 240
+Usable: 10991
+Unusable: 5296
+
+Mon Jul 13 05:26:03 EDT 2015
+Mn
+Mn: 8138
+Cluster: 421
+Usable: 6443
+Unusable: 1274
+
+Mon Jul 13 05:46:10 EDT 2015
+K
+K: 5306
+Cluster: 146
+Usable: 2900
+Unusable: 2260
+
+Mon Jul 13 06:12:14 EDT 2015
+Fe
+Fe: 27514
+Cluster: 11287
+Usable: 15677
+Unusable: 550
+
+Mon Jul 13 07:07:13 EDT 2015
+Cu
+Cu: 4397
+Cluster: 708
+Usable: 2574
+Unusable: 1115
+
+Mon Jul 13 07:16:06 EDT 2015
+Ni
+Ni: 2252
+Cluster: 98
+Usable: 1476
+Unusable: 678
+
+Mon Jul 13 07:21:09 EDT 2015
+Cd
+Cd: 4289
+Cluster: 282
+Usable: 2363
+Unusable: 1644
+
+Mon Jul 13 07:33:25 EDT 2015
+Co
+Co: 2087
+Cluster: 64
+Usable: 1596
+Unusable: 427
+Mon Jul 13 07:37:48 EDT 2015
+Hg
+Hg: 1923
+Cluster: 180
+Usable: 208
+Unusable: 1535
+
+Mon Jul 13 07:40:01 EDT 2015
+Sr
+Sr: 3551
+Cluster: 11
+Usable: 1496
+Unusable: 2044
+
+Mon Jul 13 08:02:15 EDT 2015
+Ba
+Ba: 311
+Cluster: 20
+Usable: 92
+Unusable: 199
+
+Mon Jul 13 08:02:45 EDT 2015
+Cs
+Cs: 393
+Cluster: 16
+Usable: 43
+Unusable: 334
+
+Mon Jul 13 08:03:07 EDT 2015
+Pt
+Pt: 629
+Cluster: 69
+Usable: 148
+Unusable: 412
+
+Mon Jul 13 08:03:45 EDT 2015
+Yb
+Yb: 177
+Cluster: 20
+Usable: 87
+Unusable: 70
+
+Mon Jul 13 08:04:01 EDT 2015
+Au
+Au: 322
+Cluster: 24
+Usable: 20
+Unusable: 278
+
+Mon Jul 13 08:04:18 EDT 2015
+Li
+Li: 88
+Cluster: 0
+Usable: 65
+Unusable: 23
+
+Mon Jul 13 08:04:30 EDT 2015
+Pb
+Pb: 152
+Cluster: 4
+Usable: 44
+Unusable: 104
+
+Mon Jul 13 08:04:45 EDT 2015
+Tl
+Tl: 261
+Cluster: 48
+Usable: 92
+Unusable: 121
+
+
+Mon Jul 13 08:05:31 EDT 2015
+Pr
+Pr: 55
+Cluster: 6
+Usable: 31
+Unusable: 18
+
+Mon Jul 13 08:05:34 EDT 2015
+Ag
+Ag: 75
+Cluster: 13
+Usable: 29
+Unusable: 33
+
+Mon Jul 13 08:05:41 EDT 2015
+Mo
+Mo: 664
+Cluster: 51
+Usable: 553
+Unusable: 60
+
+Mon Jul 13 08:07:58 EDT 2015
+Ru
+Ru: 134
+Cluster: 30
+Usable: 46
+Unusable: 58
+
+Mon Jul 13 08:08:10 EDT 2015
+Y
+Y: 202
+Cluster: 4
+Usable: 113
+Unusable: 85
+
+Mon Jul 13 08:08:31 EDT 2015
+Lu
+Lu: 56
+Cluster: 2
+Usable: 20
+Unusable: 34
+
+Mon Jul 13 08:08:40 EDT 2015
+Eu
+Eu: 61
+Cluster: 6
+Usable: 34
+Unusable: 21
+
+Mon Jul 13 08:08:44 EDT 2015
+Pd
+Pd: 85
+Cluster: 17
+Usable: 7
+Unusable: 61
+
+Mon Jul 13 08:08:47 EDT 2015
+Tb
+Tb: 32
+Cluster: 0
+Usable: 22
+Unusable: 10
+
+Mon Jul 13 08:08:49 EDT 2015
+Os
+Os: 33
+Cluster: 4
+Usable: 1
+Unusable: 28
+
+Mon Jul 13 08:08:52 EDT 2015
+W
+W: 1443
+Cluster: 80
+Usable: 1290
+Unusable: 73
+
+Mon Jul 13 08:11:42 EDT 2015
+Cr
+Cr: 21
+Cluster: 0
+Usable: 16
+Unusable: 5
+
+Mon Jul 13 08:11:44 EDT 2015
+Gd
+Gd: 197
+Cluster: 8
+Usable: 119
+Unusable: 70
+
+Mon Jul 13 08:11:53 EDT 2015
+La
+La: 18
+Cluster: 0
+Usable: 17
+Unusable: 1
+
+Mon Jul 13 08:11:53 EDT 2015
+Ir
+Ir: 48
+Cluster: 2
+Usable: 30
+Unusable: 16
+
+Mon Jul 13 08:11:55 EDT 2015
+Ga
+Ga: 10
+Cluster: 0
+Usable: 9
+Unusable: 1
+
+Mon Jul 13 08:11:56 EDT 2015
+Rh
+Rh: 46
+Cluster: 12
+Usable: 13
+Unusable: 21
+
+Mon Jul 13 08:11:57 EDT 2015
+Al
+Al: 351
+Cluster: 4
+Usable: 344
+Unusable: 3
+
+Mon Jul 13 08:13:15 EDT 2015
+Ce
+Ce: 7
+Cluster: 0
+Usable: 6
+Unusable: 1
+
+Mon Jul 13 08:13:16 EDT 2015
+Sb
+Sb: 10
+Cluster: 0
+Usable: 6
+Unusable: 4
+
+Mon Jul 13 08:13:17 EDT 2015
+Er
+Er: 6
+Cluster: 0
+Usable: 2
+Unusable: 4
+
+Mon Jul 13 08:13:19 EDT 2015
+Bs
+Bs: 0
+Cluster: 0
+Usable: 0
+Unusable: 0
+
+Mon Jul 13 08:13:19 EDT 2015
+Dy
+Dy: 30
+Cluster: 10
+Usable: 0
+Unusable: 20
+
+Mon Jul 13 08:13:19 EDT 2015
+Ho
+Ho: 35
+Cluster: 0
+Usable: 25
+Unusable: 10
+
+Mon Jul 13 08:13:22 EDT 2015
+In
+In: 3
+Cluster: 0
+Usable: 3
+Unusable: 0
+
+Mon Jul 13 08:13:23 EDT 2015
+V
+V: 364
+Cluster: 32
+Usable: 323
+Unusable: 9
+
+Mon Jul 13 08:14:10 EDT 2015
+

@@ -1,0 +1,8 @@
+##!/usr/bash
+
+for metal in Zn Mg Ca Na Mn K Fe Cu Ni Cd Co Hg Sr Ba Cs Pt Yb Au Li Pb Tl Rb Sm Pr Ag Mo Ru Y Lu Eu Pd Tb Os W Cr Gd La Ir Ga Rh Al Ce Sb Er Bi Dy Ho In V
+do
+echo "$metal"
+./znCoordinations.pl ../metalloproteins/protein_list_$metal.txt $metal -d
+date
+done
