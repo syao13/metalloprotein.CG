@@ -60,7 +60,9 @@ our @defaultDataMembers = (
                           "numCenter" => 0,
 			  "numCluster" => 0,
 			  "decisions" => 0,
-			  "nonModels" => 0
+			  "nonModels" => 0,
+			  "unusable" => 0,
+			  "usable" => 0
                           );
 
 our $cgRelations = [
@@ -116,6 +118,10 @@ sub readPDB
     my $sequences = $pdb->{sequences};
     foreach my $oneShell (@$shellsOfOnePDB) 
       {
+      if (scalar @{$oneShell->{shell}} > 3) { $self->{usable} += 1; }
+      else { $self->{unusable} += 1; }
+
+      goto SKIP;
       ## if an atom in the shell is not standard aa, mark its closest aa ligand
       my $closestAA = {};
       foreach my $lig (@{$oneShell->{shell}})
@@ -135,6 +141,8 @@ sub readPDB
 
       ## store all chain-sequence pair of within its PDB into each shell
       $oneShell->{seqsOfPDB} = $sequences; #if (! $oneShell->{sequence});
+
+      SKIP:
       }
 
     push @$allShells, @$shellsOfOnePDB;

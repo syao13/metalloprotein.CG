@@ -64,6 +64,8 @@ use Data::Dumper::Concise;
 
 ########## read in required arguments ##########
 my $pathsFile = shift @ARGV;
+my $metal = shift @ARGV;
+
 unless ($ARGV[0] eq "-i" || $ARGV[0] eq "-d")
   { print STDERR $help; exit;}
 my $flow = shift @ARGV;
@@ -172,9 +174,16 @@ while (@ARGV)
 ############# main process #############
 ########################################
 
-my $analyzer = ZnCGanalysis->new("pathsFile" => $pathsFile, "element" => "ZN", "majorCGs" => ["Tetrahedral", "TrigonalBipyramidal", "Octahedral"], "minLigNum" => 4);
-print "Zn: ", $analyzer->{numCenter}, "\n";
+my $analyzer = ZnCGanalysis->new("pathsFile" => $pathsFile, 
+				 "element" => uc($metal), 
+				 "majorCGs" => ["Tetrahedral", "TrigonalBipyramidal", "Octahedral"], 
+				 "minLigNum" => 4);
+print "$metal: ", $analyzer->{numCenter}, "\n";
 print "Cluster: ", $analyzer->{numCluster}, "\n";
+print "Usable: ", $analyzer->{usable}, "\n";
+print "Unusable: ", $analyzer->{unusable}, "\n\n";
+exit;
+
 $analyzer->bootstrapCoordination($statOutFileName);
 
 ## required argument defines the workflow

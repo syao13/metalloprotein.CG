@@ -15,6 +15,57 @@ our @defaultDataMembers = (
 );
 
 our $secondShellDist = 8.0;
+our %atomRadius = (
+	"ZN" =>	1.35,
+	"YB" => 1.75,
+	"Y"  =>	1.80,
+	"W"  =>	1.35,
+	"V"  =>	1.35,
+	"TL" =>	1.90,
+	"TB" =>	1.75,
+	"SR" =>	2.00,
+	"SM" =>	1.85,
+	"SB" =>	1.45,
+	"RU" =>	1.30,
+	"RH" =>	1.35,
+	"RB" =>	2.35,
+	"PT" =>	1.35,
+	"PR" =>	1.85,
+	"PD" =>	1.40,
+	"PB" =>	1.80,
+	"OS" =>	1.30,
+	"NI" =>	1.35,
+	"NA" =>	1.80,
+	"MO" =>	1.45,
+	"MN" =>	1.40,
+	"MG" =>	1.50,
+	"LU" =>	1.75,
+	"LI" =>	1.45,
+	"LA" =>	1.95,
+	"K"  => 2.20,
+	"IR" =>	1.35,
+	"IN" =>	1.55,
+	"HO" =>	1.75,
+	"HG" =>	1.50,
+	"GD" =>	1.80,
+	"GA" =>	1.30,
+	"FE" =>	1.40,
+	"EU" =>	1.85,
+	"ER" =>	1.75,
+	"DY" =>	1.75,
+	"CU" =>	1.35,
+	"CS" =>	2.60,
+	"CR" =>	1.40,
+	"CO" =>	1.35,
+	"CE" => 1.85,
+	"CD" =>	1.55,
+	"CA" =>	1.80,
+	"BI" =>	1.60,
+	"BA" =>	2.15,
+	"AU" => 1.35,
+	"AL" => 1.25,
+	"AG" => 1.60);
+
 
 ## Creat a list of AtomShell objs of given element from a list of Atom objects 
 ## Optional parameters: min and max distances, with default as 1.3 to 3.2
@@ -24,8 +75,8 @@ sub createShells
   my $element = shift @_;
   my $atoms = shift @_;
   my $minDist = (@_) ? shift @_ : 1.3;
-  my $maxDist = (@_) ? shift @_ : 3.2;
- 
+  my $maxDist = ($atomRadius{$element} > $atomRadius{"ZN"})? ($atomRadius{$element} - $atomRadius{"ZN"} + 3.2): 3.2;
+
   my @centers = grep { $_->{element} eq $element; } (@$atoms); 
 
   ## Rule out clusters
