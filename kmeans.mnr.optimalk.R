@@ -49,20 +49,24 @@ compressed.nr <- compressed.nr[!ind.comp2, ]
 angles.comp <- compressed.nr[,2:7]
 dim(angles.comp)
 angle.sorted.comp <- t(apply(angles.comp, 1, function(x) c(x[1], sort(x[2:5]), x[6])))
-colnames(angle.sorted.comp) <- c("angle1", "mid1", "mid2", "mid3", "mid4","angle6")
+angle.sorted.comp <- angle.sorted.comp[,c(1,2,3,5,6)]
+colnames(angle.sorted.comp) <- c("largest",  "midSmall", "midMiddle", "midLarge","opposite")
 
 ##### normal
 angles.norm <- normal.nr[,2:7]
 dim(angles.norm)
 angle.sorted.norm <- t(apply(angles.norm, 1, function(x) c(x[1], sort(x[2:5]), x[6])))
-colnames(angle.sorted.norm) <- c("angle1", "mid1", "mid2", "mid3", "mid4","angle6")
+angle.sorted.norm <- angle.sorted.norm[,c(1,2,3,5,6)]
+colnames(angle.sorted.norm) <- c("largest",  "midSmall", "midMiddle", "midLarge","opposite")
 
 ##### combined
 angles.all <- all.nr[,2:7]
 dim(angles.all)
 angle.sorted.all <- t(apply(angles.all, 1, function(x) c(x[1], sort(x[2:5]), x[6])))
-colnames(angle.sorted.all) <- c("angle1", "mid1", "mid2", "mid3", "mid4","angle6")
-#####################################################
+angle.sorted.all <- angle.sorted.all[,c(1,2,3,5,6)]
+colnames(angle.sorted.all) <- c("largest",  "midSmall", "midMiddle", "midLarge","opposite")
+
+####################################################
 
 ####################    k-means   ####################    
 library(cluster) 
