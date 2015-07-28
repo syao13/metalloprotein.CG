@@ -7,14 +7,14 @@ load("compressed_cluster_assg.RData")
 load("combined_cluster_assg.RData")
 
 rawdata1 <- read.table("four.chi.txt", header = TRUE)
-rawdata2 <- read.table("four.chi.leaveOut.txt", header = TRUE)
+rawdata2 <- rawdata1 #read.table("four.chi.leaveOut.txt", header = TRUE)
 
 ## Set the number k normal, compressed, and combined
-normal.k <- 10
+normal.k <- 9
 normal.cluster <- get(paste("normal.", normal.k, ".clusters", sep=""))
 normal.cluster[,2] <- as.numeric(normal.cluster[,2])
 
-compressed.k <- 8
+compressed.k <- 10
 compressed.cluster <- get(paste("compressed.", compressed.k, ".clusters", sep=""))
 compressed.cluster[,2] <- as.numeric(compressed.cluster[,2])
 
