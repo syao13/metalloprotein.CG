@@ -1,1 +1,1 @@
-/mlab/data/databases/PDB/2013_03_18/h4/pdb1h4n.ent.gz
+/mlab/data/databases/PDB/2015_02_25/mj/pdb4mjy.ent.gz

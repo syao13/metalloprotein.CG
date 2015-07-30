@@ -121,7 +121,6 @@ sub readPDB
       if (scalar @{$oneShell->{shell}} > 3) { $self->{usable} += 1; }
       else { $self->{unusable} += 1; }
 
-      goto SKIP;
       ## if an atom in the shell is not standard aa, mark its closest aa ligand
       my $closestAA = {};
       foreach my $lig (@{$oneShell->{shell}})
@@ -141,8 +140,6 @@ sub readPDB
 
       ## store all chain-sequence pair of within its PDB into each shell
       $oneShell->{seqsOfPDB} = $sequences; #if (! $oneShell->{sequence});
-
-      SKIP:
       }
 
     push @$allShells, @$shellsOfOnePDB;
@@ -166,7 +163,7 @@ sub bootstrapCoordination
   $self->{stats} = $stats;
 
   &writeTableFile("$statOutFileName.0.txt", $stats);
-#  $self->printStats();
+  $self->printStats();
   }
 
 
@@ -192,13 +189,13 @@ sub IAcoordination
     $$currStats{"distance"} = $self->calcDistStats();
 
     $self->{stats} = $currStats;
-#    $self->printStats($i);
+    $self->printStats($i);
 
     &writeTableFile("$statOutFileName.$i.txt", $currStats);
 
     if ($i == 20)
       { 
-#      print "Failed to stabilize\n";
+      print "Failed to stabilize\n";
       last; 
       }
 

@@ -178,13 +178,14 @@ my $analyzer = ZnCGanalysis->new("pathsFile" => $pathsFile,
 				 "element" => uc($metal), 
 				 "majorCGs" => ["Tetrahedral", "TrigonalBipyramidal", "Octahedral"], 
 				 "minLigNum" => 4);
-print "$metal: ", $analyzer->{numCenter}, "\n";
-print "Cluster: ", $analyzer->{numCluster}, "\n";
-print "Usable: ", $analyzer->{usable}, "\n";
-print "Unusable: ", $analyzer->{unusable}, "\n\n";
-exit;
+#print "$metal: ", $analyzer->{numCenter}, "\n";
+#print "Cluster: ", $analyzer->{numCluster}, "\n";
+#print "Usable: ", $analyzer->{usable}, "\n";
+#print "Unusable: ", $analyzer->{unusable}, "\n\n";
+#exit;
 
 $analyzer->bootstrapCoordination($statOutFileName);
+goto OPTIONS;
 
 ## required argument defines the workflow
 if ($flow eq "-i") 
@@ -258,7 +259,7 @@ sub coordProbs
   return @probs;
   }
 
-
+OPTIONS:
 ## Some other supplemental options
 if ($jsonOpt)
   {

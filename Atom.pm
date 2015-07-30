@@ -86,7 +86,9 @@ sub angle
   my $distBSelf = &distance($b, $self);
   if ($distAB == 0.0 || $distASelf == 0 || $distBSelf == 0)
     { return 0; }
-  my $angleAB = 57.2957795*(&Arccos( ($distAB**2 - $distASelf**2 - $distBSelf**2)/-(2*$distASelf*$distBSelf) ));
+  if (abs($distAB - $distASelf - $distBSelf) < 0.00001) 
+    { return 180; }
+  my $angleAB = 57.2957795*(&_arccos( ($distAB**2 - $distASelf**2 - $distBSelf**2)/-(2*$distASelf*$distBSelf) ));
   return $angleAB;
   }
 
@@ -205,8 +207,9 @@ sub _vecLength
   }
 
 
-sub Arccos
+sub _arccos
   {
+
   atan2( sqrt(1 - $_[0] * $_[0]), $_[0] )
   }
 
