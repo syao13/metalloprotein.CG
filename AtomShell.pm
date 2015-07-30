@@ -5,7 +5,7 @@ use strict;
 use Atom;
 
 ## Constructor: creatShells; creat; new
-## Methods: znID, anglesBetweenShell, distanceBetweenShell
+## Methods: metalID, anglesBetweenShell, distanceBetweenShell
 
 our @defaultDataMembers = (   
                                 "center" => 0,
@@ -156,15 +156,15 @@ sub distanceBetweenShell
 
 ## Returns a zinc id that could be used to identify each zinc site specifically
 ## 	The format is pdbid.chinid.serial#, for example, 1BY4.C.2330
-sub znID
+sub metalID
   {
   my $self = shift @_;
 
-  my $znAtom = $self->{center};
+  my $metalAtom = $self->{center};
 
-  my $pdbid = $znAtom->{PDBid};
-  my $chainid = $znAtom->{chainID};
-  my $serial = $znAtom->{residueNumber};
+  my $pdbid = $metalAtom->{PDBid};
+  my $chainid = $metalAtom->{chainID};
+  my $serial = $metalAtom->{residueNumber};
 
   return  "$pdbid.$chainid.$serial";
   }

@@ -1,5 +1,0 @@
-Total entries: 9360 
-Entries that are both protein and nucleic acid: 662
-Entries that are neither protein or na: 12
-Entries that are only nucleic acid: 9
-Entries that are only protein: 8677
