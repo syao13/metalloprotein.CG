@@ -1,0 +1,33 @@
+##!/usr/bash
+
+## for each of the metal in Zn Mg Ca Fe Na, show only one as example
+
+## Test run for just bootstrapping, comment out the rest, and print out angle distribution 
+./znCoordinations.pl ../metalloproteins/protein_list_Zn.txt Zn -d ../output_allMetal/stats.Zn -angleBD ../output_allMetal/angleDist.Zn.txt
+
+## Put in the "vote" binding ligands via chi-squared stat, add in a 7-ligand CG temporarily, and print out probs for each coordination number (CN).
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -d ../output_allMetal/stats.bind.Na -angleBD ../output_allMetal/angleDist.bind.Na.txt >../output_allMetal/numLigProb.Na.txt; date
+
+#Thu Jul 30 22:06:04 EDT 2015
+#Fri Jul 31 03:18:14 EDT 2015
+
+#date; ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -d ../output_allMetal/stats.bind.Fe -angleBD ../output_allMetal/angleDist.bind.Fe.txt > ../output_allMetal/numLigProb.Fe.txt; date; ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -d ../output_allMetal/stats.bind.Ca -angleBD ../output_allMetal/angleDist.bind.Ca.txt > ../output_allMetal/numLigProb.Ca.txt; date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -d ../output_allMetal/stats.bind.Mg -angleBD ../output_allMetal/angleDist.bind.Mg.txt > ../output_allMetal/numLigProb.Mg.txt; date; ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d ../output_allMetal/stats.bind.Zn -angleBD ../output_allMetal/angleDist.bind.Zn.txt > ../output_allMetal/numLigProb.Zn.txt; date 
+#Thu Jul 30 22:28:35 EDT 2015
+#Fri Jul 31 00:23:26 EDT 2015
+#Fri Jul 31 02:11:48 EDT 2015
+#Fri Jul 31 16:21:32 EDT 2015
+#Fri Jul 31 17:48:31 EDT 2015
+
+
+## Run the prob up to 10-ligand, rename the above to ligNumProb.Zn.7.txt
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -d ../output_allMetal/stats.bind.Na -angleBD ../output_allMetal/angleDist.bind.Na.txt >../output_allMetal/ligNumProb.Na.txt; date; ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -d ../output_allMetal/stats.bind.Fe -angleBD ../output_allMetal/angleDist.bind.Fe.txt > ../output_allMetal/ligNumProb.Fe.txt; date; ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -d ../output_allMetal/stats.bind.Ca -angleBD ../output_allMetal/angleDist.bind.Ca.txt > ../output_allMetal/ligNumProb.Ca.txt; date; ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d ../output_allMetal/stats.bind.Zn -angleBD ../output_allMetal/angleDist.bind.Zn.txt > ../output_allMetal/ligNumProb.Zn.txt; date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -d ../output_allMetal/stats.bind.Mg -angleBD ../output_allMetal/angleDist.bind.Mg.txt > ../output_allMetal/ligNumProb.Mg.txt; date
+
+Sat Aug  1 11:18:10 EDT 2015
+Sat Aug  1 16:32:45 EDT 2015
+Sat Aug  1 18:30:28 EDT 2015
+Sat Aug  1 20:30:13 EDT 2015
+Sat Aug  1 22:01:13 EDT 2015
+Sun Aug  2 12:14:43 EDT 2015
+
+
+

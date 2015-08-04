@@ -42,9 +42,12 @@ use TrigonalBipyramidalVP;
 use SquarePlanar;
 use SquarePyramidalV;
 use SquarePyramidal;
+use PentagonalBypyramidal;
+use Cube;
+use SquareAntiprismaticMonocapped;
+use SquareAntiprismaticBicapped;
 
 use Clone 'clone';
-
 #use Data::Dumper::Concise; # human readable, code in iaCoordination
 #use JSON; # For other programs to read back, code in iaCoordination 
 #use JSON -convertBlessedUniversally;
@@ -249,7 +252,6 @@ sub calNonModel
     { $self->{nonModels} = $nonModels;}
   $self->{coordinations} = $coordinations;
   $self->{shells} = $shells;
-
   }
 
 
@@ -260,12 +262,12 @@ sub bindShellViaDist
   my $statOutFileName = (@_)? shift @_: "stats";
   my $stats = (@_)? (shift @_) : ($self->{stats});
 
-  my %numToLet = ( 2 => "two", 3 => "three", 4 => "four", 5 => "five", 6 => "six", 7 => "seven", 8 => "eight");
+  my %numToLet = ( 2 => "two", 3 => "three", 4 => "four", 5 => "five", 6 => "six", 7 => "seven", 8 => "eight", 9 => "nine", 10 => "ten");
   my $coordinations = {};
   foreach my $shell (@{$self->{shells}}) 
     {
     my @models;
-    foreach my $cg ("TrigonalPlanar", @{$self->{majorCGs}})
+    foreach my $cg ("TrigonalPlanar", @{$self->{majorCGs}}, "PentagonalBypyramidal", "Cube", "SquareAntiprismaticMonocapped", "SquareAntiprismaticBicapped")
       {
       my $cgObj = $cg->new(shellObj => $shell);
       $cgObj->bestDistChi($stats);

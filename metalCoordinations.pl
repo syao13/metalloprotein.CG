@@ -185,7 +185,6 @@ my $analyzer = MPCGanalysis->new("pathsFile" => $pathsFile,
 #exit;
 
 $analyzer->bootstrapCoordination($statOutFileName);
-goto OPTIONS;
 
 ## required argument defines the workflow
 if ($flow eq "-i") 
@@ -259,7 +258,6 @@ sub coordProbs
   return @probs;
   }
 
-OPTIONS:
 ## Some other supplemental options
 if ($jsonOpt)
   {
