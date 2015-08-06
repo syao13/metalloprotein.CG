@@ -40,7 +40,7 @@ sub orderedCombinations
    
   my $orderedCombos;
   push (@$orderedCombos, [$$combo[0], $$combo[1], $$combo[2], $$combo[3]]);
-  push (@$orderedCombos, [$$combo[1], $$combo[0], $$combo[1], $$combo[2]]);
+  push (@$orderedCombos, [$$combo[1], $$combo[0], $$combo[2], $$combo[3]]);
   push (@$orderedCombos, [$$combo[2], $$combo[0], $$combo[1], $$combo[3]]);
   push (@$orderedCombos, [$$combo[3], $$combo[0], $$combo[1], $$combo[2]]);
 

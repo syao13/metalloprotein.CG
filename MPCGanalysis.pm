@@ -42,7 +42,7 @@ use TrigonalBipyramidalVP;
 use SquarePlanar;
 use SquarePyramidalV;
 use SquarePyramidal;
-use PentagonalBypyramidal;
+use PentagonalBipyramidal;
 use Cube;
 use SquareAntiprismaticMonocapped;
 use SquareAntiprismaticBicapped;
@@ -79,7 +79,8 @@ our $cgRelations = [
   {"name" => "TrigonalBipyramidalVP", "num" => 4, "parents" => ["TrigonalBipyramidal"], "children" => [], "siblings" => ["TrigonalBipyramidalVA"]},
   {"name" => "SquarePyramidalV", "num" => 4, "parents" => ["SquarePyramidal", "Octahedral"], "children" => [], "siblings" => ["SquarePlanar"]},
   {"name" => "SquarePlanar", "num" => 4, "parents" => ["SquarePyramidal", "Octahedral"], "children" => [], "siblings" => ["SquarePyramidalV"]},
-  {"name" => "SquarePyramidal", "num" => 5, "parents" => ["Octahedral"], "children" => ["SquarePlanar", "SquarePyramidalV"], "siblings" => []}
+  {"name" => "SquarePyramidal", "num" => 5, "parents" => ["Octahedral"], "children" => ["SquarePlanar", "SquarePyramidalV"], "siblings" => []},
+  {"name" => "PentagonalBypyramidal", "num" => 7, "parents" => [], "children" => [], "siblings" => []},
 ]; 
 
 sub new
@@ -267,7 +268,7 @@ sub bindShellViaDist
   foreach my $shell (@{$self->{shells}}) 
     {
     my @models;
-    foreach my $cg ("TrigonalPlanar", @{$self->{majorCGs}}, "PentagonalBypyramidal", "Cube", "SquareAntiprismaticMonocapped", "SquareAntiprismaticBicapped")
+    foreach my $cg ("TrigonalPlanar", @{$self->{majorCGs}}, "PentagonalBipyramidal", "Cube", "SquareAntiprismaticMonocapped", "SquareAntiprismaticBicapped")
       {
       my $cgObj = $cg->new(shellObj => $shell);
       $cgObj->bestDistChi($stats);
@@ -282,9 +283,9 @@ sub bindShellViaDist
     push @{$$coordinations{$numLig}}, $bestModel;
 
     # print chi probabilities
-    print $shell->metalID(), "; ";
-    map {print $_->{bestCombo}->{probability}, "; "} (@models);
-    print "\n";
+    #print $shell->metalID(), "; ";
+    #map {print $_->{bestCombo}->{probability}, "; "} (@models);
+    #print "\n";
     #print "$bestModel\n";
     #print "\n";
     }
@@ -599,7 +600,7 @@ sub calcDeviationCoordination
   foreach my $shell (@$shells)
     {
     my @models;
-    foreach my $major (@{$self->{majorCGs}})
+    foreach my $major ("Tetrahedral", "TrigonalBipyramidal", "Octahedral", "PentagonalBipyramidal")
       {
       my $cgObj = $major->new(shellObj => $shell);
       $cgObj->bestTestStatistic("dev");
@@ -643,21 +644,21 @@ sub calcAngleStats
   my $coordSets = $self->{coordinations};
   my $angleStats = {};
 
-  my $coordinationAgnles = {};
+  my $coordinationAngles = {};
   foreach my $coord (keys %$coordSets)
     {
     my $coordSet = $$coordSets{$coord};
     next if (! $coordSet);
-    map { $_->calcExpectedAngleStats($coordinationAgnles) ;} (@$coordSet);
+    map { $_->calcExpectedAngleStats($coordinationAngles) ;} (@$coordSet);
     }
 
   my $totalDev = 0;
   my $totaln = 0;
-  foreach my $coordination (keys %$coordinationAgnles)
+  foreach my $coordination (keys %$coordinationAngles)
     {
-    foreach my $angle (keys %{$$coordinationAgnles{$coordination}})
+    foreach my $angle (keys %{$$coordinationAngles{$coordination}})
       {
-      my $stats = RawStatistics->new("variables" => $$coordinationAgnles{$coordination}{$angle} ) ;
+      my $stats = RawStatistics->new("variables" => $$coordinationAngles{$coordination}{$angle} ) ;
       my $mean = $stats->calcMean() ;
       my $deviation = $stats->calcDeviation() ;
       my $count = $stats->count();
@@ -681,7 +682,7 @@ sub calcAngleStats
   $$angleStats{"variance"} = $variance;
   $$angleStats{"standardDeviation"} = $variance ** 0.5;
 
-  $self->{rawAngles} = $coordinationAgnles;
+  $self->{rawAngles} = $coordinationAngles;
   return $angleStats;
   }
 

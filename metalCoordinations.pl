@@ -1,13 +1,14 @@
 #!/usr/bin/perl 
 
 my $help = <<HELP;
-  usage: ./metalCoordinations.pl PDBpathsFile -i/d [(criteria threshold) statisticsFilePrefix] [-s sequences header sequenceResultsFile] [-r rSpreadsheet (leaveOut) statisticsFile]
+  usage: ./metalCoordinations.pl PDBpathsFile metal -i/d [(criteria threshold) statisticsFilePrefix] [-s sequences header sequenceResultsFile] [-r rSpreadsheet (leaveOut) statisticsFile]
 		[-json jsonFile] [-dumper dumperFile] [-decision] [-angleList angleListMid] [-ec pathToFlat pathToPDB ecFile] [-ligand] [-angleBD angleBreakDownFile]
  
   Parameters:
 
     required:
   	PDBpathsFile 
+	metal
 	-i/d [(criteria threshold) statisticsFilePrefix], 
 		criteria: probability(p)/compressed(c)/nonModel(n); 
 		threshold: threshold for the criteria; 
@@ -176,7 +177,7 @@ while (@ARGV)
 
 my $analyzer = MPCGanalysis->new("pathsFile" => $pathsFile, 
 				 "element" => uc($metal), 
-				 "majorCGs" => ["Tetrahedral", "TrigonalBipyramidal", "Octahedral"], 
+				 "majorCGs" => ["Tetrahedral", "TrigonalBipyramidal", "Octahedral", "PentagonalBipyramidal"], 
 				 "minLigNum" => 4);
 #print "$metal: ", $analyzer->{numCenter}, "\n";
 #print "Cluster: ", $analyzer->{numCluster}, "\n";

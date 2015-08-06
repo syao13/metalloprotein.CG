@@ -84,7 +84,7 @@ sub angle
   my $distAB = &distance($a, $b);
   my $distASelf = &distance($a, $self);
   my $distBSelf = &distance($b, $self);
-  if ($distAB == 0.0 || $distASelf == 0 || $distBSelf == 0)
+  if ($distAB == 0 || $distASelf == 0 || $distBSelf == 0)
     { return 0; }
   if (abs($distAB - $distASelf - $distBSelf) < 0.00001) 
     { return 180; }

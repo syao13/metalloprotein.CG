@@ -29,5 +29,20 @@ Sat Aug  1 20:30:13 EDT 2015
 Sat Aug  1 22:01:13 EDT 2015
 Sun Aug  2 12:14:43 EDT 2015
 
+## Try bootstrap with Tet, Tbp, Oct, and add Spy (and maybe pbp)
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d ../output_allMetal/stats.spy.Zn; date
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -d ../output_allMetal/stats.spy.Fe; date
+ 
+
+## Add Pentagonal Bipyramidal in bootstrap 
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d ../output_allMetal/stats.pbp.Zn; date
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -d ../output_allMetal/stats.pbp.Ca; date
+
+#Wed Aug  5 23:19:30 EDT 2015
+#Deviation sorted: #Octahedral = 974 #PentagonalBipyramidal = 29 #Tetrahedral = 18039 #TrigonalBipyramidal = 2553
+#Thu Aug  6 00:46:51 EDT 2015
+#Deviation sorted: #Octahedral = 5899 #PentagonalBipyramidal = 4138 #Tetrahedral = 5036 #TrigonalBipyramidal = 6543
+#Thu Aug  6 03:31:55 EDT 2015
+
 
 
