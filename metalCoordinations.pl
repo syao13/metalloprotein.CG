@@ -107,7 +107,7 @@ my $statOutFileName = ($ARGV[0] !~ /\-/) ? shift @ARGV : "statistics";
 
 ########## read in optional arguments ##########
 my ($seqOpt, $seq, $header, $seqFile, $rInputOpt, $rInputFile, $statsFile, $leaveOut, $jsonOpt, $jsonFile, $dumperOpt, $dumperFile, $decisionOpt, $angleListOpt, $angleListMid);
-my ($ECopt, $pathToFlat, $pathToPDB, $ecFile, $ligandOpt, $angleBreakDownOpt, $angleBreakDownFile);
+my ($ECopt, $pathToFlat, $pathToPDB, $ecFile, $ligandOpt, $angleBreakDownOpt, $angleBreakDownFile, $bondLengthOpt, $bondLengthFile);
 while (@ARGV) 
   {
   if ($ARGV[0] !~ /\-/)
@@ -168,6 +168,11 @@ while (@ARGV)
     $angleBreakDownOpt = 1;
     $angleBreakDownFile = shift @ARGV;
     }
+  elsif ($option eq "-bondLength")
+    {
+    $bondLengthOpt = 1;
+    $bondLengthFile = shift @ARGV;
+    }
   }
 
 
@@ -188,10 +193,10 @@ my $analyzer = MPCGanalysis->new("pathsFile" => $pathsFile,
 $analyzer->bootstrapCoordination($statOutFileName);
 
 ## required argument defines the workflow
-if ($flow eq "-i") 
-  { $analyzer->IAcoordination($statOutFileName, $iaControl, $threshold); }
-else 
-  { $analyzer->bindShellViaDist($statOutFileName); }
+#if ($flow eq "-i") 
+#  { $analyzer->IAcoordination($statOutFileName, $iaControl, $threshold); }
+#else 
+#  { $analyzer->bindShellViaDist($statOutFileName); }
 
 ## optional args set what to print out
 if ($seqOpt)
@@ -259,7 +264,26 @@ sub coordProbs
   return @probs;
   }
 
+
 ## Some other supplemental options
+if ($bondLengthOpt)
+  {
+  open (BLF, ">", $bondLengthFile) or die $!;
+  my $stats = &readTableFile($statsFile) if ($statsFile);
+
+  foreach my $cg (keys %{$analyzer->{coordinations}})
+    {
+    foreach my $metalObj (@{$analyzer->{coordinations}{$cg}})
+      {
+       my $comboLigands = $metalObj->{bestCombo}->{ligands};
+       my $center = $metalObj->{shellObj}->{center};
+       print BLF map {$_->{element},", ", $center->distance($_), "\n" ;} (@$comboLigands);
+      }
+    }
+    close BLF;
+  }
+    
+
 if ($jsonOpt)
   {
   open (JOUT, '>', $jsonFile);
@@ -403,9 +427,9 @@ sub getUnpidFromPdbid
 if ($ligandOpt)
   {
   my %ligandCombo;
-  foreach my $analyzerination (values %{$analyzer->{coordinations}})
+  foreach my $cg (values %{$analyzer->{coordinations}})
     {
-    foreach my $metalObj (@$analyzerination)
+    foreach my $metalObj (@$cg)
       {
       my @residues = map {$_->{residueName};} (@{$metalObj->{bestCombo}->{ligands}});
       $ligandCombo{join ".", sort {lc($a) cmp lc($b);} (@residues)}++;
@@ -416,39 +440,37 @@ if ($ligandOpt)
 
 if ($angleBreakDownOpt)
   {
-  foreach my $analyzerination (keys %{$analyzer->{rawAngles}})
+  foreach my $cg (keys %{$analyzer->{rawAngles}})
     {
-    foreach my $angel (keys %{$analyzer->{rawAngles}{$analyzerination}} )
+    foreach my $angel (keys %{$analyzer->{rawAngles}{$cg}} )
       {
       my $histogram=[];
 
-      push @$histogram, scalar (grep {$_ > 0  && $_ < 15;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 15 && $_ < 25;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 25 && $_ < 35;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 35 && $_ < 45;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 45 && $_ < 55;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 55 && $_ < 65;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 65 && $_ < 75;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 75 && $_ < 85;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 85 && $_ < 95;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 95 && $_ < 105;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 105 && $_ < 115;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 115 && $_ < 125;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 125 && $_ < 135;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 135 && $_ < 145;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 145 && $_ < 155;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 155 && $_ < 165;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 165 && $_ < 175;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 175 && $_ < 180;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
-      push @$histogram, scalar (grep {$_ > 180 ;} (@{$analyzer->{rawAngles}{$analyzerination}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 0  && $_ < 15;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 15 && $_ < 25;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 25 && $_ < 35;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 35 && $_ < 45;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 45 && $_ < 55;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 55 && $_ < 65;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 65 && $_ < 75;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 75 && $_ < 85;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 85 && $_ < 95;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 95 && $_ < 105;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 105 && $_ < 115;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 115 && $_ < 125;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 125 && $_ < 135;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 135 && $_ < 145;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 145 && $_ < 155;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 155 && $_ < 165;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 165 && $_ < 175;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 175 && $_ < 180;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
+      push @$histogram, scalar (grep {$_ > 180 ;} (@{$analyzer->{rawAngles}{$cg}{$angel}}) ) ;
  
-      $analyzer->{rawAngles}{$analyzerination}{$angel} = $histogram;
+      $analyzer->{rawAngles}{$cg}{$angel} = $histogram;
       }
     }
 
   &writeTableFile($angleBreakDownFile, $analyzer->{rawAngles});
   }
-
-
 
 

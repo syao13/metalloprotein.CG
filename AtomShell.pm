@@ -109,8 +109,8 @@ sub create
 
   #print $center->{element}, "flag\n";
   return $class->new("center" => $center, 
-		     "shell" => [ grep {my $distance = $center->distance($_); ($distance >= $minDist && $distance <= $maxDist && $_->{element} ne "C" && $_->{element} ne "H" && $_->{element} ne $center->{element} );} (@$atoms) ],
-		     "secondShell" => [ grep {my $distance = $center->distance($_); ($distance >= $minDist && $distance <= $secondShellDist && $_->{element} ne "C" && $_->{element} ne "H" && $_->{element} ne $center->{element} );} (@$atoms) ] ); 
+		     "shell" => [ grep {my $distance = $center->distance($_); ($distance >= $minDist && $distance <= $maxDist && $_->{element} ne "C" && $_->{element} ne "H" && ! $atomRadius{$_->{element}} );} (@$atoms) ],
+		     "secondShell" => [ grep {my $distance = $center->distance($_); ($distance >= $minDist && $distance <= $secondShellDist && $_->{element} ne "C" && $_->{element} ne "H" && ! $atomRadius{$_->{element}} );} (@$atoms) ] ); 
   }
 
 ## A standard way to creat a now obj, not useful for this AtomShell obj though

@@ -31,8 +31,6 @@ Sun Aug  2 12:14:43 EDT 2015
 
 ## Try bootstrap with Tet, Tbp, Oct, and add Spy (and maybe pbp)
 date; ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d ../output_allMetal/stats.spy.Zn; date
-date; ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -d ../output_allMetal/stats.spy.Fe; date
- 
 
 ## Add Pentagonal Bipyramidal in bootstrap 
 date; ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d ../output_allMetal/stats.pbp.Zn; date
@@ -43,6 +41,48 @@ date; ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -d ../output_al
 #Thu Aug  6 00:46:51 EDT 2015
 #Deviation sorted: #Octahedral = 5899 #PentagonalBipyramidal = 4138 #Tetrahedral = 5036 #TrigonalBipyramidal = 6543
 #Thu Aug  6 03:31:55 EDT 2015
+
+## removed all metal-metal cluster
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d ../output_allMetal/stats.bootstrap.Zn; date; ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -d ../output_allMetal/stats.bootstrap.Ca; date
+
+#Thu Aug  6 15:50:53 EDT 2015
+#Deviation sorted: Octahedral = 975 PentagonalBipyramidal = 28 Tetrahedral = 18036 TrigonalBipyramidal = 2556
+#Thu Aug  6 17:17:40 EDT 2015
+#Deviation sorted: Octahedral = 5893 PentagonalBipyramidal = 4136 Tetrahedral = 5023 TrigonalBipyramidal = 6556
+#Thu Aug  6 19:52:11 EDT 2015
+
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -d ../output_allMetal/stats.bootstrap.Fe; date; ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -d ../output_allMetal/stats.bootstrap.Na; date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -d ../output_allMetal/stats.bootstrap.Mg; date
+
+#Thu Aug  6 23:24:15 EDT 2015
+#Deviation sorted: Octahedral = 8630 PentagonalBipyramidal = 57 Tetrahedral = 2202 TrigonalBipyramidal = 4803
+#Fri Aug  7 01:22:07 EDT 2015
+#Deviation sorted: Octahedral = 2212 PentagonalBipyramidal = 208 Tetrahedral = 6046 TrigonalBipyramidal = 4376
+#Fri Aug  7 06:45:14 EDT 2015
+#Deviation sorted: Octahedral = 12814 PentagonalBipyramidal = 353 Tetrahedral = 10952 TrigonalBipyramidal = 10318
+#Fri Aug  7 20:53:57 EDT 2015
+
+## Add spy in bootstrap to only 5-lig shells
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -d ../output_allMetal/stats.spy.Fe; date
+
+#Fri Aug  7 12:20:48 EDT 2015 
+#Deviation sorted: Octahedral = 8630 PentagonalBipyramidal = 57 SquarePyramidal = 3192 Tetrahedral = 2157 TrigonalBipyramidal = 1656
+#Fri Aug  7 14:20:16 EDT 2015
+
+## print out bond length to visualize.
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -d ../output_allMetal/stats.bl.Na -bondLength ../output_allMetal/bondLength.Na.txt; date
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d ../output_allMetal/stats.bl.Zn -bondLength ../output_allMetal/bondLength.Zn.txt; date; 
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -d ../output_allMetal/stats.bl.Ca -bondLength ../output_allMetal/bondLength.Ca.txt; date; 
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -d ../output_allMetal/stats.bl.Fe -bondLength ../output_allMetal/bondLength.Fe.txt; date;
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -d ../output_allMetal/stats.bl.Mg -bondLength ../output_allMetal/bondLength.Mg.txt; date;
+
+## Same as bootstrap
+
+## The above was actually printing out bond-length after ligand chosing, not bootstrapping. So re-run
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -d ../output_allMetal/stats.bl.Na -bondLength ../output_allMetal/bondLength.bs.Na.txt &
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d ../output_allMetal/stats.bl.Zn -bondLength ../output_allMetal/bondLength.bs.Zn.txt &
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -d ../output_allMetal/stats.bl.Ca -bondLength ../output_allMetal/bondLength.bs.Ca.txt &
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -d ../output_allMetal/stats.bl.Fe -bondLength ../output_allMetal/bondLength.bs.Fe.txt &
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -d ../output_allMetal/stats.bl.Mg -bondLength ../output_allMetal/bondLength.bs.Mg.txt &
 
 
 
