@@ -47,7 +47,7 @@ pVal <- cor.test(distances$struc, distances$func, method = "spearman")$p.value
 pVal
 ggplot(distances, aes(x = struc, y = func)) + 
   geom_point(size = 4) + xlab("Structural") + ylab("Functional") + ggtitle("Cluster Distances, normal 9") + 
-  geom_text(data = NULL, aes(family="serif"), x = 60, y = 0.97, 
+  geom_text(data = NULL, aes(family="serif"), x = 2.5, y = 0.50, 
             label = paste("rho = ", substr(as.character(corVal), 1, 4), " \n ", 
                           "p-value = ", signif(pVal,3), sep = ""), size = 10) + 
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 18), plot.title = element_text(size = 20))
@@ -85,7 +85,7 @@ pVal <- cor.test(distances$struc, distances$func, method = "spearman")$p.value
 pVal
 ggplot(distances, aes(x = struc, y = func)) + 
   geom_point(size = 4) + xlab("Structural") + ylab("Functional") + ggtitle("Cluster Distances, compressed 10") + 
-  geom_text(data = NULL, aes(family="serif"), x = 70, y = 0.97, 
+  geom_text(data = NULL, aes(family="serif"), x = 1.00, y = 0.40, 
             label = paste("rho = ", substr(as.character(corVal), 1, 4), " \n ", 
                           "p-value = ", signif(pVal,3), sep = ""), size = 10) + 
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 18), plot.title = element_text(size = 20))
