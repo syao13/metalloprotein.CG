@@ -67,7 +67,7 @@ use Data::Dumper::Concise;
 my $pathsFile = shift @ARGV;
 my $metal = shift @ARGV;
 
-unless ($ARGV[0] eq "-i" || $ARGV[0] eq "-d")
+unless ($ARGV[0] eq "-i" || $ARGV[0] eq "-d"|| $ARGV[0] eq "-bs")
   { print STDERR $help; exit;}
 my $flow = shift @ARGV;
 
@@ -193,10 +193,10 @@ my $analyzer = MPCGanalysis->new("pathsFile" => $pathsFile,
 $analyzer->bootstrapCoordination($statOutFileName);
 
 ## required argument defines the workflow
-#if ($flow eq "-i") 
-#  { $analyzer->IAcoordination($statOutFileName, $iaControl, $threshold); }
-#else 
-#  { $analyzer->bindShellViaDist($statOutFileName); }
+if ($flow eq "-i") 
+  { $analyzer->IAcoordination($statOutFileName, $iaControl, $threshold); }
+elsif ($flow eq "-d") 
+  { $analyzer->bindShellViaDist($statOutFileName); }
 
 ## optional args set what to print out
 if ($seqOpt)
@@ -269,15 +269,15 @@ sub coordProbs
 if ($bondLengthOpt)
   {
   open (BLF, ">", $bondLengthFile) or die $!;
-  my $stats = &readTableFile($statsFile) if ($statsFile);
+  print BLF join(", ", "metalID", "residueID", "element", "bondLength", "resolution", "rValue", "rFree"), "\n" ; 
 
   foreach my $cg (keys %{$analyzer->{coordinations}})
     {
     foreach my $metalObj (@{$analyzer->{coordinations}{$cg}})
       {
-       my $comboLigands = $metalObj->{bestCombo}->{ligands};
-       my $center = $metalObj->{shellObj}->{center};
-       print BLF map {$_->{element},", ", $center->distance($_), "\n" ;} (@$comboLigands);
+      my $comboLigands = $metalObj->{bestCombo}->{ligands};
+      my $center = $metalObj->{shellObj}->{center};
+      print BLF map {join(", ", $metalObj->{shellObj}->metalID(), $_->resID, $_->{element}, $center->distance($_), $_->{resolution}, $_->{rValue}, $_->{rFree}), "\n" ;} (@$comboLigands);
       }
     }
     close BLF;

@@ -85,4 +85,6 @@ date; ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -d ../output_al
 date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -d ../output_allMetal/stats.bl.Mg -bondLength ../output_allMetal/bondLength.bs.Mg.txt &
 
 
+## Add r value and r free along with bond length, make bootstrap a workflow choice
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -bs ../output_allMetal/stats.bl.Zn -bondLength ../output_allMetal/bondLength.rvalue.Zn.txt &
 

@@ -42,7 +42,9 @@ sub read
   my $PDBid;
   my $date;
   my $chainSeqs = {};
-  my $resolution = 0;
+  my $resolution = -1;
+  my $rValue = -1;
+  my $rFree = -1;
 
   foreach my $record (<PDBFILE>)
     {
@@ -65,7 +67,9 @@ sub read
                         'PDBid' => $PDBid, 
                         'method' => $method,
 			'date' => $date,
-			'resolution' => $resolution
+			'resolution' => $resolution,
+			'rValue' => $rValue,
+			'rFree' => $rFree
                        ) ;
       foreach my $value (@keyValues)
         { 
@@ -88,7 +92,11 @@ sub read
       $method =~ s/\s/_/g;
       }
     elsif ($record =~ /^REMARK   2 RESOLUTION.(.+)ANGSTROMS/)
-      { $resolution = $1;}      
+      { $resolution = $1;}
+    elsif ($record =~ /^REMARK   3   R VALUE            \(WORKING SET\) : (.+)$/)
+      { $rValue = $1; }
+    elsif ($record =~ /^REMARK   3   FREE R VALUE                     : (.+)$/)
+      {$rFree = $1; }
     elsif ($record =~ /^MODEL/)
       {
       $modelCount++;
