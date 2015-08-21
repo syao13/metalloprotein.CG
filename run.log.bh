@@ -87,4 +87,23 @@ date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -d ../output_al
 
 ## Add r value and r free along with bond length, make bootstrap a workflow choice
 date; ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -bs ../output_allMetal/stats.bl.Zn -bondLength ../output_allMetal/bondLength.rvalue.Zn.txt &
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -bs ../output_allMetal/stats.bl.Na -bondLength ../output_allMetal/bondLength.rvalue.Na.txt &
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -bs ../output_allMetal/stats.bl.Ca -bondLength ../output_allMetal/bondLength.rvalue.Ca.txt &
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -bs ../output_allMetal/stats.bl.Fe -bondLength ../output_allMetal/bondLength.rvalue.Fe.txt &
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs ../output_allMetal/stats.bl.Mg -bondLength ../output_allMetal/bondLength.rvalue.Mg.txt &
+
+## The bootstrapping may include 2nd shell atoms because a generous distance cutoff. So remove the 2nd shell by checking is there any atoms in between.
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -bs ../output_allMetal/stats.rm2ndshell.Na -bondLength ../output_allMetal/bondLength.rm2ndshell.Na.txt >../output_allMetal/output.rm2ndshell.Na.txt &
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -bs ../output_allMetal/stats.rm2ndshell.Ca -bondLength ../output_allMetal/bondLength.rm2ndshell.Ca.txt >../output_allMetal/output.rm2ndshell.Ca.txt &
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -bs ../output_allMetal/stats.rm2ndshell.Fe -bondLength ../output_allMetal/bondLength.rm2ndshell.Fe.txt >../output_allMetal/output.rm2ndshell.Fe.txt &
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -bs ../output_allMetal/stats.rm2ndshell.Zn -bondLength ../output_allMetal/bondLength.rm2ndshell.Zn.txt >../output_allMetal/output.rm2ndshell.Zn.txt &
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs ../output_allMetal/stats.rm2ndshell.Mg -bondLength ../output_allMetal/bondLength.rm2ndshell.Mg.txt >../output_allMetal/output.rm2ndshell.Mg.txt &
+
+## Throw carbon in to see what happens
+./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -bs ../output_allMetal/stats.carbon.Na -bondLength ../output_allMetal/bondLength.carbon.Na.txt >../output_allMetal/output.carbon.Na.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -bs ../output_allMetal/stats.carbon.Ca -bondLength ../output_allMetal/bondLength.carbon.Ca.txt >../output_allMetal/output.carbon.Ca.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -bs ../output_allMetal/stats.carbon.Fe -bondLength ../output_allMetal/bondLength.carbon.Fe.txt >../output_allMetal/output.carbon.Fe.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -bs ../output_allMetal/stats.carbon.Zn -bondLength ../output_allMetal/bondLength.carbon.Zn.txt >../output_allMetal/output.carbon.Zn.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs ../output_allMetal/stats.carbon.Mg -bondLength ../output_allMetal/bondLength.carbon.Mg.txt >../output_allMetal/output.carbon.Mg.txt &
+
 

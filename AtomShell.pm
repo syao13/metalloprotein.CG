@@ -107,10 +107,42 @@ sub create
   my $minDist = shift @_;
   my $maxDist = shift @_;
 
-  #print $center->{element}, "flag\n";
+  my @tempShell = grep {my $distance = $center->distance($_); ($distance >= $minDist && $distance <= $maxDist && $_->{element} ne "H" && ! $atomRadius{$_->{element}} );} (@$atoms);
+
   return $class->new("center" => $center, 
-		     "shell" => [ grep {my $distance = $center->distance($_); ($distance >= $minDist && $distance <= $maxDist && $_->{element} ne "C" && $_->{element} ne "H" && ! $atomRadius{$_->{element}} );} (@$atoms) ],
+		     "shell" => [_remove2ndShell($center, @tempShell)], 
 		     "secondShell" => [ grep {my $distance = $center->distance($_); ($distance >= $minDist && $distance <= $secondShellDist && $_->{element} ne "C" && $_->{element} ne "H" && ! $atomRadius{$_->{element}} );} (@$atoms) ] ); 
+  }
+
+
+sub _remove2ndShell
+  {
+  my $center = shift @_;
+  my %remove;
+
+  foreach my $ligand (@_)
+    {
+    if (grep {$center->distance($ligand) > $center->distance($_) * 1.5 && $center->distance($ligand) > $ligand->distance($_) * 1.5 ;} (@_))
+      { $remove{$ligand} = 1;
+      my $pdbid = $center->{PDBid};
+      my $chainid = $center->{chainID}; 
+      my $serial = $center->{residueNumber};
+      my $residue = $ligand->resID();
+      my $ele = $ligand->{element};
+
+      if ($ele ne "C")
+	{
+	print  "$pdbid.$chainid.$serial:$residue.$ele\n";
+        print join (", ", map {$_->resID(), $_->{element}, $center->distance($_)} (@_)), "\n";
+	}
+      }
+    }
+  
+  if (%remove)
+    #{ return grep { ! $remove{$_} && $_->{element} ne "C"; } (@_); } 
+    { return grep { ! $remove{$_} ; } (@_); }
+  else 
+    {return grep { $_->{element} ne "C"; } (@_);}
   }
 
 ## A standard way to creat a now obj, not useful for this AtomShell obj though
