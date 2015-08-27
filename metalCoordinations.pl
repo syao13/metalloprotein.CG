@@ -91,11 +91,19 @@ elsif ($ARGV[0] =~ /^(c|comp|compressed)$/)
   else
     { $threshold = 68;}
   }
-## nonModel is to remove the zinc shell for all later iterations if if didn't pass the probability threshold.
-elsif ($ARGV[0] =~ /^(n|non|nonModel)$/) 
+elsif ($ARGV[0] =~ /^(n|non|nonModel)$/) ## nonModel is to remove the zinc shell for all later iterations if if didn't pass the probability threshold.
   { 
   shift @ARGV;
   $iaControl = "n";
+  if ($ARGV[0] =~ /^[+-]?\d+(\.\d+)?$/)
+    { $threshold = shift @ARGV; }
+  else
+    { $threshold = 0.001;}
+  }
+elsif ($ARGV[0] =~ /^(s|shellCutoff)$/) ## bond length cutoff for the first shell in bootstrap
+  {
+  shift @ARGV;
+  $iaControl = "s";
   if ($ARGV[0] =~ /^[+-]?\d+(\.\d+)?$/)
     { $threshold = shift @ARGV; }
   else
@@ -183,7 +191,9 @@ while (@ARGV)
 my $analyzer = MPCGanalysis->new("pathsFile" => $pathsFile, 
 				 "element" => uc($metal), 
 				 "majorCGs" => ["Tetrahedral", "TrigonalBipyramidal", "Octahedral", "PentagonalBipyramidal"], 
-				 "minLigNum" => 4);
+				 "minLigNum" => 4,
+				 "shellOpt" => $iaControl,
+				 "shellCutoff" => $threshold);
 #print "$metal: ", $analyzer->{numCenter}, "\n";
 #print "Cluster: ", $analyzer->{numCluster}, "\n";
 #print "Usable: ", $analyzer->{usable}, "\n";

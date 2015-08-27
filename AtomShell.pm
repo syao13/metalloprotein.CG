@@ -75,7 +75,9 @@ sub createShells
   my $element = shift @_;
   my $atoms = shift @_;
   my $minDist = (@_) ? shift @_ : 1.3;
-  my $maxDist = ($atomRadius{$element} > $atomRadius{"ZN"})? ($atomRadius{$element} - $atomRadius{"ZN"} + 3.2): 3.2;
+
+  my $maxDist = (@_) ? shift @_ : (($atomRadius{$element} > $atomRadius{"ZN"})? ($atomRadius{$element} - $atomRadius{"ZN"} + 3.2): 3.2 );
+  my $ligElements = (@_) ? shift @_ : ();
 
   my @centers = grep { $_->{element} eq $element; } (@$atoms); 
 
@@ -95,7 +97,7 @@ sub createShells
   @centers = (grep {! exists $cluster{$_}; } (@centers));
   #print scalar @centers, "\n";
 
-  return [ map { $class->create($_,$atoms,$minDist,$maxDist); } (@centers) ];
+  return [ map { $class->create($_,$atoms,$minDist,$maxDist,$ligElements); } (@centers) ];
   }
 
 ## create an AtomShell obj from a center atom and list of Atom objs.
@@ -106,8 +108,16 @@ sub create
   my $atoms = shift @_;
   my $minDist = shift @_;
   my $maxDist = shift @_;
+  my $ligElements = shift @_;
 
-  my @tempShell = grep {my $distance = $center->distance($_); ($distance >= $minDist && $distance <= $maxDist && $_->{element} ne "H" && ! $atomRadius{$_->{element}} );} (@$atoms);
+  my (@ligElements, @tempShell);
+  if ($ligElements)
+    {
+    @ligElements = split(//, $ligElements);
+    @tempShell = grep {my $distance = $center->distance($_); my $atom = $_; ($distance >= $minDist && $distance <= $maxDist && grep {$atom->{element} eq $_} (@ligElements) );} (@$atoms);
+    }
+  else 
+    { @tempShell = grep {my $distance = $center->distance($_); ($distance >= $minDist && $distance <= $maxDist && $_->{element} ne "H" && ! $atomRadius{$_->{element}} );} (@$atoms); }
 
   return $class->new("center" => $center, 
 		     "shell" => [_remove2ndShell($center, @tempShell)], 
@@ -118,8 +128,8 @@ sub create
 sub _remove2ndShell
   {
   my $center = shift @_;
-  my %remove;
 
+  my %remove;
   foreach my $ligand (@_)
     {
     if (grep {$center->distance($ligand) > $center->distance($_) * 1.5 && $center->distance($ligand) > $ligand->distance($_) * 1.5 ;} (@_))
@@ -138,11 +148,7 @@ sub _remove2ndShell
       }
     }
   
-  if (%remove)
-    #{ return grep { ! $remove{$_} && $_->{element} ne "C"; } (@_); } 
-    { return grep { ! $remove{$_} ; } (@_); }
-  else 
-    {return grep { $_->{element} ne "C"; } (@_);}
+  return grep { ! $remove{$_} ; } (@_);  
   }
 
 ## A standard way to creat a now obj, not useful for this AtomShell obj though
