@@ -106,4 +106,11 @@ date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs ../output_a
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -bs ../output_allMetal/stats.carbon.Zn -bondLength ../output_allMetal/bondLength.carbon.Zn.txt >../output_allMetal/output.carbon.Zn.txt &
 ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs ../output_allMetal/stats.carbon.Mg -bondLength ../output_allMetal/bondLength.carbon.Mg.txt >../output_allMetal/output.carbon.Mg.txt &
 
+## Had a mistake in including the carbons, need rerun
+./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -bs ../output_allMetal/stats.carbon1.Na -bondLength ../output_allMetal/bondLength.carbon1.Na.txt >../output_allMetal/output.carbon1.Na.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -bs ../output_allMetal/stats.carbon1.Ca -bondLength ../output_allMetal/bondLength.carbon1.Ca.txt >../output_allMetal/output.carbon1.Ca.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -bs ../output_allMetal/stats.carbon1.Fe -bondLength ../output_allMetal/bondLength.carbon1.Fe.txt >../output_allMetal/output.carbon1.Fe.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -bs ../output_allMetal/stats.carbon1.Zn -bondLength ../output_allMetal/bondLength.carbon1.Zn.txt >../output_allMetal/output.carbon1.Zn.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs ../output_allMetal/stats.carbon1.Mg -bondLength ../output_allMetal/bondLength.carbon1.Mg.txt >../output_allMetal/output.carbon1.Mg.txt &
+
 

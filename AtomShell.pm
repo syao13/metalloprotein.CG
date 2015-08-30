@@ -142,7 +142,8 @@ sub _remove2ndShell
     #{ return grep { ! $remove{$_} && $_->{element} ne "C"; } (@_); } 
     { return grep { ! $remove{$_} ; } (@_); }
   else 
-    {return grep { $_->{element} ne "C"; } (@_);}
+    #{return grep { $_->{element} ne "C"; } (@_);}
+    { return @_; }
   }
 
 ## A standard way to creat a now obj, not useful for this AtomShell obj though
