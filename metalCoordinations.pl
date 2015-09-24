@@ -72,7 +72,7 @@ unless ($ARGV[0] eq "-i" || $ARGV[0] eq "-d"|| $ARGV[0] eq "-bs")
 my $flow = shift @ARGV;
 
 ## This is not really -i/-d specific
-my ($iaControl, $threshold); 
+my ($iaControl, $threshold, $shellCutoff, $shellElement); 
 if ($ARGV[0] =~ /^(p|porb|probability)$/)
   {
   shift @ARGV;
@@ -91,8 +91,7 @@ elsif ($ARGV[0] =~ /^(c|comp|compressed)$/)
   else
     { $threshold = 68;}
   }
-## nonModel is to remove the zinc shell for all later iterations if if didn't pass the probability threshold.
-elsif ($ARGV[0] =~ /^(n|non|nonModel)$/) 
+elsif ($ARGV[0] =~ /^(n|non|nonModel)$/) ## nonModel is to remove the zinc shell for all later iterations if if didn't pass the probability threshold.
   { 
   shift @ARGV;
   $iaControl = "n";
@@ -100,6 +99,21 @@ elsif ($ARGV[0] =~ /^(n|non|nonModel)$/)
     { $threshold = shift @ARGV; }
   else
     { $threshold = 0.001;}
+  }
+elsif ($ARGV[0] =~ /^(s|shellCutoff)$/) ## bond length cutoff for the first shell in bootstrap
+  {
+  shift @ARGV;
+  $iaControl = "s";
+  if ($ARGV[0] =~ /^\d+(\.\d+)?$/)
+    {
+    $shellCutoff = shift @ARGV;
+    $shellElement = shift @ARGV;
+    }
+  else
+    {
+    $shellCutoff = 3.2;
+    $shellElement = "ONS";
+    }
   }
 
 ## Assign names for statistics file for each round
@@ -183,7 +197,9 @@ while (@ARGV)
 my $analyzer = MPCGanalysis->new("pathsFile" => $pathsFile, 
 				 "element" => uc($metal), 
 				 "majorCGs" => ["Tetrahedral", "TrigonalBipyramidal", "Octahedral", "PentagonalBipyramidal"], 
-				 "minLigNum" => 4);
+				 "minLigNum" => 4,
+				 "shellCutoff" => $shellCutoff,
+				 "shellElement" => $shellElement);
 #print "$metal: ", $analyzer->{numCenter}, "\n";
 #print "Cluster: ", $analyzer->{numCluster}, "\n";
 #print "Usable: ", $analyzer->{usable}, "\n";
