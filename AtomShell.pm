@@ -133,18 +133,21 @@ sub _remove2ndShell
   foreach my $ligand (@_)
     {
     if (grep {$center->distance($ligand) > $center->distance($_) * 1.5 && $center->distance($ligand) > $ligand->distance($_) * 1.5 ;} (@_))
-      { $remove{$ligand} = 1;
-      my $pdbid = $center->{PDBid};
-      my $chainid = $center->{chainID}; 
-      my $serial = $center->{residueNumber};
-      my $residue = $ligand->resID();
-      my $ele = $ligand->{element};
+      { 
+      $remove{$ligand} = 1;
 
-      if ($ele ne "C")
-	{
-	print  "$pdbid.$chainid.$serial:$residue.$ele\n";
-        print join (", ", map {$_->resID(), $_->{element}, $center->distance($_)} (@_)), "\n";
-	}
+      #my $pdbid = $center->{PDBid};
+      #my $chainid = $center->{chainID}; 
+      #my $serial = $center->{residueNumber};
+      #my $residue = $ligand->resID();
+      #my $ele = $ligand->{element};
+
+      # if elements are specified, then there normally shouldn't be any C; and if not specified, then we want to include C to estimate the density issue.
+      #if ($ele ne "C")
+	#{
+	#print  "$pdbid.$chainid.$serial:$residue.$ele\n";
+        #print join (", ", map {$_->resID(), $_->{element}, $center->distance($_)} (@_)), "\n";
+	#}
       }
     }
   

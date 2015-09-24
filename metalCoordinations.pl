@@ -72,7 +72,7 @@ unless ($ARGV[0] eq "-i" || $ARGV[0] eq "-d"|| $ARGV[0] eq "-bs")
 my $flow = shift @ARGV;
 
 ## This is not really -i/-d specific
-my ($iaControl, $threshold); 
+my ($iaControl, $threshold, $shellCutoff, $shellElement); 
 if ($ARGV[0] =~ /^(p|porb|probability)$/)
   {
   shift @ARGV;
@@ -104,10 +104,16 @@ elsif ($ARGV[0] =~ /^(s|shellCutoff)$/) ## bond length cutoff for the first shel
   {
   shift @ARGV;
   $iaControl = "s";
-  if ($ARGV[0] =~ /^[+-]?\d+(\.\d+)?$/)
-    { $threshold = shift @ARGV; }
+  if ($ARGV[0] =~ /^\d+(\.\d+)?$/)
+    {
+    $shellCutoff = shift @ARGV;
+    $shellElement = shift @ARGV;
+    }
   else
-    { $threshold = 0.001;}
+    {
+    $shellCutoff = 3.2;
+    $shellElement = "ONS";
+    }
   }
 
 ## Assign names for statistics file for each round
@@ -192,8 +198,8 @@ my $analyzer = MPCGanalysis->new("pathsFile" => $pathsFile,
 				 "element" => uc($metal), 
 				 "majorCGs" => ["Tetrahedral", "TrigonalBipyramidal", "Octahedral", "PentagonalBipyramidal"], 
 				 "minLigNum" => 4,
-				 "shellOpt" => $iaControl,
-				 "shellCutoff" => $threshold);
+				 "shellCutoff" => $shellCutoff,
+				 "shellElement" => $shellElement);
 #print "$metal: ", $analyzer->{numCenter}, "\n";
 #print "Cluster: ", $analyzer->{numCluster}, "\n";
 #print "Usable: ", $analyzer->{usable}, "\n";

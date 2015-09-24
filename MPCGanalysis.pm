@@ -112,7 +112,7 @@ sub readPDB
     my $pdb = PDBEntry->new("singlePdbFile" => $file);
     my $atoms = $pdb->{atoms};
 
-    my $shellsOfOnePDB = ($self->{shellOpt})? AtomShell->createShells($element, $atoms, 1.3, $self->{shellCutoff}) : AtomShell->createShells($element, $atoms);
+    my $shellsOfOnePDB = ($self->{shellCutoff})? AtomShell->createShells($element, $atoms, 1.3, $self->{shellCutoff}, $self->{shellElement}) : AtomShell->createShells($element, $atoms);
    
     ## Calculating number of zinc clusters
     my $metal = scalar (grep {$_->{"element"} eq $element} (@$atoms)); 
