@@ -82,8 +82,15 @@ our $cgRelations = [
   {"name" => "SquarePyramidalV", "num" => 4, "parents" => ["SquarePyramidal", "Octahedral"], "children" => [], "siblings" => ["SquarePlanar"]},
   {"name" => "SquarePlanar", "num" => 4, "parents" => ["SquarePyramidal", "Octahedral"], "children" => [], "siblings" => ["SquarePyramidalV"]},
   {"name" => "SquarePyramidal", "num" => 5, "parents" => ["Octahedral"], "children" => ["SquarePlanar", "SquarePyramidalV"], "siblings" => []},
-  {"name" => "PentagonalBypyramidal", "num" => 7, "parents" => [], "children" => [], "siblings" => []},
+  {"name" => "PentagonalBipyramidal", "num" => 7, "parents" => [], "children" => [], "siblings" => []},
+  {"name" => "Cube", "num" => 8, "parents" => [], "children" => [], "siblings" => []},
+  {"name" => "SquareAntiprismaticMonocapped", "num" => 9, "parents" => [], "children" => [], "siblings" => []},
+  {"name" => "SquareAntiprismaticBicapped", "num" => 10, "parents" => [], "children" => [], "siblings" => []}
 ]; 
+
+
+## The combined lm slope of bond length std vs. resolution
+our $slope = 0.0562;
 
 sub new
   {
@@ -270,9 +277,10 @@ sub bindShellViaDist
   foreach my $shell (@{$self->{shells}}) 
     {
     my @models;
-    foreach my $cg ("TrigonalPlanar", @{$self->{majorCGs}}, "PentagonalBipyramidal", "Cube", "SquareAntiprismaticMonocapped", "SquareAntiprismaticBicapped")
+    #foreach my $cg ("TrigonalPlanar", @{$self->{majorCGs}}, "PentagonalBipyramidal", "Cube", "SquareAntiprismaticMonocapped", "SquareAntiprismaticBicapped")
+    foreach my $cg (@{$self->{majorCGs}}, "PentagonalBipyramidal", "Cube", "SquareAntiprismaticMonocapped", "SquareAntiprismaticBicapped")
       {
-      my $cgObj = $cg->new(shellObj => $shell);
+      my $cgObj = $cg->new("shellObj" => $shell);
       $cgObj->bestDistChi($stats);
       push @models, $cgObj;
       }
@@ -285,15 +293,78 @@ sub bindShellViaDist
     push @{$$coordinations{$numLig}}, $bestModel;
 
     # print chi probabilities
-    #print $shell->metalID(), "; ";
-    #map {print $_->{bestCombo}->{probability}, "; "} (@models);
-    #print "\n";
+    print $shell->metalID(), "; ";
+    map {print $_->{bestCombo}->{probability}, "; "} (@models);
+    print "\n";
     #print "$bestModel\n";
     #print "\n";
     }
 
   $self->{coordinations} = $coordinations;
   }
+
+sub shellViaAdjustDistStd
+  {
+  my $self = shift @_;
+  my $statOutFileName = (@_)? shift @_: "stats";
+  my $stats = (@_)? (shift @_) : ($self->{stats});
+  my $blStats = $$stats{"distance"};
+
+  my ($resTotal, $ligandTotal);
+  #foreach my $coord (keys %{$self->{coordinations}})
+  #  {
+  #  foreach my $oneCG (@{$self->{coordinations}->{$coord}})
+  #    {
+  #    my $resolution = ($oneCG->{shellObj}->{center}->{resolution} == -1)? 2.5 : $oneCG->{shellObj}->{center}->{resolution};
+  #    $resTotal += $oneCG->{numAtoms} * $resolution;
+  #    $ligandTotal += $oneCG->{numAtoms};
+
+  #print $oneCG->{numAtoms}, ", $resolution\n";
+  #    }
+  #  }
+  #my $resAvg = $resTotal/$ligandTotal;
+  #print "$resAvg\n";
+
+  my $coordinations = {};
+  foreach my $shell (@{$self->{shells}})
+    {
+    my $finalShell = [];
+    foreach my $ligand (@{$shell->{shell}})
+      {
+      my $resolution = ($ligand->{resolution} == -1)? 2.5 : $ligand->{resolution};
+      my $adjStd = ($resolution - $$blStats{$ligand->{element}}{resolutionAvg}) * $slope + $$blStats{$ligand->{element}}{standardDeviation};
+
+#print $ligand->{element}, ", ", $shell->{center}->distance($ligand), ", ", $$blStats{$ligand->{element}}{mean}, ", $resolution, $adjStd, ";
+
+      if ( abs($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mean}) <= $adjStd * 3 )
+	{ push @$finalShell, $ligand; 
+#print "in\n";}
+#else {print "out\n";}
+      }
+
+    my $numLig = @$finalShell;
+#print $shell->metalID(), "; ";
+#print "$numLig\n";
+
+    next if ($numLig < 3 || $numLig > 10);
+
+    my $cg =  (grep {$$_{"num"} eq $numLig;} (@$cgRelations))[0];
+
+#print $$cg{"name"}, "\n";
+
+    my $shellObj = AtomShell->new("center" => $shell->{center}, "shell" => $finalShell);
+
+    my $cgObj = $$cg{"name"}->new("shellObj" => $shellObj);
+    $cgObj->bestDistChi($stats);    
+
+    my %numToLet = ( 2 => "two", 3 => "three", 4 => "four", 5 => "five", 6 => "six", 7 => "seven", 8 => "eight", 9 => "nine", 10 => "ten");
+    my $numLig = $numToLet{$numLig};
+    push @{$$coordinations{$numLig}}, $cgObj;
+    } 
+
+  $self->{coordinations} = $coordinations;
+  }
+
 
 
 ## After bestDistance, print out sequences in fasta format
@@ -680,9 +751,15 @@ sub calcAngleStats
       }
     }
  
+  my ($pooledVar, $pooledCount);
+  map {my $cg = $_; map {$pooledCount += $$angleStats{$cg}{$_}{"count"} - 1; $pooledVar += $$angleStats{$cg}{$_}{"variance"} * ($$angleStats{$cg}{$_}{"count"} - 1) } (keys %{$$coordinationAngles{$cg}})} (keys %$coordinationAngles);
+  $pooledVar = $pooledVar / $pooledCount;
+
   my $variance = $totalDev/$totaln ;
   $$angleStats{"variance"} = $variance;
   $$angleStats{"standardDeviation"} = $variance ** 0.5;
+  $$angleStats{"pooledVar"} = $pooledVar;
+  $$angleStats{"pooledStd"} = $pooledVar ** 0.5;
 
   $self->{rawAngles} = $coordinationAngles;
   return $angleStats;
@@ -696,6 +773,7 @@ sub calcDistStats
   my $coordSets = $self->{coordinations};
   my $elementDists = {};
   my $distStats = {};
+  my $elementRes = {};
 
   foreach my $coord (keys %$coordSets)
     {
@@ -706,7 +784,10 @@ sub calcDistStats
       foreach my $ligand ( @{$model->{bestCombo}->{ligands}} )
         {
         my $element = $ligand->{element};
+        my $resolution = ($ligand->{resolution} == -1)? 2.5 : $ligand->{resolution};
+
         push (@{$$elementDists{$element}}, $model->{shellObj}->{center}->distance($ligand));
+        push (@{$$elementRes{$element}}, $resolution);
         }
       }
     }
@@ -714,22 +795,25 @@ sub calcDistStats
   foreach my $element (keys %$elementDists)
     {
     map {push (@{$$elementDists{"average"}}, $_) ;} (@{$$elementDists{$element}});
+    map {push (@{$$elementRes{"average"}}, $_) ;} (@{$$elementRes{$element}});
 
     if (@{$$elementDists{$element}} > 30)
       {
       my $stats = RawStatistics->new("variables" => $$elementDists{$element} ) ;
-      my $mean = $stats->calcMean() ;
-      my $var =+ $stats->calcVariance() ;
+      my $statsRes = RawStatistics->new("variables" => $$elementRes{$element} ) ;
 
-      $$distStats{$element} = {"mean" => $mean, "variance" => $var, "count" => $stats->count(), "max" => $stats->max(), "min" => $stats->min(), "standardDeviation" => $stats->calcStd()};
+      $$distStats{$element} = {"mean" => $stats->calcMean(), "variance" => $stats->calcVariance(), "count" => $stats->count(), "max" => $stats->max(), "min" => $stats->min(), "standardDeviation" => $stats->calcStd(), "resolutionAvg" => $statsRes->calcMean()};
       }
     }
 
-  my $stats = RawStatistics->new("variables" => $$elementDists{"average"} ) ;
-  my $mean = $stats->calcMean() ;
-  my $var =+ $stats->calcVariance() ;
+  my ($pooledVar, $pooledCount);
+  map {$pooledCount += $$distStats{$_}{"count"} - 1; $pooledVar += $$distStats{$_}{"variance"} * ($$distStats{$_}{"count"} - 1) } (keys %$elementDists);
+  $pooledVar = $pooledVar / $pooledCount;
 
-  $$distStats{"average"} = {"mean" => $mean, "variance" => $var, "count" => $stats->count(), "max" => $stats->max(), "min" => $stats->min(), "standardDeviation" => $stats->calcStd()};
+  my $stats = RawStatistics->new("variables" => $$elementDists{"average"} ) ;
+  my $statsRes = RawStatistics->new("variables" => $$elementRes{"average"} ) ;
+
+  $$distStats{"average"} = {"mean" => $stats->calcMean(), "variance" => $stats->calcVariance(), "count" => $stats->count(), "max" => $stats->max(), "min" => $stats->min(), "standardDeviation" => $stats->calcStd(), "resolutionAvg" => $statsRes->calcMean(), "pooledVar" => $pooledVar };
 
   return $distStats;
   }

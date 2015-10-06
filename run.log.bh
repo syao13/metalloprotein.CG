@@ -120,7 +120,7 @@ date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs ../output_a
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -bs shellCutoff 2.783 SON ../output_allMetal/stats.cutoff.Zn -bondLength ../output_allMetal/bondLength.cutoff.Zn.txt >../output_allMetal/output.cutoff.Zn.txt&
 ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs shellCutoff 2.856 ON ../output_allMetal/stats.cutoff.Mg -bondLength ../output_allMetal/bondLength.cutoff.Mg.txt >../output_allMetal/output.cutoff.Mg.txt&
 
-
-
-
+## test run on zn to compare the difference between single ligand voting and all-ligand chi squared test.
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats.singleLig.Zn -bondLength ../output_allMetal/bondLength.singleLig.Zn.txt >../output_allMetal/output.singleLig.Zn.txt
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats.chiSquaredLig.Zn -bondLength ../output_allMetal/bondLength.chiSquaredLig.Zn.txt >../output_allMetal/output.chiSquaredLig.Zn.txt
 

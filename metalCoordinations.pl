@@ -213,7 +213,8 @@ if ($flow eq "-i")
   { $analyzer->IAcoordination($statOutFileName, $iaControl, $threshold); }
 elsif ($flow eq "-d") 
   { $analyzer->bindShellViaDist($statOutFileName); }
-
+  #{ $analyzer->shellViaAdjustDistStd($statOutFileName); }
+ 
 ## optional args set what to print out
 if ($seqOpt)
   {
@@ -285,7 +286,7 @@ sub coordProbs
 if ($bondLengthOpt)
   {
   open (BLF, ">", $bondLengthFile) or die $!;
-  print BLF join(", ", "metalID", "residueID", "element", "bondLength", "resolution", "rValue", "rFree"), "\n" ; 
+  print BLF join(",", "metalID", "residueID", "element", "bondLength", "resolution", "rValue", "rFree"), "\n" ; 
 
   foreach my $cg (keys %{$analyzer->{coordinations}})
     {

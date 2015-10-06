@@ -12,6 +12,7 @@ our @defaultDataMembers = (
                             "combos" => 0    # array of possible atom combinations for coordination 
 			    );
 
+our $slope = 0.0562;
 
 sub new
   {
@@ -78,17 +79,25 @@ sub distanceChi
   for(my $x = 0; $x < @$combo; $x++)
     {
     my $element = $$combo[$x]->{element};
-    my ($expect, $variance);
+    my ($expect, $variance, $varianceOld);
 
     if (exists $$distanceStats{$element})
       {
       $expect = $$distanceStats{$element}{"mean"}; 
-      $variance = $$distanceStats{$element}{"variance"};
+      $varianceOld = $$distanceStats{$element}{"variance"};
+
+      my $resolution = ($$combo[$x]->{resolution} == -1)? 2.5 : $$combo[$x]->{resolution};
+      my $adjStd = ($resolution - $$distanceStats{$element}{resolutionAvg}) * $slope + $$distanceStats{$element}{standardDeviation};
+      $variance = $adjStd ** 2; 
       }
     else     
       {
       $expect = $$distanceStats{"average"}{"mean"};
-      $variance = $$distanceStats{"average"}{"variance"};
+      $varianceOld = $$distanceStats{"average"}{"variance"};
+
+      my $resolution = ($$combo[$x]->{resolution} == -1)? 2.5 : $$combo[$x]->{resolution};
+      my $adjStd = ($resolution - $$distanceStats{"average"}{resolutionAvg}) * $slope + $$distanceStats{"average"}{standardDeviation};
+      $variance = $adjStd ** 2;
       }
 
     $distChi += ($center->distance($$combo[$x]) - $expect) ** 2 / $variance ;
