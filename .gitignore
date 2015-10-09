@@ -8,3 +8,4 @@ result*
 *.pdf
 *.tiff
 test.*
+.Rproj.user

@@ -1,37 +1,105 @@
 ##!/usr/bash
+#
+# IMPORTANT!!!!!
+#
+# edit these variables to their appropriate values before running!
+#
+output_dir=/mlab/data/rmflight/Projects/work/sen/zincPaperAnalysis/output # should correspond to ../output
+PDB_dir=/mlab/data/databases/PDB/2015_02_25
+alias interpro=/mlab/data/software/interproscan/interproscan.sh
+
+#####
 
 date
 echo "Start"
 
-# creat the list of all entries that has ZN in its HETATM
-../znProtein/zn_protein.pl /mlab/data/databases/PDB/2015_02_25 list_all_zn.2015_02_25.txt
-date
-echo "list_all_zn.2015_02_25.txt done!"
-date
-
-#to get rid of entries that lacks a protein portion
-../znProtein/zn_protein_nucleicacid3.pl protein_all_zn.2015_02_25.txt 2015_02_25 >count.protein.na.2015_02_25.txt
-date
-echo "protein_or_both.2015_02_25.txt done!"
+# Acquire the list of all entries that have ZN in its HETATM
+../znProtein/zn_protein.pl $PDB_dir ../output_allMetal/zn_protein_all.2015_02_25.txt
+echo "zn_protein_all.2015_02_25.txt done"
 date
 
-## Get sequences
-./znCoordinations.pl protein_or_both.2015_02_25.txt -d -s s s seqs.SEQRES.shell.txt
-./znCoordinations.pl protein_or_both.2015_02_25.txt -d -s a s seqs.ATOM.shell.txt
-./znCoordinations.pl protein_or_both.2015_02_25.txt -d -s s b seqs.SEQRES.bind.txt
-./znCoordinations.pl protein_or_both.2015_02_25.txt -d -s n s seqs.number.shell.txt
-./znCoordinations.pl protein_or_both.2015_02_25.txt -d -s s ss seqs.SEQRES.secondshell.txt
-./znCoordinations.pl protein_or_both.2015_02_25.txt -d -s s c seqs.SEQRES.closest.txt
+# To get rid of entries that lack a protein portion
+../znProtein/zn_protein_nucleicacid.4.pl ../output_allMetal/zn_protein_all.2015_02_25.txt ../output_allMetal/na.txt ../output_allMetal/protein_or_both.2015_02_25.txt
+echo "protein_or_both.2015_02_25.txt done"
+date
+
+## Get zinc binding or shell sequences
+./znCoordinations.pl ../output_allMetal/protein_or_both.2015_02_25.txt -d ../output_allMetal/stats -s s s ../output_allMetal/seqs.SEQRES.shell.txt
+./znCoordinations.pl ../output_allMetal/protein_or_both.2015_02_25.txt -d ../output_allMetal/stats -s a s ../output_allMetal/seqs.ATOM.shell.txt
+./znCoordinations.pl ../output_allMetal/protein_or_both.2015_02_25.txt -d ../output_allMetal/stats -s s b ../output_allMetal/seqs.SEQRES.bind.txt
 echo "Sequences done!"
 date
 
 ## Run the IA to get the statistics for each CG
-./znCoordinations.pl protein_or_both.2015_02_25.txt -i c 68 stats.noCompressed >out.noCompressed.txt
+./znCoordinations.pl ../output_allMetal/protein_or_both.2015_02_25.txt -i c 68 ../output_allMetal/stats.noCompressed >../output_allMetal/out.noCompressed.txt
 echo "IA process done!"
 date
 
 ## Use statistics above to get zinc list, sequences, and relative info for clustering zinc CGs in R. (zinc shell determination via bond-length)
-./znCoordinations.pl protein_or_both.2015_02_25.txt -d stats.chi -r four.chi.txt stats.noCompressed.8.txt
-./znCoordinations.pl protein_or_both.2015_02_25.txt -d stats.chi.leaveOut -r four.chi.leaveOut.txt leaveOut stats.noCompressed.8.txt
+./znCoordinations.pl ../output_allMetal/protein_or_both.2015_02_25.txt -d ../output_allMetal/stats.chi -r ../output_allMetal/four.chi.txt ../output_allMetal/stats.noCompressed.7.txt
+./znCoordinations.pl ../output_allMetal/protein_or_both.2015_02_25.txt -d ../output_allMetal/stats.chi.leaveOut -r ../output_allMetal/four.chi.leaveOut.txt leaveOut ../output_allMetal/stats.noCompressed.7.txt
 echo "Zinc spreadsheet done!"
 date
+
+## do the atom to seqres alignment using R
+./seq_alignment.R
+echo "sequence alignment done"
+date
+
+## Acquire non-redundant set zinc list
+./nonRedundancy.R
+echo "non redundancy calculations done"
+date
+
+## Separate normal vs compressed group using random forest
+./rf.comp.sortedmid.R
+echo "separation using random forest done"
+date
+
+## Run k-means with a certain number of repetitions to get two measures vs k 
+./kmeans.mnr.optimalk.R
+echo "kmeans clustering done"
+date
+
+## Write the fasta file of non-redundant stuff
+./write_fasta.R
+echo "fasta sequences written"
+date
+
+## generating interproscan results
+interpro -i $output_dir/non_redundant_zinc.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant_zinc.ipr.tsv
+echo "interproscan done"
+date
+
+
+# do functional characterization
+./functional_characterization.R
+echo "functional distances done"
+date
+
+## Calculate structural distances and all four measures vs. k for determining optimal k 
+./measures.vs.k.R
+echo "comparing functional and structural distances done"
+date
+
+## Graph the four measure on the same plot
+./cluster_metric_graphs.R
+echo "graphing clustering done"
+date
+
+## Print the results of cluster centers, counts, and average probabilities
+./cluster.centers.prob.R
+echo "data out"
+date
+
+## Graph hierarchical clustering of structural and functional cluster distances.
+./hierarchical.clustering.R
+echo "graphing other stuff"
+date
+
+## EC and IPR enrichment
+./ec_ipr_enrichment.R
+echo "doing ec and ipr enrichment"
+date
+
+echo "All done! Check ../output for files!"

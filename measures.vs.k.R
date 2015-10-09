@@ -1,16 +1,18 @@
+#!/usr/bin/Rscript
+
 ### Load the data
 library(cluster) 
 library(clue)
 
 options(stringsAsFactors=FALSE)
-setwd("~/Desktop/zinc.CG.2015")
+setwd("../output")
 
-rawdata <- read.table("four.chi.txt", header = FALSE)
+rawdata <- read.table("four.chi.txt", header = TRUE)
 
 ############ normal vs. compressed#####################
 ### choose one to operate 
 ## normal
-load("./normal_cluster_assg.RData")
+load("normal_cluster_assg.RData")
 data.normal <- rawdata[sapply(normal.1.clusters[,1], function(x) which(rawdata[,1] == x)[1]),]
 angles.normal <- t(apply(data.normal[2:7], 1, function(x) c(x[1], sort(x[2:5]), x[6])))
 colnames(angles.normal) <- c("angle1", "mid1", "mid2", "mid3", "mid4","angle6")
@@ -38,7 +40,10 @@ getDistM <- function(selectAngles, clusters) {
     for (j in i:clusterNum) {
       cluster1 <- selectAngles[clusters == i,]
       cluster2 <- selectAngles[clusters == j,]
-      
+     
+      std1 <- sqrt(sum(apply(cluster1, 2, var))/6)
+      std2 <- sqrt(sum(apply(cluster2, 2, var))/6)
+ 
       rmsd <- 0
       for (m in 1: nrow(cluster1)) {
         for (n in 1: nrow(cluster2)) {
@@ -48,7 +53,7 @@ getDistM <- function(selectAngles, clusters) {
           rmsd <- rmsd + sqrt(sum((angles1-angles2)^2))
         }
       }
-      dist.mat[i,j] <- dist.mat[j,i] <- rmsd / nrow(cluster1) / nrow(cluster2)      
+      dist.mat[i,j] <- dist.mat[j,i] <- rmsd / nrow(cluster1) / nrow(cluster2) / std1 / std2     
     }
   }
   dist.mat

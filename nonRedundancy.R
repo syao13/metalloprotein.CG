@@ -1,16 +1,18 @@
+#!/usr/bin/Rscript
+
 ##############  This program is to get non-redundant set of zinc ID list. ############## 
 ## Non-redundant set is defined by the shell domain as well as binding ligand combination. 
 ## If the shell ligands spans over multi-chains, consider them all together.
 
 options(stringsAsFactors=FALSE)
-setwd("~/Desktop/zinc.CG.2015")
+setwd("../output")
 
 library(Biostrings)
 aaCodes <- toupper(AMINO_ACID_CODE)
 
 ## SEQRES sequences, names of atom2seq are shell headers
-bindFasta <- readAAStringSet("sequences.SEQRES.bind.txt", format="fasta")
-shellFasta <- readAAStringSet("sequences.SEQRES.shell.txt", format="fasta")
+bindFasta <- readAAStringSet("seqs.SEQRES.bind.txt", format="fasta")
+shellFasta <- readAAStringSet("seqs.SEQRES.shell.txt", format="fasta")
 load("atom2seq.RData")
 
 length(bindFasta)
@@ -34,7 +36,7 @@ shellHeaders <- names(shellFasta)
 
 
 ## put together sequences and corresponding header for binding ligands and shell ligand
-sum(bindFasta==shellFasta)
+#sum(bindFasta==shellFasta)
 sequences <- sapply(1:length(bindFasta), function(x) as.character(bindFasta[[x]]))
 seqMat <- cbind(bindHeaders, shellHeaders, sequences)
 
@@ -64,8 +66,8 @@ headerBoundaryLig <- function (header) {
   rbind(chainRg, rgLig)
 }
 
-headerBoundaryLig("1B55.A.1|A143.HIS.ND1.N|A154.CYS.SG.S|A155.CYS.SG.S|A165.CYS.SG.S|A2 ")
-headerBoundaryLig("1D1T.A.403|B271.HIS.NE2.N|A507.CYS.OXT.O|B2377.NAD.N7A.N|B735.HOH.O.O|A1")   
+#headerBoundaryLig("1B55.A.1|A143.HIS.ND1.N|A154.CYS.SG.S|A155.CYS.SG.S|A165.CYS.SG.S|A2 ")
+#headerBoundaryLig("1D1T.A.403|B271.HIS.NE2.N|A507.CYS.OXT.O|B2377.NAD.N7A.N|B735.HOH.O.O|A1")   
 
 ### get shell sequnce from seqMat rows and mapping info, outNum 
 getOneChainDomain <- function (seqMatItem, outNum) {
@@ -107,28 +109,28 @@ getOneChainDomain <- function (seqMatItem, outNum) {
   start5 <- start - 5
   end5 <- end + 5
   if (start5 < 1) {start5 <- 1}
-  if (end5 > nchar(seq)) {end5 <- nchar(seq)}
+  if (end5 > nchar(seq)) {end5 <- length(seq)}
   
   substring(seq, start5, end5)
 }
 
 
-getOneChainDomain(seqMat[14235,], outNum)
+#getOneChainDomain(seqMat[14235,], outNum)
 
 
 ## get all metal-binding domains
 domains <- apply(seqMat, 1, function(x) getOneChainDomain(x, outNum))
-length(domains)
-length(unique(domains))
+#length(domains)
+#length(unique(domains))
 
 err <- domains[which(substring(domains, 1,5) == "error")]
 table(err)
 
-hist(nchar(domains[which(substring(domains, 1,5) != "error")]), 100,
-     xlab="zinc-binding shell domain length", main="The length of zinc binding shell domain")
-table(nchar(domains))
-mean(nchar(domains))
-sd(nchar(domains))
+#hist(nchar(domains[which(substring(domains, 1,5) != "error")]), 100,
+#     xlab="zinc-binding shell domain length", main="The length of zinc binding shell domain")
+#table(nchar(domains))
+#mean(nchar(domains))
+#sd(nchar(domains))
 
 #################### get unique shell-domain-binding-ligand combinations #####################
 ## Acquire ligand combination
@@ -141,21 +143,21 @@ ligandsFromHeader <- function(header) {
   paste(sort(ligNames), collapse = '.')
 }
 
-ligandsFromHeader("1B55.A.1|A143.HIS.ND1.N|A154.CYS.SG.S|A155.CYS.SG.S|A165.CYS.SG.S|A2 ")
-ligandsFromHeader("1D1T.A.403|B271.HIS.NE2.N|A507.CYS.OXT.O|B2377.NAD.N7A.N|B735.HOH.O.O|A1")
+#ligandsFromHeader("1B55.A.1|A143.HIS.ND1.N|A154.CYS.SG.S|A155.CYS.SG.S|A165.CYS.SG.S|A2 ")
+#ligandsFromHeader("1D1T.A.403|B271.HIS.NE2.N|A507.CYS.OXT.O|B2377.NAD.N7A.N|B735.HOH.O.O|A1")
 
 ligands <- sapply(seqMat[,1], function(x) ligandsFromHeader(x))
-length(ligands)
+#length(ligands)
 
 seqLigs <- paste(domains, ligands, sep=".")
-length(unique(seqLigs))
+#length(unique(seqLigs))
 
 ## combine multiple chains, if any
 znids <- sapply(seqMat[,1], function(x) strsplit(x, '[|]')[[1]][1])
-length(znids)
+#length(znids)
 uid <- unique(znids)
-length(uid)
-## the reason that uid is not 22251 is because when generating fasta file for multichains,
+#length(uid)
+## the reason that uid is not 17135 is because when generating fasta file for multichains,
 ## removed zincs with all non-aa ligands
 
 ## concatenate seq-lig combos together for multi chains
@@ -171,11 +173,11 @@ mtSeqFromZnid <- function(id, znids, seqLig) {
 
 multiSeqLigs <- sapply(uid, function(x) mtSeqFromZnid(x, znids, seqLigs))
 length(multiSeqLigs)
-length(unique(multiSeqLigs))
 
 uMultiSeqLigs <- unique(multiSeqLigs)[unique(multiSeqLigs) != "error"]
+print("Total non-redundant set is 6501")
 length(uMultiSeqLigs)
-## 7848
+## 6501
 ## uMultiSeqLigs and finalZnList have the same dimention
 
 
@@ -190,7 +192,7 @@ length(uMultiSeqLigs)
 ## if both x-ray and NMR, if minRes < 2, use the minRes one, otherwise, use latest one
 ######################################################################
 
-rawdata <- read.table("four.noProb.2015.txt", header = FALSE)
+rawdata <- read.table("four.chi.txt", header = TRUE)
 idMthYrRes <- rawdata[,c(1,22:24)]
 idMthYrRes[,3] <- date <-sapply(idMthYrRes[,3], function(x) if (x<10) {x <- as.numeric(paste("200", x, sep=""))}
                                 else if (x<50) {x <- as.numeric(paste("20", x, sep=""))}
@@ -233,52 +235,52 @@ save(finalZnList, file="finalZnList.RData")
 
 ################ below is some characterization of the final list ################
 ## size of each non-redundant set
-length(finalZnList)
-hist(size[size!=1], 100, xlab = "size of the redundant sets", ylab="Count")
-sum(size==1)
-table(size)
-mean(size)
-sd(size)
+#length(finalZnList)
+#hist(size[size!=1], 100, xlab = "size of the redundant sets", ylab="Count")
+#sum(size==1)
+#table(size)
+#mean(size)
+#sd(size)
 
 ## mothod, year, resolution of the non-redundant set
-mthYrRes <- t(sapply(finalZnList, function(x) idMthYrRes[which(idMthYrRes[,1] == x), 2:4]))  
+#mthYrRes <- t(sapply(finalZnList, function(x) idMthYrRes[which(idMthYrRes[,1] == x), 2:4]))  
 
 ## resolution
-data<- rawdata[rawdata[,1] %in% finalZnList, ]
-sum(data[,24]<2.5) ## 6610
-hist(data[,24],100)
-mean(data[,24])
-sd(data[,24])
+#data<- rawdata[rawdata[,1] %in% finalZnList, ]
+#sum(data[,24]<3) ##5573 
+#hist(as.numeric(data[,24]),100)
+#mean(as.numeric(data[,24]))
+#sd(as.numeric(data[,24]))
 
 ## minimum angles
-minAngle <- apply(data[,2:6], 1, min)
-hist(minAngle,100)
+#minAngle <- apply(data[,2:6], 1, min)
+#hist(as.numeric(minAngle,100))
 
 
 ####### check some of the redundant list 
 ## uid and multiSeqLigs have one-to-one match
 ## size, finalZnlist, and uMultiSeqLigs have one-to-one match
 ## znids and seqMat rows have one-to-one match
-table(size)
-which(size == 25) 
-i <- 1193 ## choose one number from above results
-size[i]
-finalZnList[i]
-uMultiSeqLigs[i]
-uid[which(multiSeqLigs == uMultiSeqLigs[i])]
+#table(size)
+#which(size == 25) 
+#i <- 1193 ## choose one number from above results
+#size[i]
+#finalZnList[i]
+#uMultiSeqLigs[i]
+#uid[which(multiSeqLigs == uMultiSeqLigs[i])]
 
-idMthYrRes[(idMthYrRes[,1] %in% uid[which(multiSeqLigs == uMultiSeqLigs[i])]),]
-seqMat[(znids %in% uid[which(multiSeqLigs == uMultiSeqLigs[i])]),]
+#idMthYrRes[(idMthYrRes[,1] %in% uid[which(multiSeqLigs == uMultiSeqLigs[i])]),]
+#seqMat[(znids %in% uid[which(multiSeqLigs == uMultiSeqLigs[i])]),]
 
 
 ###### prepare for Robert
-length(multiSeqLigs)
+#length(multiSeqLigs)
 
 data<- rawdata[rawdata[,1] %in% finalZnList, ]
-res3znList <- data[data[,29]<3, 1]
-length(res3znList)
-res3znList[1]
+res3znList <- data[data[,24]<3, 1]
 
+print("With resolution greater than 3: 6199")
+length(res3znList)
 
 znListSeqPos <- NULL
 for (i in res3znList) {
@@ -306,8 +308,8 @@ for (i in res3znList) {
       seqLig1 <- as.character(substring(seq, ligPos, ligPos))
       seqLig3 <- aaCodes[seqLig1]
       if (is.na(seqLig3) || seqLig3 != strsplit(items[k], '[.]')[[1]][2] ) {
-        print(shellH)
-        print(items[k])
+        #print(shellH)
+        #print(items[k])
         next
       }  
       
@@ -321,10 +323,10 @@ for (i in res3znList) {
   }
 }
 
-dim(znListSeqPos)
+#dim(znListSeqPos)
 colnames(znListSeqPos) <- c("zinc id", "total chains", "chain counts", "ligand combo", "ligand position combo", "sequence")
 
-znListSeqPos[1:5,]
+#znListSeqPos[1:5,]
 
 write.table(znListSeqPos, file="znlist.nonredundant.txt", sep="\t")
 

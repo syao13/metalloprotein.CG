@@ -1,18 +1,20 @@
+#!/usr/bin/Rscript
+
 ####################    load data  ####################  
-setwd("~/Desktop/zinc.CG.2015")
+setwd("../output")
 load("normal_cluster_assg.RData")
 load("compressed_cluster_assg.RData")
 load("combined_cluster_assg.RData")
 
 rawdata1 <- read.table("four.chi.txt", header = TRUE)
-rawdata2 <- read.table("four.chi.leaveOut.txt", header = TRUE)
+rawdata2 <- rawdata1 #read.table("four.chi.leaveOut.txt", header = TRUE)
 
 ## Set the number k normal, compressed, and combined
-normal.k <- 10
+normal.k <- 9
 normal.cluster <- get(paste("normal.", normal.k, ".clusters", sep=""))
 normal.cluster[,2] <- as.numeric(normal.cluster[,2])
 
-compressed.k <- 8
+compressed.k <- 10
 compressed.cluster <- get(paste("compressed.", compressed.k, ".clusters", sep=""))
 compressed.cluster[,2] <- as.numeric(compressed.cluster[,2])
 
@@ -47,6 +49,7 @@ colnames(sortedAngles.normal) <- c("angle1", "mid1", "mid2", "mid3", "mid4","ang
 dim(sortedAngles.normal)
 dim(normal.cluster)
 
+print("Table 5")
 round(apply(sortedAngles.normal, 2, function(x) tapply(x, normal.cluster[,2], mean)), digit=1)
 round(apply(sortedAngles.normal, 2, function(x) tapply(x, normal.cluster[,2], sd)), digit=1)
 round(apply(sortedAngles.normal, 2, function(x) tapply(x, normal.cluster[,2], length))[,1], digit=1)
@@ -58,6 +61,7 @@ colnames(sortedAngles.compressed) <- c("angle1", "mid1", "mid2", "mid3", "mid4",
 dim(sortedAngles.compressed)
 dim(compressed.cluster)
 
+print("Table 6")
 round(apply(sortedAngles.compressed, 2, function(x) tapply(x, compressed.cluster[,2], mean)), digit=1)
 round(apply(sortedAngles.compressed, 2, function(x) tapply(x, compressed.cluster[,2], sd)), digit=1)
 round(apply(sortedAngles.compressed, 2, function(x) tapply(x, compressed.cluster[,2], length))[,1], digit=1)
@@ -69,6 +73,7 @@ colnames(sortedAngles.combined) <- c("angle1", "mid1", "mid2", "mid3", "mid4","a
 dim(sortedAngles.combined)
 dim(combined.cluster)
 
+print("Table S7")
 round(apply(sortedAngles.combined, 2, function(x) tapply(x, combined.cluster[,2], mean)), digit=1)
 round(apply(sortedAngles.combined, 2, function(x) tapply(x, combined.cluster[,2], sd)), digit=1)
 round(apply(sortedAngles.combined, 2, function(x) tapply(x, combined.cluster[,2], length))[,1], digit=1)
@@ -78,21 +83,23 @@ round(apply(sortedAngles.combined, 2, function(x) tapply(x, combined.cluster[,2]
 probs.normal <- data.normal[,34:38]
 dim(probs.normal)
 
+print("Table 7")
 round(apply(probs.normal, 2, function(x) tapply(x, normal.cluster[,2], mean)), digit=3)
 round(apply(probs.normal, 2, function(x) tapply(x, normal.cluster[,2], sd)), digit=3)
 
 #### compressed
-probs.compressed <- data.compressed[,34:38]
-dim(probs.compressed)
+#probs.compressed <- data.compressed[,34:38]
+#dim(probs.compressed)
 
-round(apply(probs.compressed, 2, function(x) tapply(x, compressed.cluster[,2], mean)), digit=3)
-round(apply(probs.compressed, 2, function(x) tapply(x, compressed.cluster[,2], sd)), digit=3)
+#round(apply(probs.compressed, 2, function(x) tapply(x, compressed.cluster[,2], mean)), digit=3)
+#round(apply(probs.compressed, 2, function(x) tapply(x, compressed.cluster[,2], sd)), digit=3)
 
 #### compressed and leaving out the smallest angle
 data.compressed.leaveout <- rawdata2[compressed.cluster[,1],]
 probs.compressed.leaveout <- data.compressed.leaveout[,34:38]
 dim(probs.compressed.leaveout)
 
+print("Table 8")
 round(apply(probs.compressed.leaveout, 2, function(x) tapply(x, compressed.cluster[,2], mean)), digit=3)
 round(apply(probs.compressed.leaveout, 2, function(x) tapply(x, compressed.cluster[,2], sd)), digit=3)
 
@@ -100,16 +107,16 @@ round(apply(probs.compressed.leaveout, 2, function(x) tapply(x, compressed.clust
 ############## Representative ###################
 #### Find the best examples for clusters
 ## the ids are reordered, and this is only normal or compressed group, so be careful about the ids and row numbers.
-centers
-cen <- centers[8,] ## change the cluster number
-distTOcenter <- apply(abs(t(t(selectAngles)-cen)), 1, sum)
-ord <- order(distTOcenter)
-ord[1:5]
-selectAngles[ord[1:5],]
-data[row.names(selectAngles[ord[1:5],]),]
-cen
+#centers
+#cen <- centers[8,] ## change the cluster number
+#distTOcenter <- apply(abs(t(t(selectAngles)-cen)), 1, sum)
+#ord <- order(distTOcenter)
+#ord[1:5]
+#selectAngles[ord[1:5],]
+#data[row.names(selectAngles[ord[1:5],]),]
+#cen
 
 ## Print out results
-paste(centers, "+/-", centers.sd, sep="")
-matrix( data = paste(centers, "+/-", centers.sd, sep=""), ncol=6, byrow=TRUE)
+#paste(centers, "+/-", centers.sd, sep="")
+#matrix( data = paste(centers, "+/-", centers.sd, sep=""), ncol=6, byrow=TRUE)
 
