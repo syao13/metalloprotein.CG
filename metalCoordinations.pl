@@ -67,7 +67,7 @@ use Data::Dumper::Concise;
 my $pathsFile = shift @ARGV;
 my $metal = shift @ARGV;
 
-unless ($ARGV[0] eq "-i" || $ARGV[0] eq "-d"|| $ARGV[0] eq "-bs")
+unless ($ARGV[0] eq "-i" || $ARGV[0] eq "-d"|| $ARGV[0] eq "-bs" || $ARGV[0] eq "-dd")
   { print STDERR $help; exit;}
 my $flow = shift @ARGV;
 
@@ -213,7 +213,8 @@ if ($flow eq "-i")
   { $analyzer->IAcoordination($statOutFileName, $iaControl, $threshold); }
 elsif ($flow eq "-d") 
   { $analyzer->bindShellViaDist($statOutFileName); }
-  #{ $analyzer->shellViaAdjustDistStd($statOutFileName); }
+elsif ($flow eq "-dd")
+  { $analyzer->shellViaAdjustDistStd($statOutFileName); }
  
 ## optional args set what to print out
 if ($seqOpt)
@@ -226,29 +227,33 @@ if ($rInputOpt)
   open (FID, ">", $rInputFile) or die $!;
   my $stats = &readTableFile($statsFile) if ($statsFile);
 
-  print FID "Metal_ID\tAngle_1\tAngle_2\tAngle_3\tAngle_4\tAngle_5\tAngle_6\tLigand_1\tLigand_2\tLigand_3\tLigand_4\t";
-  print FID "Bond_Length_1\tBond_length_2\tBond_length_3\tBond_length_4\tBi_status_1\tBi_status_2\tBi_status_3\tBi_status_4\tBi_status_5\tBi_status_6\t";
-  print FID "Method\tDate\tResolution\tB_factor_1\tB_factor_2\tB_factor_3\tB_factor_4\tOverall_bi_status\tLig_chain_ID_combo\tLig_residue_combo\tLig_atom_combo\tAmineN\t";
-  print FID "Chi_prob_Tet\tChi_prob_Bva\tChi_prob_Bvp\tChi_prob_Spv\tChi_prob_Spl\t" if ($statsFile);
-  print FID "\n";
+  #print FID "Metal_ID\tAngle_1\tAngle_2\tAngle_3\tAngle_4\tAngle_5\tAngle_6\tLigand_1\tLigand_2\tLigand_3\tLigand_4\t";
+  #print FID "Bond_Length_1\tBond_length_2\tBond_length_3\tBond_length_4\tBi_status_1\tBi_status_2\tBi_status_3\tBi_status_4\tBi_status_5\tBi_status_6\t";
+  #print FID "Method\tDate\tResolution\tB_factor_1\tB_factor_2\tB_factor_3\tB_factor_4\tOverall_bi_status\tLig_chain_ID_combo\tLig_residue_combo\tLig_atom_combo\tAmineN\t";
+  #print FID "Chi_prob_Tet\tChi_prob_Bva\tChi_prob_Bvp\tChi_prob_Spv\tChi_prob_Spl\t" if ($statsFile);
+  #print FID "\n";
 
-  foreach my $metalObj (@{$analyzer->{coordinations}{"four"}})
+  foreach my $ligNum (keys %{$analyzer->{coordinations}})
     {
-    print FID $metalObj->{shellObj}->metalID(), "\t";
-    map { print FID "$_  \t";} ($metalObj->orderedAngles());
-    map { print FID "$_  \t";} ($metalObj->ligandAtomElement()); ## also have bond lengths for each ligand and bidentations for each angle
+    next if ($ligNum eq "three");
+    foreach my $metalObj (@{$analyzer->{coordinations}{$ligNum}})
+      {
+      print FID $metalObj->{shellObj}->metalID(), "\t";
+      map { print FID "$_\t";} ($metalObj->orderedAngles());
+      map { print FID "$_\t";} ($metalObj->ligandAtomElement()); ## also have bond lengths for each ligand and bidentations for each angle
     
-    print FID $metalObj->{shellObj}->{center}->{method}, "\t";
-    print FID $metalObj->{shellObj}->{center}->{date}, "\t";
-    print FID $metalObj->{shellObj}->{center}->{resolution}, "\t";
-    map { print FID $_->{bFactor}, "\t";} (@{$metalObj->{bestCombo}->{ligands}});
-    print FID $metalObj->bidentate(), "\t";
-    map { print FID "$_  \t";} ($metalObj->ligandCombos());
+      print FID $metalObj->{shellObj}->{center}->{method}, "\t";
+      print FID $metalObj->{shellObj}->{center}->{date}, "\t";
+      print FID $metalObj->{shellObj}->{center}->{resolution}, "\t";
+      map { print FID $_->{bFactor}, "\t";} (@{$metalObj->{bestCombo}->{ligands}});
+      print FID $metalObj->bidentate(), "\t";
+      map { print FID "$_\t";} ($metalObj->ligandCombos());
 
-    map { print FID $_, "\t";} (&coordProbs($metalObj->{shellObj}, $stats, $leaveOut)) if ($statsFile);
-    #map { print FID $_->{chiAngle}, "\t";} (@{$metalObj->{bestCombo}->{ligands}});
+      map { print FID $_, "\t";} (&coordProbs($metalObj->{shellObj}, $stats, $leaveOut)) if ($statsFile);
+      #map { print FID $_->{chiAngle}, "\t";} (@{$metalObj->{bestCombo}->{ligands}});
     
-    print FID "\n";
+      print FID "\n";
+      }
     }
   close FID;
   }

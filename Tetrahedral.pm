@@ -114,7 +114,13 @@ sub angleList
   return @anglelist;
   }
 
-sub orderedAngles
+## ## Order angles as largest, middles, and opposite, with the ligands ordered as
+#	first is the ligand that composing the largest, and is also the first ligand defining the largest angle plane where the perpendicular vector and one of the rest two is the closest.
+#	second is the other of the largest-angle ligand,
+#	third is the one closest to the perpendicular vector
+#	forth is the last ligand.
+
+sub orderedAnglesPerpVec
   {
   my $self = shift @_;
   return 0 if (! exists $self->{bestCombo});
@@ -175,7 +181,14 @@ sub orderedAngles
   return $self->calcAllAngles109();
   }
 
-sub orderedAnglesOld
+
+## Order angles as largest, middles, and opposite, with the ligands ordered as 
+#	the ligand sharing between largest and largest-middle first, 
+#	the other ligand composing the largest second, 
+#	the other ligand composing the largest-middle third,
+#	and the fourth. 
+
+sub orderedAnglesLargeMid
   {
   my $self = shift @_;
   return 0 if (! exists $self->{bestCombo});
@@ -255,5 +268,7 @@ sub calcAllAngles109
 
   return @angles;
   }
+
+
 
 

@@ -94,7 +94,6 @@ sub distanceChi
       {
       $expect = $$distanceStats{"average"}{"mean"};
       $varianceOld = $$distanceStats{"average"}{"variance"};
-
       my $resolution = ($$combo[$x]->{resolution} == -1)? 2.5 : $$combo[$x]->{resolution};
       my $adjStd = ($resolution - $$distanceStats{"average"}{resolutionAvg}) * $slope + $$distanceStats{"average"}{standardDeviation};
       $variance = $adjStd ** 2;
@@ -336,7 +335,88 @@ sub ligandAtomElement
   }
 
 
+## Order angle as largest, middles, and opposite, with the ligands ordered as simply the two composing the largest and then the two composing the opposite
+sub orderedAngles
+  {
+  my $self = shift @_;
+  return 0 if (! exists $self->{bestCombo});
+  my $combo = $self->{bestCombo}->{ligands};
 
+  my @anglelist = $self->allAngles(); ## Angles ordered by the ligand position in combo
+  @anglelist = sort {$b <=> $a} (@anglelist);
+
+  my $center = $self->{shellObj}->{center};
+  my %largest;
+  FORLOOP: for(my $x = 0; $x < $#$combo; $x++)
+    {
+    for(my $y = $x+1; $y < @$combo; $y++)
+      {
+      my $angle = $center->angle($$combo[$x], $$combo[$y]);
+
+      if ($angle == $anglelist[0])
+        {
+        $largest{$x} = 1;
+        $largest{$y} = 1;
+        last FORLOOP;
+        }
+      }
+    }
+
+  my @otherinds = grep { $largest{$_} != 1;} (0..(@$combo-1)); ## find the smallest opposite
+  my $otherLigs = [map {$$combo[$_]} (grep {my $ind = $_; $largest{$ind} != 1;} (0..(@$combo-1)))];
+  my @otherAngles = $self->allAngles($otherLigs);
+  @otherAngles = sort {$a <=> $b} (@otherAngles);
+
+  my %opposite;
+  for (my $x = 2; $x < @otherAngles - 1 ; $x++)
+    {
+    for(my $y = $x+1; $y < @otherAngles; $y++)
+      {
+      my $angle = $center->angle($$combo[$otherinds[$x]], $$combo[$otherinds[$y]]);
+
+      if ($angle == $otherAngles[0])
+	{
+        $opposite{$otherinds[$x]} = 1;
+        $opposite{$otherinds[$y]} = 1;
+	}
+      }
+    }
+
+#print "@anglelist\n";
+#print %largest, "\n";
+#print "otherinds, @otherinds\n";
+#print "otherligs, ", @$otherLigs, "\n";
+#print "@otherAngles\n";
+#print %opposite, "\n";
+
+  my $newCombo = [];
+  push @$newCombo, (map {$$combo[$_]} (keys %largest));
+  push @$newCombo, (map {$$combo[$_]} (grep {my $ind = $_; $largest{$ind} != 1 && $opposite{$ind} != 1;} (0..(@$combo-1))));
+  push @$newCombo, (map {$$combo[$_]} (keys %opposite));
+  $self->{bestCombo}->{ligands} = $newCombo;
+
+  return $self->allAngles();
+  }
+
+
+sub allAngles
+  {
+  my $self = shift @_;
+  my $combo = (@_)? shift @_ : $self->{bestCombo}->{ligands};
+
+  my $center = $self->{shellObj}->{center};
+
+  my @angles;
+  for(my $x = 0; $x < $#$combo; $x++)
+    { 
+    for(my $y = $x+1; $y < @$combo; $y++)
+      {
+      push (@angles, $center->angle($$combo[$x], $$combo[$y]));
+      }
+    }
+
+  return @angles;
+  }
 
 
 

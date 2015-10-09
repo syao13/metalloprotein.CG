@@ -293,9 +293,9 @@ sub bindShellViaDist
     push @{$$coordinations{$numLig}}, $bestModel;
 
     # print chi probabilities
-    print $shell->metalID(), "; ";
-    map {print $_->{bestCombo}->{probability}, "; "} (@models);
-    print "\n";
+    #print $shell->metalID(), "; ";
+    #map {print $_->{bestCombo}->{probability}, "; "} (@models);
+    #print "\n";
     #print "$bestModel\n";
     #print "\n";
     }
@@ -310,21 +310,6 @@ sub shellViaAdjustDistStd
   my $stats = (@_)? (shift @_) : ($self->{stats});
   my $blStats = $$stats{"distance"};
 
-  my ($resTotal, $ligandTotal);
-  #foreach my $coord (keys %{$self->{coordinations}})
-  #  {
-  #  foreach my $oneCG (@{$self->{coordinations}->{$coord}})
-  #    {
-  #    my $resolution = ($oneCG->{shellObj}->{center}->{resolution} == -1)? 2.5 : $oneCG->{shellObj}->{center}->{resolution};
-  #    $resTotal += $oneCG->{numAtoms} * $resolution;
-  #    $ligandTotal += $oneCG->{numAtoms};
-
-  #print $oneCG->{numAtoms}, ", $resolution\n";
-  #    }
-  #  }
-  #my $resAvg = $resTotal/$ligandTotal;
-  #print "$resAvg\n";
-
   my $coordinations = {};
   foreach my $shell (@{$self->{shells}})
     {
@@ -337,12 +322,38 @@ sub shellViaAdjustDistStd
 #print $ligand->{element}, ", ", $shell->{center}->distance($ligand), ", ", $$blStats{$ligand->{element}}{mean}, ", $resolution, $adjStd, ";
 
       if ( abs($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mean}) <= $adjStd * 3 )
-	{ push @$finalShell, $ligand; 
-#print "in\n";}
+	{ 
+        push @$finalShell, $ligand;  
+#print "in\n";
+	}
 #else {print "out\n";}
       }
 
+    my @excludeInd; ## eliminate ligands with unreasonable atom-atom distances
+    for (my $x=0; $x < @$finalShell -1; $x++)
+      {
+      for (my $y=$x+1; $y < @$finalShell; $y++)
+        {
+        my $distBtLigs = $$finalShell[$x]->distance($$finalShell[$y]) ;
+        if ($distBtLigs < 1.5 || $distBtLigs > 6.0 )
+	  {
+	  if ($shell->{center}->distance($$finalShell[$x]) < $shell->{center}->distance($$finalShell[$y]))
+	    { push @excludeInd, $y ;}
+	  else 
+	    { push @excludeInd, $x ;}
+	  }
+        }
+      }
+
+    if (@excludeInd)
+      {
+      print STDERR $shell->metalID(), "\n";
+      next;
+      }
+
+    #map {splice @$finalShell, $_, 1;} (@excludeInd)
     my $numLig = @$finalShell;
+
 #print $shell->metalID(), "; ";
 #print "$numLig\n";
 
@@ -356,6 +367,8 @@ sub shellViaAdjustDistStd
 
     my $cgObj = $$cg{"name"}->new("shellObj" => $shellObj);
     $cgObj->bestDistChi($stats);    
+
+#print $cgObj->{bestCombo}->{probability}, "\n\n"; 
 
     my %numToLet = ( 2 => "two", 3 => "three", 4 => "four", 5 => "five", 6 => "six", 7 => "seven", 8 => "eight", 9 => "nine", 10 => "ten");
     my $numLig = $numToLet{$numLig};

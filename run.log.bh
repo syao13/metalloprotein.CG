@@ -124,3 +124,7 @@ date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs ../output_a
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats.singleLig.Zn -bondLength ../output_allMetal/bondLength.singleLig.Zn.txt >../output_allMetal/output.singleLig.Zn.txt
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats.chiSquaredLig.Zn -bondLength ../output_allMetal/bondLength.chiSquaredLig.Zn.txt >../output_allMetal/output.chiSquaredLig.Zn.txt
 
+## Rerun to have R input for testing the angle space 
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_allMetal/stats.singleLig1.Zn -bondLength ../output_allMetal/bondLength.singleLig1.Zn.txt -r ../output_allMetal/rAllLig.singleLig.txt >../output_allMetal/output.tooClose.Zn.txt
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats.chiSquaredLig1.Zn -bondLength ../output_allMetal/bondLength.chiSquaredLig1.Zn.txt -r ../output_allMetal/rAllLig.chiSquaredLig.txt
+
