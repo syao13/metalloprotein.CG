@@ -29,12 +29,12 @@ all.equal(outNum, refNum)
 
 ## ----loadData------------------------------------------------------------
 #useDir <- "/mlab/data/rmflight/Documents/projects/work/sen/coordination_families"
-setwd("../output")
+setwd("../output_allMetal/")
 
 ## ----read_sequences----------------------------------------
 library(Biostrings)
-seq <- readAAStringSet("seqs.SEQRES.shell.txt", use.names=TRUE)
-atom <- readAAStringSet("seqs.ATOM.shell.txt", use.names=TRUE)
+seq <- readAAStringSet("seqs.SEQRES.shell.singleLig.zn.txt", use.names=TRUE)
+atom <- readAAStringSet("seqs.ATOM.shell.singleLig.zn.txt", use.names=TRUE)
 
 ## ----sanityCheck-------------------------------------------
 splitDot <- function(inNames){
@@ -56,14 +56,14 @@ useNames <- sample(names(atom), 100)
 outAlign <- mclapply(useNames, function(x){genAlign(atom[[x]], seq[[x]])}, mc.cores=6)
 
 ## ----runAllAlign---------------------------------------------
-useNames <- names(atom)
+seNames <- names(atom)
 outNum <- mclapply(useNames, function(x){
   tmpRes <- genAlign(atom[[x]], seq[[x]])
   tmpRes$atomNum
-}, mc.cores=6)
+}, mc.cores=6) ## This takes about 20 min
 names(outNum) <- useNames
 
-save(outNum, file="atom2seq.RData")
+save(outNum, file="atom2seq.singleLig.zn.RData")
 
 
 

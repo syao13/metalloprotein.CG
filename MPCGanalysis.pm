@@ -347,7 +347,7 @@ sub shellViaAdjustDistStd
 
     if (@excludeInd)
       {
-      print STDERR $shell->metalID(), "\n";
+      #print STDERR $shell->metalID(), "\n";
       next;
       }
 
@@ -363,7 +363,7 @@ sub shellViaAdjustDistStd
 
 #print $$cg{"name"}, "\n";
 
-    my $shellObj = AtomShell->new("center" => $shell->{center}, "shell" => $finalShell);
+    my $shellObj = AtomShell->new("center" => $shell->{center}, "shell" => $finalShell, "seqsOfPDB" => $shell->{seqsOfPDB});
 
     my $cgObj = $$cg{"name"}->new("shellObj" => $shellObj);
     $cgObj->bestDistChi($stats);    
@@ -389,7 +389,7 @@ sub printSequences
   my $headerType = shift @_;
   my $ligNum = shift @_;
 
-  open (my $fileH, ">", $outFile) or die $!;
+  open (my $fileH, ">>", $outFile) or die $!;
   foreach my $model (@{$self->{coordinations}{$ligNum}}) 
     {
     my $seqsOfPDB = $model->{shellObj}->{seqsOfPDB};

@@ -219,7 +219,8 @@ elsif ($flow eq "-dd")
 ## optional args set what to print out
 if ($seqOpt)
   {
-  $analyzer->printSequences($seqFile, $seq, $header, "four"); ## four ligands
+  foreach my $ligNum (keys %{$analyzer->{coordinations}})
+    {$analyzer->printSequences($seqFile, $seq, $header, $ligNum);} ## four ligands
   }
 
 if ($rInputOpt)
@@ -233,24 +234,25 @@ if ($rInputOpt)
   #print FID "Chi_prob_Tet\tChi_prob_Bva\tChi_prob_Bvp\tChi_prob_Spv\tChi_prob_Spl\t" if ($statsFile);
   #print FID "\n";
 
-  foreach my $ligNum (keys %{$analyzer->{coordinations}})
+  foreach my $ligNum (sort keys %{$analyzer->{coordinations}})
     {
     next if ($ligNum eq "three");
     foreach my $metalObj (@{$analyzer->{coordinations}{$ligNum}})
       {
       print FID $metalObj->{shellObj}->metalID(), "\t";
-      map { print FID "$_\t";} ($metalObj->orderedAngles());
-      map { print FID "$_\t";} ($metalObj->ligandAtomElement()); ## also have bond lengths for each ligand and bidentations for each angle
-    
       print FID $metalObj->{shellObj}->{center}->{method}, "\t";
       print FID $metalObj->{shellObj}->{center}->{date}, "\t";
       print FID $metalObj->{shellObj}->{center}->{resolution}, "\t";
+
+      map { print FID "$_\t";} ($metalObj->orderedAngles());
+      map { print FID "$_\t";} ($metalObj->ligandAtomElement()); ## also have bond lengths for each ligand and bidentations for each angle
+    
       map { print FID $_->{bFactor}, "\t";} (@{$metalObj->{bestCombo}->{ligands}});
       print FID $metalObj->bidentate(), "\t";
       map { print FID "$_\t";} ($metalObj->ligandCombos());
 
       map { print FID $_, "\t";} (&coordProbs($metalObj->{shellObj}, $stats, $leaveOut)) if ($statsFile);
-      #map { print FID $_->{chiAngle}, "\t";} (@{$metalObj->{bestCombo}->{ligands}});
+      map { print FID $_->{chiAngle}, "\t";} (@{$metalObj->{bestCombo}->{ligands}});
     
       print FID "\n";
       }

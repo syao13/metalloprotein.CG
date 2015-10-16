@@ -24,9 +24,9 @@ echo "protein_or_both.2015_02_25.txt done"
 date
 
 ## Get zinc binding or shell sequences
-./znCoordinations.pl ../output_allMetal/protein_or_both.2015_02_25.txt -d ../output_allMetal/stats -s s s ../output_allMetal/seqs.SEQRES.shell.txt
-./znCoordinations.pl ../output_allMetal/protein_or_both.2015_02_25.txt -d ../output_allMetal/stats -s a s ../output_allMetal/seqs.ATOM.shell.txt
-./znCoordinations.pl ../output_allMetal/protein_or_both.2015_02_25.txt -d ../output_allMetal/stats -s s b ../output_allMetal/seqs.SEQRES.bind.txt
+./znCoordinations.pl ../output_allMetal/protein_or_both.2015_02_25.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats -s s s ../output_allMetal/seqs.SEQRES.shell.txt
+./znCoordinations.pl ../output_allMetal/protein_or_both.2015_02_25.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats -s a s ../output_allMetal/seqs.ATOM.shell.txt
+./znCoordinations.pl ../output_allMetal/protein_or_both.2015_02_25.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats -s s b ../output_allMetal/seqs.SEQRES.bind.txt
 echo "Sequences done!"
 date
 

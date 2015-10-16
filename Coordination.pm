@@ -368,9 +368,9 @@ sub orderedAngles
   @otherAngles = sort {$a <=> $b} (@otherAngles);
 
   my %opposite;
-  for (my $x = 2; $x < @otherAngles - 1 ; $x++)
+  for (my $x = 0; $x < @otherinds - 1 ; $x++)
     {
-    for(my $y = $x+1; $y < @otherAngles; $y++)
+    for(my $y = $x+1; $y < @otherinds; $y++)
       {
       my $angle = $center->angle($$combo[$otherinds[$x]], $$combo[$otherinds[$y]]);
 
@@ -382,18 +382,22 @@ sub orderedAngles
       }
     }
 
-#print "@anglelist\n";
-#print %largest, "\n";
-#print "otherinds, @otherinds\n";
-#print "otherligs, ", @$otherLigs, "\n";
-#print "@otherAngles\n";
-#print %opposite, "\n";
+#print "angle list: @anglelist\n";
+#print "largest angle: ", $anglelist[0], "\n";
+#print "largest indices: ", keys %largest, "\n";
+#print "other indices: @otherinds\n";
+#print "other angles: @otherAngles\n";
+#print "smallest opposite angle: ", $otherAngles[0], "\n";
+#print "opposite indices: ", keys %opposite, "\n";
 
   my $newCombo = [];
   push @$newCombo, (map {$$combo[$_]} (keys %largest));
   push @$newCombo, (map {$$combo[$_]} (grep {my $ind = $_; $largest{$ind} != 1 && $opposite{$ind} != 1;} (0..(@$combo-1))));
   push @$newCombo, (map {$$combo[$_]} (keys %opposite));
   $self->{bestCombo}->{ligands} = $newCombo;
+
+#print "ordered all angles: ",  $self->allAngles(), "\n";
+#print "\n";
 
   return $self->allAngles();
   }

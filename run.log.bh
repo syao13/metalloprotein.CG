@@ -128,3 +128,19 @@ date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs ../output_a
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_allMetal/stats.singleLig1.Zn -bondLength ../output_allMetal/bondLength.singleLig1.Zn.txt -r ../output_allMetal/rAllLig.singleLig.txt >../output_allMetal/output.tooClose.Zn.txt
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats.chiSquaredLig1.Zn -bondLength ../output_allMetal/bondLength.chiSquaredLig1.Zn.txt -r ../output_allMetal/rAllLig.chiSquaredLig.txt
 
+## Generate sequences
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_allMetal/stats.ss.singleLig.Zn -s s s ../output_allMetal/seqs.SEQRES.shell.singleLig.zn.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_allMetal/stats.as.singleLig.Zn -s a s ../output_allMetal/seqs.ATOM.shell.singleLig.zn.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_allMetal/stats.sb.singleLig.Zn -s s b ../output_allMetal/seqs.SEQRES.bind.singleLig.zn.txt &
+
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats.ss.chiSquaredLig.Zn -s s s ../output_allMetal/seqs.SEQRES.shell.chiSquaredLig.zn.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats.as.chiSquaredLig.Zn -s a s ../output_allMetal/seqs.ATOM.shell.chiSquaredLig.zn.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats.sb.chiSquaredLig.Zn -s s b ../output_allMetal/seqs.SEQRES.bind.chiSquaredLig.zn.txt &
+
+
+## rerun to get R input after fixing &orderedAngles
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_allMetal/stats.singleLig2.Zn -r ../output_allMetal/rAllLig.singleLig.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats.chiSquaredLig2.Zn -r ../output_allMetal/rAllLig.chiSquaredLig.txt &
+
+
+
