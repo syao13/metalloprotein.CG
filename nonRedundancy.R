@@ -11,7 +11,7 @@ library(Biostrings)
 aaCodes <- toupper(AMINO_ACID_CODE)
 
 ## SEQRES sequences, names of atom2seq are shell headers
-tbindFasta <- readAAStringSet("seqs.SEQRES.bind.chiSquaredLig.zn.txt", format="fasta")
+bindFasta <- readAAStringSet("seqs.SEQRES.bind.chiSquaredLig.zn.txt", format="fasta")
 shellFasta <- readAAStringSet("seqs.SEQRES.shell.chiSquaredLig.zn.txt", format="fasta")
 load("atom2seq.chiSquaredLig.zn.RData")
 
@@ -118,7 +118,7 @@ getOneChainDomain <- function (seqMatItem, outNum) {
   if (start5 < 1) {start5 <- 1}
   if (end5 > nchar(seq)) {end5 <- length(seq)}
   
- seqMat[14235,] substring(seq, start5, end5)
+  substring(seq, start5, end5)
 }
 
 
@@ -200,7 +200,7 @@ length(uMultiSeqLigs)
 ## if both x-ray and NMR, if minRes < 2, use the minRes one, otherwise, use latest one
 ######################################################################
 rawdata <- read.table("rAllLig.chiSquaredLig.txt", fill = TRUE)
-idMthYrRes <- rawdata[,c(1,22:24)]
+idMthYrRes <- rawdata[,c(1:4)]
 idMthYrRes[,3] <- date <-sapply(idMthYrRes[,3], function(x) if (x<10) {x <- as.numeric(paste("200", x, sep=""))}
                                 else if (x<50) {x <- as.numeric(paste("20", x, sep=""))}
                                 else {x <- as.numeric(paste("19", x, sep=""))})
