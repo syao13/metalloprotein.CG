@@ -234,9 +234,8 @@ if ($rInputOpt)
   #print FID "Chi_prob_Tet\tChi_prob_Bva\tChi_prob_Bvp\tChi_prob_Spv\tChi_prob_Spl\t" if ($statsFile);
   #print FID "\n";
 
-  foreach my $ligNum (sort keys %{$analyzer->{coordinations}})
+  foreach my $ligNum ("ten", "nine", "eight", "seven", "six", "five", "four")
     {
-    next if ($ligNum eq "three");
     foreach my $metalObj (@{$analyzer->{coordinations}{$ligNum}})
       {
       print FID $metalObj->{shellObj}->metalID(), "\t";

@@ -1,6 +1,4 @@
 #!/usr/bin/Rscript
-
-date()
 ## set anglesU to change between normal and compressed angles group
 ####################    load data  ####################  
 setwd("../output")
@@ -25,8 +23,8 @@ anglesU <- angles
 #### Define the data into normal and compressed from rf prediciton on 58-68 angles.
 minAngle <- apply(angles, 1, min)
 
-ind.normal <- names(prediction.all)[prediction.all=="normal"]
-ind.compress <- names(prediction.all)[prediction.all=="compressed"]
+ind.normal <- prediction.all=="normal"
+ind.compress <- prediction.all=="compressed"
 
 angles.normal <- angles[ind.normal,]
 angles.compress <- angles[ind.compress,]
@@ -49,22 +47,22 @@ compressed.nr <- compressed.nr[!ind.comp2, ]
 angles.comp <- compressed.nr[,2:7]
 dim(angles.comp)
 angle.sorted.comp <- t(apply(angles.comp, 1, function(x) c(x[1], sort(x[2:5]), x[6])))
-angle.sorted.comp <- angle.sorted.comp[,c(1,2,3,5,6)]
-colnames(angle.sorted.comp) <- c("largest",  "midSmall", "midMiddle", "midLarge","opposite")
+#angle.sorted.comp <- angle.sorted.comp[,c(1,2,3,5,6)]
+#colnames(angle.sorted.comp) <- c("largest",  "midSmall", "midMiddle", "midLarge","opposite")
 
 ##### normal
 angles.norm <- normal.nr[,2:7]
 dim(angles.norm)
 angle.sorted.norm <- t(apply(angles.norm, 1, function(x) c(x[1], sort(x[2:5]), x[6])))
-angle.sorted.norm <- angle.sorted.norm[,c(1,2,3,5,6)]
-colnames(angle.sorted.norm) <- c("largest",  "midSmall", "midMiddle", "midLarge","opposite")
+#angle.sorted.norm <- angle.sorted.norm[,c(1,2,3,5,6)]
+#colnames(angle.sorted.norm) <- c("largest",  "midSmall", "midMiddle", "midLarge","opposite")
 
 ##### combined
 angles.all <- all.nr[,2:7]
 dim(angles.all)
 angle.sorted.all <- t(apply(angles.all, 1, function(x) c(x[1], sort(x[2:5]), x[6])))
-angle.sorted.all <- angle.sorted.all[,c(1,2,3,5,6)]
-colnames(angle.sorted.all) <- c("largest",  "midSmall", "midMiddle", "midLarge","opposite")
+#angle.sorted.all <- angle.sorted.all[,c(1,2,3,5,6)]
+#colnames(angle.sorted.all) <- c("largest",  "midSmall", "midMiddle", "midLarge","opposite")
 
 ####################################################
 
@@ -119,32 +117,48 @@ kmeansStab <- function(data, k, nrep){
 
 
 #### Better run on lab machine with 500 repetitions.
-nrep <- 500 
+library(parallel)
 sumdiff.norm <- sumdiff.comp <- sumdiff.all <- 0
 jaccard.norm <- jaccard.comp <- jaccard.all <- 0
+nangle <- dim(angle.sorted.all)[2]
+nrep <- 300
 
-for (k in 1:30) {
-  kmat.norm <- kmeansStab(angle.sorted.norm, k, nrep)
-  sumdiff.norm[k] <- mean(kmat.norm$distance[kmat.norm$distance!=-1])/k
-  jaccard.norm[k] <- mean(kmat.norm$jaccard[kmat.norm$jaccard!=-1])/k
-  cluster <- kmat.norm$cluster
+date()
+resultList <- mclapply(1:30, function(x) kmeansStab(angle.sorted.norm, x, nrep), mc.cores=10)
+for (i in 1:length(resultList)){
+  k <- length(resultList[[i]]$mean)/nangle
+
+  sumdiff.norm[k] <- mean(resultList[[i]]$distance[resultList[[i]]$distance!=-1])/k
+  jaccard.norm[k] <- mean(resultList[[i]]$jaccard[resultList[[i]]$jaccard!=-1])/k
+  cluster <- resultList[[i]]$cluster
   clusterAssg <- cbind(normal.nr[,1], cluster)
   assign(paste("normal.", k, ".clusters",  sep=""), clusterAssg)
-  
-  kmat.comp <- kmeansStab(angle.sorted.comp, k, nrep)
-  sumdiff.comp[k] <- mean(kmat.comp$distance[kmat.comp$distance!=-1])/k
-  jaccard.comp[k] <- mean(kmat.comp$jaccard[kmat.comp$jaccard!=-1])/k
-  cluster <- kmat.comp$cluster
+}
+
+date()
+resultList <- mclapply(1:30, function(x) kmeansStab(angle.sorted.comp, x, nrep), mc.cores=10)
+for (i in 1:length(resultList)){
+  k <- length(resultList[[i]]$mean)/nangle
+
+  sumdiff.comp[k] <- mean(resultList[[i]]$distance[resultList[[i]]$distance!=-1])/k
+  jaccard.comp[k] <- mean(resultList[[i]]$jaccard[resultList[[i]]$jaccard!=-1])/k
+  cluster <- resultList[[i]]$cluster
   clusterAssg <- cbind(compressed.nr[,1], cluster)
   assign(paste("compressed.", k, ".clusters",  sep=""), clusterAssg)
-  
-  kmat.all <- kmeansStab(angle.sorted.all, k, nrep)
-  sumdiff.all[k] <- mean(kmat.all$distance[kmat.all$distance!=-1])/k
-  jaccard.all[k] <- mean(kmat.all$jaccard[kmat.all$jaccard!=-1])/k
-  cluster <- kmat.all$cluster
+}
+
+date()
+resultList <- mclapply(1:30, function(x) kmeansStab(angle.sorted.all, x, nrep), mc.cores=10)
+for (i in 1:length(resultList)){
+  k <- length(resultList[[i]]$mean)/nangle
+
+  sumdiff.all[k] <- mean(resultList[[i]]$distance[resultList[[i]]$distance!=-1])/k
+  jaccard.all[k] <- mean(resultList[[i]]$jaccard[resultList[[i]]$jaccard!=-1])/k
+  cluster <- resultList[[i]]$cluster
   clusterAssg <- cbind(all.nr[,1], cluster)
   assign(paste("combined.", k, ".clusters",  sep=""), clusterAssg)
 }
+date()
 
 save(list=sapply(1:30, function(x) paste0("normal.", x, ".clusters",  sep="")), file="normal_cluster_assg.RData")
 save(list=sapply(1:30, function(x) paste0("compressed.", x, ".clusters",  sep="")), file="compressed_cluster_assg.RData")
@@ -169,7 +183,6 @@ save(list=c("sumdiff.norm", "jaccard.norm", "sumdiff.comp", "jaccard.comp", "sum
 #jaccard.all
 #plot(jaccard.all,type="b", main="Combined, Jaccard metric", xlab="k")
 
-date()
 
 
 

@@ -3,12 +3,12 @@
 ### Load the data
 library(cluster) 
 library(clue)
+library(parallel)
 
 options(stringsAsFactors=FALSE)
 setwd("../output")
 
 rawdata <- read.table("four.chi.txt", header = TRUE)
-
 ############ normal vs. compressed#####################
 ### choose one to operate 
 ## normal
@@ -17,13 +17,11 @@ data.normal <- rawdata[sapply(normal.1.clusters[,1], function(x) which(rawdata[,
 angles.normal <- t(apply(data.normal[2:7], 1, function(x) c(x[1], sort(x[2:5]), x[6])))
 colnames(angles.normal) <- c("angle1", "mid1", "mid2", "mid3", "mid4","angle6")
 
-
 ## compressed
 load("compressed_cluster_assg.RData")
 data.compressed <- rawdata[sapply(compressed.1.clusters[,1], function(x) which(rawdata[,1] == x)[1]),]
 angles.compressed <- t(apply(data.compressed[2:7], 1, function(x) c(x[1], sort(x[2:5]), x[6])))
 colnames(angles.compressed) <- c("angle1", "mid1", "mid2", "mid3", "mid4","angle6")
-
 
 ## combined
 load("combined_cluster_assg.RData")
@@ -53,24 +51,30 @@ getDistM <- function(selectAngles, clusters) {
           rmsd <- rmsd + sqrt(sum((angles1-angles2)^2))
         }
       }
-      dist.mat[i,j] <- dist.mat[j,i] <- rmsd / nrow(cluster1) / nrow(cluster2) / std1 / std2     
+      dist.mat[i,j] <- dist.mat[j,i] <- rmsd / nrow(cluster1) / nrow(cluster2) #/ std1 / std2     
     }
   }
   dist.mat
 }
 
-## This takes an hour or so on my laptop
 
-for (i in 1:30) {
-  clusters <- get(paste("normal.",i,".clusters", sep=""))
-  assign(paste("dist.struct.norm.", i,  sep=""), getDistM(angles.normal, as.numeric(clusters[,2])))
-  
-  clusters <- get(paste("compressed.",i,".clusters", sep=""))
-  assign(paste("dist.struct.comp.", i,  sep=""), getDistM(angles.compressed, as.numeric(clusters[,2])))
+distMats <- mclapply(1:30, function(x) { 
+	clusters <- get(paste("normal.",x,".clusters", sep=""))
+	getDistM(angles.normal, as.numeric(clusters[,2]))
+}, mc.cores=10)
+for (i in 1:30) { assign(paste("dist.struct.norm.", dim(distMats[[i]])[1],  sep=""), distMats[[i]])}
 
-  clusters <- get(paste("combined.",i,".clusters", sep=""))
-  assign(paste("dist.struct.comb.", i,  sep=""), getDistM(angles.combined, as.numeric(clusters[,2])))
-}
+distMats <- mclapply(1:30, function(x) {
+        clusters <- get(paste("compressed.",x,".clusters", sep=""))
+        getDistM(angles.compressed, as.numeric(clusters[,2]))
+}, mc.cores=10)
+for (i in 1:30) { assign(paste("dist.struct.comp.", dim(distMats[[i]])[1],  sep=""), distMats[[i]])}
+
+distMats <- mclapply(1:30, function(x) {
+        clusters <- get(paste("combined.",x,".clusters", sep=""))
+        getDistM(angles.combined, as.numeric(clusters[,2]))
+}, mc.cores=10)
+for (i in 1:30) { assign(paste("dist.struct.comb.", dim(distMats[[i]])[1],  sep=""), distMats[[i]])}
 
 save(list=sapply(1:30, function(x) paste("dist.struct.norm.", x,  sep="")), file="dists_struct_normal.RData")
 save(list=sapply(1:30, function(x) paste("dist.struct.comp.", x,  sep="")), file="dists_struct_compressed.RData")
@@ -80,7 +84,6 @@ save(list=sapply(1:30, function(x) paste("dist.struct.comb.", x,  sep="")), file
 # for (x in 1:30) {assign(paste("dist.struct.comp.", x, sep=""), get(paste("dist.comp.", x, sep="")))}
 # save(list=sapply(1:30, function(x) paste("dist.struct.norm.", x,  sep="")), file="dists_struct_normal.RData")
 # save(list=sapply(1:30, function(x) paste("dist.struct.comp.", x,  sep="")), file="dists_struct_compressed.RData")
-
 
 ####################  rho/p-value vs k #################### 
 # load("dists_struct_normal.RData")
