@@ -70,7 +70,7 @@ str(data.all)
 minAngle <- apply(angles, 1, min)
 compress <- function (x) {
   comp <- "normal"
-  if (x < 75 && x > 58) {comp <- "leaveout"}
+  if (x < 68 && x > 58) {comp <- "leaveout"}
   else if (x <= 58 && x >= 38) {comp <- "compressed"}
   else if (x < 38) {comp <- "supercompressed"}
   

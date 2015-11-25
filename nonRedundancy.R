@@ -295,7 +295,7 @@ for (i in res3znList) {
   
   for (j in idx) {
     seq <- seqMat[j, 3]
-    shellH <- seqMat[j,2]
+    shellH <- seqMat[j,1]
     
     items <- strsplit(shellH, '[|]')[[1]]
     chain <- substring(tail(items,1), 1, 1)
@@ -307,7 +307,7 @@ for (i in res3znList) {
       if (substring(items[k],1,1) != chain) {next}
       if (! strsplit(items[k], '[.]')[[1]][2] %in% aaCodes) {next}
           
-      mapping <- outNum[shellH]
+      mapping <- outNum[seqMat[j,2]]
      
       ligNum <- as.numeric(substring(strsplit(items[k], '[.]')[[1]][1], 2))
       ligPos <- mapping[[1]][ligNum - chainStart + 1]

@@ -138,7 +138,7 @@ date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs ../output_a
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats.sb.chiSquaredLig.Zn -s s b ../output_allMetal/seqs.SEQRES.bind.chiSquaredLig.zn.txt &
 
 
-## rerun to get R input after fixing &orderedAngles
+## rerun to get R input after fixing &orderedAngles, 10.15
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_allMetal/stats.singleLig2.Zn -r ../output_allMetal/rAllLig.singleLig.txt &
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats.chiSquaredLig2.Zn -r ../output_allMetal/rAllLig.chiSquaredLig.txt &
 

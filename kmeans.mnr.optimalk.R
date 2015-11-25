@@ -101,8 +101,8 @@ kmeansStab <- function(data, k, nrep){
       totjac <- sum(sapply(1:k, function(x) 
         jtab[x,jassign[x]]/(sum(clu1==x) + sum(clu2==jassign[x]) - jtab[x,jassign[x]]) ))
       
-      dmat[i,j] <- round(totdis, digits=3)
-      jmat[i,j] <- round(totjac, digits=3)
+      dmat[i,j] <- dmat[j,i] <- round(totdis, digits=3)
+      jmat[i,j] <- jmat[j,i] <- round(totjac, digits=3)
     }
   }
   ind <- which(rowsum(dmat,rep(1,nrep)) == min(rowsum(dmat,rep(1,nrep))))[1]
