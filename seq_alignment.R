@@ -56,7 +56,7 @@ useNames <- sample(names(atom), 100)
 outAlign <- mclapply(useNames, function(x){genAlign(atom[[x]], seq[[x]])}, mc.cores=6)
 
 ## ----runAllAlign---------------------------------------------
-seNames <- names(atom)
+useNames <- names(atom)
 outNum <- mclapply(useNames, function(x){
   tmpRes <- genAlign(atom[[x]], seq[[x]])
   tmpRes$atomNum

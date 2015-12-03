@@ -284,9 +284,9 @@ save(finalZnList, file="finalZnList.chiSquaredLig.RData")
 #length(multiSeqLigs)
 
 data<- rawdata[rawdata[,1] %in% finalZnList, ]
-res3znList <- data[data[,24]<3, 1]
+res3znList <- data[data[,4]<3, 1]
 
-print("With resolution greater than 3: 6199")
+#print("With resolution greater than 3: 6199")
 length(res3znList)
 
 znListSeqPos <- NULL

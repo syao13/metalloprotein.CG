@@ -423,17 +423,46 @@ sub allAngles
   }
 
 
+sub smallestAngle
+  {
+  my $self = shift @_;
+  return 0 if (! exists $self->{bestCombo});
+  my $combo = $self->{bestCombo}->{ligands};
 
+  my @results;
+  my @anglelist = $self->allAngles(); ## Angles ordered by the ligand position in combo
+  @anglelist = sort {$a <=> $b} (@anglelist);
+  push @results, $anglelist[0];
 
+  my $center = $self->{shellObj}->{center};
+  my @smallest;
+  FORLOOP: for(my $x = 0; $x < $#$combo; $x++)
+    {
+    for(my $y = $x+1; $y < @$combo; $y++)
+      {
+      my $angle = $center->angle($$combo[$x], $$combo[$y]);
 
+      if ($angle == $anglelist[0])
+        {
+        push @smallest, $$combo[$x];
+        push @smallest, $$combo[$y];
+        last FORLOOP;
+        }
+      }
+    }
 
+  map {push @results, $_->{residueName}.".".$_->{atomName}.".".$_->{element} ;} (@smallest);
+  
+  if ($smallest[0]->resID() eq $smallest[1]->resID())
+    { push @results, 1;}
+  else
+    { push @results, 0;}
 
+  my $numLig = @$combo;
+  push @results, $numLig;
 
-
-
-
-
-
+  return @results;
+  }
 
 
 

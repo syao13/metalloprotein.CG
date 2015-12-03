@@ -73,7 +73,7 @@ our @defaultDataMembers = (
 
 our $cgRelations = [
   {"name" => "Tetrahedral", "num" => 4, "parents" => [], "children" => ["TetrahedralV"], "siblings" => []},
-  {"name" => "TrigonalBipyramidal", "num" => 5, "parents" => [], "children" => ["TrigonalBipyramidalVA", "TrigonalBipyramidalVP", "TrigonalPlanar"], , "siblings" => []},
+  {"name" => "TrigonalBipyramidal", "num" => 5, "parents" => [], "children" => ["TrigonalBipyramidalVA", "TrigonalBipyramidalVP", "TrigonalPlanar"], "siblings" => []},
   {"name" => "Octahedral", "num" => 6, "parents" => [], "children" => ["SquarePyramidalV", "SquarePlanar", "SquarePyramidal"], "siblings" => []},
   {"name" => "TrigonalPlanar", "num" => 3, "parents" => ["TrigonalBipyramidalVA", "TrigonalBipyramidal"], "children" => [], "siblings" => []},
   {"name" => "TetrahedralV", "num" => 3, "parents" => ["Tetrahedral"], "children" => [], "siblings" => []},
@@ -357,7 +357,7 @@ sub shellViaAdjustDistStd
 #print $shell->metalID(), "; ";
 #print "$numLig\n";
 
-    next if ($numLig < 3 || $numLig > 10);
+    next if ($numLig < 4 || $numLig > 10);
 
     my $cg =  (grep {$$_{"num"} eq $numLig;} (@$cgRelations))[0];
 
@@ -371,8 +371,8 @@ sub shellViaAdjustDistStd
 #print $cgObj->{bestCombo}->{probability}, "\n\n"; 
 
     my %numToLet = ( 2 => "two", 3 => "three", 4 => "four", 5 => "five", 6 => "six", 7 => "seven", 8 => "eight", 9 => "nine", 10 => "ten");
-    my $numLig = $numToLet{$numLig};
-    push @{$$coordinations{$numLig}}, $cgObj;
+    my $numLigL = $numToLet{$numLig};
+    push @{$$coordinations{$numLigL}}, $cgObj;
     } 
 
   $self->{coordinations} = $coordinations;

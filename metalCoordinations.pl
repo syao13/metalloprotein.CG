@@ -120,7 +120,7 @@ elsif ($ARGV[0] =~ /^(s|shellCutoff)$/) ## bond length cutoff for the first shel
 my $statOutFileName = ($ARGV[0] !~ /\-/) ? shift @ARGV : "statistics";
 
 ########## read in optional arguments ##########
-my ($seqOpt, $seq, $header, $seqFile, $rInputOpt, $rInputFile, $statsFile, $leaveOut, $jsonOpt, $jsonFile, $dumperOpt, $dumperFile, $decisionOpt, $angleListOpt, $angleListMid);
+my ($seqOpt, $seq, $header, $seqFile, $rInputOpt, $rInputFile, $rfOpt, $rfFile, $statsFile, $leaveOut, $jsonOpt, $jsonFile, $dumperOpt, $dumperFile, $decisionOpt, $angleListOpt, $angleListMid);
 my ($ECopt, $pathToFlat, $pathToPDB, $ecFile, $ligandOpt, $angleBreakDownOpt, $angleBreakDownFile, $bondLengthOpt, $bondLengthFile);
 while (@ARGV) 
   {
@@ -146,6 +146,11 @@ while (@ARGV)
     $rInputFile = shift @ARGV;
     $leaveOut = shift @ARGV if ($ARGV[0] =~ /^(l|leave|leaveOut)$/);
     $statsFile = shift @ARGV if ($ARGV[0] !~ /\-/);
+    }
+  elsif ($option eq "-rf")
+    {
+    $rfOpt = 1;
+    $rfFile = shift @ARGV;
     }
   elsif ($option eq "-json")
     {
@@ -222,6 +227,24 @@ if ($seqOpt)
   foreach my $ligNum (keys %{$analyzer->{coordinations}})
     {$analyzer->printSequences($seqFile, $seq, $header, $ligNum);} ## four ligands
   }
+
+if ($rfOpt)
+  {  
+  open (FID, ">", $rfFile) or die $!;
+  my $stats = &readTableFile($statsFile) if ($statsFile);
+
+  foreach my $ligNum ("ten", "nine", "eight", "seven", "six", "five", "four")
+    {
+    foreach my $metalObj (@{$analyzer->{coordinations}{$ligNum}})
+      {
+      print FID $metalObj->{shellObj}->metalID(), "\t";
+      map { print FID "$_\t";} ($metalObj->smallestAngle()); 
+      print FID "\n";
+      }
+    }
+  close FID;
+  }
+
 
 if ($rInputOpt)
   {
