@@ -1,33 +1,29 @@
 #!/usr/bin/Rscript
 ## set anglesU to change between normal and compressed angles group
 ####################    load data  ####################  
-setwd("../output")
+setwd("../output_allMetal")
 options(stringsAsFactors=FALSE)
 
-load("rf.sorted.RData")
-load("finalZnList.RData")
-rawdata <- read.table("four.chi.txt", header = TRUE)
-znList <- rawdata[rawdata[,1] %in% finalZnList & rawdata[,24] < 3, 1]
+load("rf.singleLig.RData")
+load("finalZnList.singleLig.RData")
+rawdata <- read.table("rAllLig.singleLig.zn.txt", header=FALSE)
+colnames(rawdata) <- c("znID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
 
+znList <- rawdata[rawdata[,1] %in% finalZnList & rawdata[,4] < 3, 1]
 id <- rawdata[,1]
 orderid <- order(id)
 data <- rawdata[orderid,]
 
-angles <- data[,2:7]
-bidentates <- data[,16:21]
-ligands <- data[,8:11]
+angles <- data$angleCombo
+bidentates <- data$biStatusCombo
+ligands <- data$ligandCombo
 
-resolution <- data[,24]
+resolution <- data$resolution
 anglesU <- angles
 
 #### Define the data into normal and compressed from rf prediciton on 58-68 angles.
-minAngle <- apply(angles, 1, min)
-
 ind.normal <- prediction.all=="normal"
 ind.compress <- prediction.all=="compressed"
-
-angles.normal <- angles[ind.normal,]
-angles.compress <- angles[ind.compress,]
 
 normal <- data[ind.normal,]
 compressed <- data[ind.compress,]
@@ -41,27 +37,50 @@ dim(all.nr)
 ############ define normal vs compressed ############
 
 ##### only one compressed
-sortedA <- t(apply(compressed.nr[,2:7], 1, sort))
-ind.comp2 <- sortedA[,2] <= 63
-compressed.nr <- compressed.nr[!ind.comp2, ]
-angles.comp <- compressed.nr[,2:7]
-dim(angles.comp)
-angle.sorted.comp <- t(apply(angles.comp, 1, function(x) c(x[1], sort(x[2:5]), x[6])))
-#angle.sorted.comp <- angle.sorted.comp[,c(1,2,3,5,6)]
-#colnames(angle.sorted.comp) <- c("largest",  "midSmall", "midMiddle", "midLarge","opposite")
+secondComp <- function(angleCombo) {
+  angles <- as.numeric(strsplit(angleCombo, ",")[[1]])
+  anglesSort <- sort(angles)
 
-##### normal
-angles.norm <- normal.nr[,2:7]
-dim(angles.norm)
-angle.sorted.norm <- t(apply(angles.norm, 1, function(x) c(x[1], sort(x[2:5]), x[6])))
-#angle.sorted.norm <- angle.sorted.norm[,c(1,2,3,5,6)]
+  if (anglesSort[2] <= 63) {1}
+  else {0}
+}
+
+ind.comp2 <- sapply(compressed.nr$angleCombo, secondComp)
+compressed.nr <- compressed.nr[!ind.comp2, ]
+
+#### reduced angle space
+angleSapce5 <- function(angleCombo) {
+  angles <- as.numeric(strsplit(angleCombo, ",")[[1]])
+  anglesSort <- sort(angles[2:(length(angles)-1)])
+  c(angles[1], anglesSort[c(1, floor((length(anglesSort) + 1)/2),length(anglesSort))], angles[length(angles)])  
+}
+
+
+angleSapce6 <- function(angleCombo) {
+  angles <- as.numeric(strsplit(angleCombo, ",")[[1]])
+  anglesSort <- sort(angles[2:(length(angles)-1)])
+  c(angles[1], anglesSort[c(1, floor(quantile(1:length(anglesSort), 0.34)), floor(quantile(1:length(anglesSort), 0.67)), length(anglesSort))], angles[length(angles)])
+}
+
+## normal
+angles.norm <- normal.nr$angleCombo
+length(angles.norm)
+angle.sorted.norm <- t(sapply(angles.norm, angleSapce6))
+rownames(angle.sorted.norm) <- NULL
 #colnames(angle.sorted.norm) <- c("largest",  "midSmall", "midMiddle", "midLarge","opposite")
 
-##### combined
-angles.all <- all.nr[,2:7]
-dim(angles.all)
-angle.sorted.all <- t(apply(angles.all, 1, function(x) c(x[1], sort(x[2:5]), x[6])))
-#angle.sorted.all <- angle.sorted.all[,c(1,2,3,5,6)]
+## compressed
+angles.comp <- compressed.nr$angleCombo
+length(angles.comp)
+angle.sorted.comp <- t(sapply(angles.comp, angleSapce6))
+rownames(angle.sorted.comp) <- NULL
+#colnames(angle.sorted.comp) <- c("largest",  "midSmall", "midMiddle", "midLarge","opposite")
+
+
+angles.all <- all.nr$angleCombo
+length(angles.all)
+angle.sorted.all <- t(sapply(angles.all, angleSapce6))
+rownames(angle.sorted.all) <- NULL
 #colnames(angle.sorted.all) <- c("largest",  "midSmall", "midMiddle", "midLarge","opposite")
 
 ####################################################
@@ -160,11 +179,11 @@ for (i in 1:length(resultList)){
 }
 date()
 
-save(list=sapply(1:30, function(x) paste0("normal.", x, ".clusters",  sep="")), file="normal_cluster_assg.RData")
-save(list=sapply(1:30, function(x) paste0("compressed.", x, ".clusters",  sep="")), file="compressed_cluster_assg.RData")
-save(list=sapply(1:30, function(x) paste0("combined.", x, ".clusters",  sep="")), file="combined_cluster_assg.RData")
+save(list=sapply(1:30, function(x) paste0("normal.", x, ".clusters",  sep="")), file="normal_cluster_assg.singleLig6.zn.RData")
+save(list=sapply(1:30, function(x) paste0("compressed.", x, ".clusters",  sep="")), file="compressed_cluster_assg.singleLig6.zn.RData")
+save(list=sapply(1:30, function(x) paste0("combined.", x, ".clusters",  sep="")), file="combined_cluster_assg.singleLig6.zn.RData")
 
-save(list=c("sumdiff.norm", "jaccard.norm", "sumdiff.comp", "jaccard.comp", "sumdiff.all", "jaccard.all"), file="two_measures_over_k.RData")
+save(list=c("sumdiff.norm", "jaccard.norm", "sumdiff.comp", "jaccard.comp", "sumdiff.all", "jaccard.all"), file="two_measures_over_k.singleLig6.zn.RData")
 # load("~/Desktop/zinc.CG.2015/two_measures_over_k.RData")
 
 #sumdiff.norm

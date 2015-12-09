@@ -158,10 +158,14 @@ date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs ../output_a
 ## 12.1 run down to non redundancy for singleLig and chiSquaredLig
 ./seq_alignment.R; ./nonRedundancy.R
 
-## 12.3 get the smallest angle spreadsheet for rf input, and add number of ligands column
+## 12.3 get the smallest angle spreadsheet for rf input, and add number of ligands, method, year, and resolution columns
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_allMetal/stats.singleLig.rf.Zn -rf ../output_allMetal/rf.singleLig.txt &
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats.chiSquaredLig.rf.Zn -rf ../output_allMetal/rf.chiSquaredLig.txt &
 
+## 12.4 rerun to get R spreadsheet again with a new format: all angles are in one single column and need to be split in R
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_allMetal/stats.singleLig3.Zn -r ../output_allMetal/rAllLig.singleLig.zn.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats.chiSquaredLig3.Zn -r ../output_allMetal/rAllLig.chiSquaredLig.zn.txt &
 
-
+## 12.9 change the kmeans format to handle all angles in one column, and change the code manully to switch between singleLig/chiSquaredLig and 5/6 angle space
+./kmeans.mnr.optimalk.R
 

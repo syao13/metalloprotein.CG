@@ -313,23 +313,24 @@ sub ligandAtomElement
   my @resAtomEle;
   my $center = $self->{shellObj}->{center};
  
-  map {push @resAtomEle, $_->{residueName}.".".$_->{atomName}.".".$_->{element} ;} (@$comboLigands);
-  map {push @resAtomEle, $center->distance($_) ;} (@$comboLigands);
+  push @resAtomEle, join (',', map {$_->{residueName}.".".$_->{atomName}.".".$_->{element} ;} (@$comboLigands));
+  push @resAtomEle, join (',', map {$center->distance($_) ;} (@$comboLigands));
 
 #      push @resAtomEle, $$comboLigands[$x]->{residue_name}.".".$$comboLigands[$x]->{atom_name}.".".$$comboLigands[$x]->{element} ;
 #      push @resAtomEle, $$comboLigands[$y]->{residue_name}.".".$$comboLigands[$y]->{atom_name}.".".$$comboLigands[$x]->{element} ;
-
+  my @bidentate;
   for (my $x = 0; $x < $#$comboLigands; $x++)
     {
     for (my $y = $x+1; $y < @$comboLigands; $y++)
       {
       if ($$comboLigands[$x]->resID() eq $$comboLigands[$y]->resID())
-	{ push @resAtomEle, 1;}
+	{ push @bidentate, 1;}
       else
-        { push @resAtomEle, 0;}
+        { push @bidentate, 0;}
       }
     }
-
+  push @resAtomEle, join (',', @bidentate);
+ 
   return @resAtomEle;
 
   }
