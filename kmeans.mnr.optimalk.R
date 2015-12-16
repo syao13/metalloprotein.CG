@@ -1,12 +1,13 @@
 #!/usr/bin/Rscript
 ## set anglesU to change between normal and compressed angles group
 ####################    load data  ####################  
-setwd("../output_allMetal")
 options(stringsAsFactors=FALSE)
+args = commandArgs(trailingOnly=TRUE)
+setwd(args[1])
 
-load("rf.singleLig.RData")
-load("finalZnList.singleLig.RData")
-rawdata <- read.table("rAllLig.singleLig.zn.txt", header=FALSE)
+load("rf.chiSquaredLig.RData")
+load("finalZnList.chiSquaredLig.RData")
+rawdata <- read.table("rAllLig.chiSquaredLig.zn.txt", header=FALSE)
 colnames(rawdata) <- c("znID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
 
 znList <- rawdata[rawdata[,1] %in% finalZnList & rawdata[,4] < 3, 1]
@@ -49,39 +50,30 @@ ind.comp2 <- sapply(compressed.nr$angleCombo, secondComp)
 compressed.nr <- compressed.nr[!ind.comp2, ]
 
 #### reduced angle space
-angleSapce5 <- function(angleCombo) {
+angleSapce <- function(angleCombo, num) {
   angles <- as.numeric(strsplit(angleCombo, ",")[[1]])
   anglesSort <- sort(angles[2:(length(angles)-1)])
-  c(angles[1], anglesSort[c(1, floor((length(anglesSort) + 1)/2),length(anglesSort))], angles[length(angles)])  
-}
-
-
-angleSapce6 <- function(angleCombo) {
-  angles <- as.numeric(strsplit(angleCombo, ",")[[1]])
-  anglesSort <- sort(angles[2:(length(angles)-1)])
-  c(angles[1], anglesSort[c(1, floor(quantile(1:length(anglesSort), 0.34)), floor(quantile(1:length(anglesSort), 0.67)), length(anglesSort))], angles[length(angles)])
+  if (num == 5) { c(angles[1], anglesSort[c(1, floor((length(anglesSort) + 1)/2),length(anglesSort))], angles[length(angles)]) }
+  else if (num == 6) { c(angles[1], anglesSort[c(1, floor(quantile(1:length(anglesSort), 0.34)), floor(quantile(1:length(anglesSort), 0.67)), length(anglesSort))], angles[length(angles)]) }
 }
 
 ## normal
 angles.norm <- normal.nr$angleCombo
 length(angles.norm)
-angle.sorted.norm <- t(sapply(angles.norm, angleSapce6))
+angle.sorted.norm <- t(sapply(angles.norm, function(x) angleSapce(x, args[2])))
 rownames(angle.sorted.norm) <- NULL
-#colnames(angle.sorted.norm) <- c("largest",  "midSmall", "midMiddle", "midLarge","opposite")
 
 ## compressed
 angles.comp <- compressed.nr$angleCombo
 length(angles.comp)
-angle.sorted.comp <- t(sapply(angles.comp, angleSapce6))
+angle.sorted.comp <- t(sapply(angles.comp, function(x) angleSapce(x, args[2])))
 rownames(angle.sorted.comp) <- NULL
-#colnames(angle.sorted.comp) <- c("largest",  "midSmall", "midMiddle", "midLarge","opposite")
 
-
+## combined
 angles.all <- all.nr$angleCombo
 length(angles.all)
-angle.sorted.all <- t(sapply(angles.all, angleSapce6))
+angle.sorted.all <- t(sapply(angles.all, function(x) angleSapce(x, args[2])))
 rownames(angle.sorted.all) <- NULL
-#colnames(angle.sorted.all) <- c("largest",  "midSmall", "midMiddle", "midLarge","opposite")
 
 ####################################################
 
@@ -140,7 +132,7 @@ library(parallel)
 sumdiff.norm <- sumdiff.comp <- sumdiff.all <- 0
 jaccard.norm <- jaccard.comp <- jaccard.all <- 0
 nangle <- dim(angle.sorted.all)[2]
-nrep <- 300
+nrep <- 500
 
 date()
 resultList <- mclapply(1:30, function(x) kmeansStab(angle.sorted.norm, x, nrep), mc.cores=10)
@@ -179,11 +171,11 @@ for (i in 1:length(resultList)){
 }
 date()
 
-save(list=sapply(1:30, function(x) paste0("normal.", x, ".clusters",  sep="")), file="normal_cluster_assg.singleLig6.zn.RData")
-save(list=sapply(1:30, function(x) paste0("compressed.", x, ".clusters",  sep="")), file="compressed_cluster_assg.singleLig6.zn.RData")
-save(list=sapply(1:30, function(x) paste0("combined.", x, ".clusters",  sep="")), file="combined_cluster_assg.singleLig6.zn.RData")
+save(list=sapply(1:30, function(x) paste0("normal.", x, ".clusters",  sep="")), file="normal_cluster_assg.RData")
+save(list=sapply(1:30, function(x) paste0("compressed.", x, ".clusters",  sep="")), file="compressed_cluster_assg.RData")
+save(list=sapply(1:30, function(x) paste0("combined.", x, ".clusters",  sep="")), file="combined_cluster_assg.RData")
 
-save(list=c("sumdiff.norm", "jaccard.norm", "sumdiff.comp", "jaccard.comp", "sumdiff.all", "jaccard.all"), file="two_measures_over_k.singleLig6.zn.RData")
+save(list=c("sumdiff.norm", "jaccard.norm", "sumdiff.comp", "jaccard.comp", "sumdiff.all", "jaccard.all"), file="two_measures_over_k.RData")
 # load("~/Desktop/zinc.CG.2015/two_measures_over_k.RData")
 
 #sumdiff.norm

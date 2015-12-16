@@ -6,28 +6,43 @@ library(clue)
 library(parallel)
 
 options(stringsAsFactors=FALSE)
-setwd("../output")
+args = commandArgs(trailingOnly=TRUE)
+setwd(args[1])
 
-rawdata <- read.table("four.chi.txt", header = TRUE)
+rawdata <- read.table("rAllLig.chiSquaredLig.zn.txt", header=FALSE)
+colnames(rawdata) <- c("znID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
+
 ############ normal vs. compressed#####################
-### choose one to operate 
+angleSapce <- function(angleCombo, num) {
+  angles <- as.numeric(strsplit(angleCombo, ",")[[1]])
+  anglesSort <- sort(angles[2:(length(angles)-1)])
+  if (num == 5) { c(angles[1], anglesSort[c(1, floor((length(anglesSort) + 1)/2),length(anglesSort))], angles[length(angles)]) }
+  else if (num == 6) { c(angles[1], anglesSort[c(1, floor(quantile(1:length(anglesSort), 0.34)), floor(quantile(1:length(anglesSort), 0.67)), length(anglesSort))], angles[length(angles)]) }
+}
+
 ## normal
 load("normal_cluster_assg.RData")
 data.normal <- rawdata[sapply(normal.1.clusters[,1], function(x) which(rawdata[,1] == x)[1]),]
-angles.normal <- t(apply(data.normal[2:7], 1, function(x) c(x[1], sort(x[2:5]), x[6])))
-colnames(angles.normal) <- c("angle1", "mid1", "mid2", "mid3", "mid4","angle6")
+angles.norm <- data.normal$angleCombo
+angles.normal <- t(sapply(angles.norm, function(x) angleSapce(x, args[2])))
+rownames(angles.normal) <- NULL
+dim(angles.normal)
 
 ## compressed
 load("compressed_cluster_assg.RData")
 data.compressed <- rawdata[sapply(compressed.1.clusters[,1], function(x) which(rawdata[,1] == x)[1]),]
-angles.compressed <- t(apply(data.compressed[2:7], 1, function(x) c(x[1], sort(x[2:5]), x[6])))
-colnames(angles.compressed) <- c("angle1", "mid1", "mid2", "mid3", "mid4","angle6")
+angles.comp <- data.compressed$angleCombo
+angles.compressed <- t(sapply(angles.comp, function(x) angleSapce(x, args[2])))
+rownames(angles.compressed) <- NULL
+dim(angles.compressed)
 
 ## combined
 load("combined_cluster_assg.RData")
 data.combined <- rawdata[sapply(combined.1.clusters[,1], function(x) which(rawdata[,1] == x)[1]),]
-angles.combined <- t(apply(data.combined[2:7], 1, function(x) c(x[1], sort(x[2:5]), x[6])))
-colnames(angles.combined) <- c("angle1", "mid1", "mid2", "mid3", "mid4","angle6")
+angles.comb <- data.combined$angleCombo
+angles.combined <- t(sapply(angles.comb, function(x) angleSapce(x, args[2])))
+rownames(angles.combined) <- NULL
+dim(angles.combined)
 
 ###### Compute all distance matrices for all k
 getDistM <- function(selectAngles, clusters) {

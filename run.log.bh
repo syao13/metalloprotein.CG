@@ -166,6 +166,58 @@ date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs ../output_a
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_allMetal/stats.singleLig3.Zn -r ../output_allMetal/rAllLig.singleLig.zn.txt &
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON ../output_allMetal/stats.chiSquaredLig3.Zn -r ../output_allMetal/rAllLig.chiSquaredLig.zn.txt &
 
-## 12.9 change the kmeans format to handle all angles in one column, and change the code manully to switch between singleLig/chiSquaredLig and 5/6 angle space
+## 12.9 change the kmeans format to handle all angles in one column, and change the code manully to switch between singleLig/chiSquaredLig and 5/6 angle space: run 4 times done.
 ./kmeans.mnr.optimalk.R
+
+## make the directory an argument to pass in on command line in R
+./write_fasta.R ../output_allMetal/
+
+## run interproscan accordingly, _f22 on Hypnos doesn't work again. Ran on hemera vm
+/mlab/data/software/interproscan/interproscan.sh -i ../output_allMetal/non_redundant_zinc.singleLig.zn.fa -f tsv -iprlookup -pa -goterms -o ../output_allMetal/non_redundant_zinc.singleLig.zn.ipr.tsv
+/mlab/data/software/interproscan/interproscan.sh -i ../output_allMetal/non_redundant_zinc.chiSquaredLig.zn.fa -f tsv -iprlookup -pa -goterms -o ../output_allMetal/non_redundant_zinc.chiSquaredLig.zn.ipr.tsv
+
+## functional_characterization.R, make the directory an argument to pass in on command line.
+./functional_characterization.R ../output_allMetal/
+
+## proceed with measures and graphs.
+./measures.vs.k.R ../output_allMetal/
+./cluster_metric_graphs.R ../output_allMetal/
+
+## 12.10, fix the measures*.R only used 5 angle space for all calculation. rerun single6 and chisqr6
+./measures.vs.k.R ../output_allMetal/
+./cluster_metric_graphs.R ../output_allMetal/
+
+## change the kmeans to take command line argument, make 5/6 angle space an option as well, and change rep to 500
+./kmeans.mnr.optimalk.R ../output_single5 5; ./kmeans.mnr.optimalk.R ../output_single6 6
+./kmeans.mnr.optimalk.R ../output_chiSquared5 5; ./kmeans.mnr.optimalk.R ../output_chiSquared6 6
+
+## 12.11, continue with functional analysis
+./functional_characterization.R ../output_chiSquared5 && ./functional_characterization.R ../output_chiSquared6
+./functional_characterization.R ../output_single5 && ./functional_characterization.R ../output_single6
+
+## 
+./measures.vs.k.R ../output_single5 5 && ./measures.vs.k.R ../output_single6 6
+
+## 12.12
+./measures.vs.k.R ../output_chiSquared5 5 && ./measures.vs.k.R ../output_chiSquared6 6
+
+./cluster_metric_graphs.R ../output_single5
+./cluster_metric_graphs.R ../output_single6
+./cluster_metric_graphs.R ../output_chiSquared5
+./cluster_metric_graphs.R ../output_chiSquared6
+
+## 12.15 make the directory, angle space, num of norm, comp, comb clusters as arguements
+./cluster.centers.prob.R ../output_chiSquared6/ 6 7 6 12 | less
+
+
+
+
+
+
+
+
+
+
+
+
 
