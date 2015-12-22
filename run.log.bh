@@ -209,10 +209,169 @@ date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs ../output_a
 ## 12.15 make the directory, angle space, num of norm, comp, comb clusters as arguements
 ./cluster.centers.prob.R ../output_chiSquared6/ 6 7 6 12 | less
 
+## rerun to test 2.5 std single ligand selection criteria, get diff result files at the same time
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_2.5single/stats.zn -s s s ../output_2.5single/seqs.SEQRES.shell.txt -s a s ../output_2.5single/seqs.ATOM.shell.txt -s s b ../output_2.5single/seqs.SEQRES.bind.txt -r ../output_2.5single/r.allLig.txt -rf ../output_2.5single/rf.smallest.txt
+
+## 12.16 sequence options are exclusive, the above only got sb opt run, has to run separately
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_2.5single/stats.ss -s s s ../output_2.5single/seqs.SEQRES.shell.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_2.5single/stats.as -s a s ../output_2.5single/seqs.ATOM.shell.txt &
+
+## test 2 std single ligand selection criteria, get diff result files at the same time
+## never do this again!
+#./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_2single/stats.ss -s s s ../output_2single/seqs.SEQRES.shell.txt -r ../output_2single/r.allLig.txt -rf ../output_2single/rf.smallest.txt &
+#./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_2single/stats.as -s a s ../output_2single/seqs.SEQRES.shell.txt &
+#./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_2single/stats.sb -s s b ../output_2single/seqs.ATOM.shell.txt &
+
+## the names of the above seq results are wrong, rename the later two and rerun to get ss
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_2single/stats.ss -s s s ../output_2single/seqs.SEQRES.shell.txt &
+
+## proceed with everything
+./seq_alignment.R ../output_2.5single/
+./nonRedundancy.R ../output_2.5single/
+./rf.smallAngle.R ../output_2.5single/
+
+## make a copy of the output_2.5single folder
+./kmeans.mnr.optimalk.R ../output_2.5single5 5
+./kmeans.mnr.optimalk.R ../output_2.5single6 6
+
+## Actually the seq files are cancatenate to exsisting ones, then proceed same thing with output_2single
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_2single/stats.ss -s s s ../output_2single/seqs.SEQRES.shell.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_2single/stats.as -s a s ../output_2single/seqs.ATOM.shell.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_2single/stats.sb -s s b ../output_2single/seqs.SEQRES.bind.txt &
+./seq_alignment.R ../output_2single/ && ./nonRedundancy.R ../output_2single/ && ./rf.smallAngle.R ../output_2single/
+
+./kmeans.mnr.optimalk.R ../output_2single5 5
+./kmeans.mnr.optimalk.R ../output_2single6 6
+
+## 12.17 
+./write_fasta.R ../output_2single5
+./write_fasta.R ../output_2single6
+./write_fasta.R ../output_2.5single5
+./write_fasta.R ../output_2.5single6
+
+## ssh interproscan
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_2single5
+/mlab/data/software/interproscan/interproscan_f22.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_2single6
+/mlab/data/software/interproscan/interproscan_f22.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_2.5single5
+/mlab/data/software/interproscan/interproscan_f22.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_2.5single6
+/mlab/data/software/interproscan/interproscan_f22.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+## All of the above four failed!
+
+## start other metals
+./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -d shellCutoff 3.302 ON ../output_Na_chiSquared/stats.ss -s s s ../output_Na_chiSquared/seqs.SEQRES.shell.txt -r ../output_Na_chiSquared/r.allLig.txt -rf ../output_Na_chiSquared/rf.smallest.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -d shellCutoff 3.302 ON ../output_Na_chiSquared/stats.ss -s s s ../output_Na_chiSquared/seqs.ATOM.shell.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -d shellCutoff 3.302 ON ../output_Na_chiSquared/stats.ss -s s b ../output_Na_chiSquared/seqs.SEQRES.bind.txt &
+
+./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -d shellCutoff 3.094 O ../output_Ca_chiSquared/stats.ss -s s s ../output_Ca_chiSquared/seqs.SEQRES.shell.txt -r ../output_Ca_chiSquared/r.allLig.txt -rf ../output_Ca_chiSquared/rf.smallest.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -d shellCutoff 3.094 O ../output_Ca_chiSquared/stats.ss -s s s ../output_Ca_chiSquared/seqs.ATOM.shell.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -d shellCutoff 3.094 O ../output_Ca_chiSquared/stats.ss -s s b ../output_Ca_chiSquared/seqs.SEQRES.bind.txt &
+
+./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -d shellCutoff 2.640 SON ../output_Fe_chiSquared/stats.ss -s s s ../output_Fe_chiSquared/seqs.SEQRES.shell.txt -r ../output_Fe_chiSquared/r.allLig.txt -rf ../output_Fe_chiSquared/rf.smallest.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -d shellCutoff 2.640 SON ../output_Fe_chiSquared/stats.ss -s s s ../output_Fe_chiSquared/seqs.ATOM.shell.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -d shellCutoff 2.640 SON ../output_Fe_chiSquared/stats.ss -s s b ../output_Fe_chiSquared/seqs.SEQRES.bind.txt &
+
+./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -d shellCutoff 2.856 ON ../output_Mg_chiSquared/stats.ss -s s s ../output_Mg_chiSquared/seqs.SEQRES.shell.txt -r ../output_Mg_chiSquared/r.allLig.txt -rf ../output_Mg_chiSquared/rf.smallest.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -d shellCutoff 2.856 ON ../output_Mg_chiSquared/stats.ss -s s s ../output_Mg_chiSquared/seqs.ATOM.shell.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -d shellCutoff 2.856 ON ../output_Mg_chiSquared/stats.ss -s s b ../output_Mg_chiSquared/seqs.SEQRES.bind.txt &
+
+
+## 12.18 Try to rerun interproscan, 5 and 6 angle space do not affect the functional mapping, so only need to once
+## on hemera fedora20@vm
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_2single5
+/mlab/data/software/interproscan/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+## on interproscan vm
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_2.5single5
+/mlab/data/software/interproscan/interproscan_f22.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+## The -s a s option actually didn't get running from above, need rerun
+./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -d shellCutoff 3.302 ON ../output_Na_chiSquared/stats.as -s a s ../output_Na_chiSquared/seqs.ATOM.shell.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -d shellCutoff 3.094 O ../output_Ca_chiSquared/stats.as -s a s ../output_Ca_chiSquared/seqs.ATOM.shell.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -d shellCutoff 2.640 SON ../output_Fe_chiSquared/stats.as -s a s ../output_Fe_chiSquared/seqs.ATOM.shell.txt & 
+./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -d shellCutoff 2.856 ON ../output_Mg_chiSquared/stats.as -s a s ../output_Mg_chiSquared/seqs.ATOM.shell.txt &
+
+## Use 3 std for now to run single ligand selection on other metals
+./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -dd shellCutoff 3.302 ON ../output_Na_singleLig/stats.ss -s s s ../output_Na_singleLig/seqs.SEQRES.shell.txt -r ../output_Na_singleLig/r.allLig.txt -rf ../output_Na_singleLig/rf.smallest.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -dd shellCutoff 3.302 ON ../output_Na_singleLig/stats.as -s a s ../output_Na_singleLig/seqs.ATOM.shell.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -dd shellCutoff 3.302 ON ../output_Na_singleLig/stats.sb -s s b ../output_Na_singleLig/seqs.SEQRES.bind.txt &
+
+./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -dd shellCutoff 3.094 O ../output_Ca_singleLig/stats.ss -s s s ../output_Ca_singleLig/seqs.SEQRES.shell.txt -r ../output_Ca_singleLig/r.allLig.txt -rf ../output_Ca_singleLig/rf.smallest.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -dd shellCutoff 3.094 O ../output_Ca_singleLig/stats.as -s a s ../output_Ca_singleLig/seqs.ATOM.shell.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -dd shellCutoff 3.094 O ../output_Ca_singleLig/stats.sb -s s b ../output_Ca_singleLig/seqs.SEQRES.bind.txt &
+
+./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -dd shellCutoff 2.640 SON ../output_Fe_singleLig/stats.ss -s s s ../output_Fe_singleLig/seqs.SEQRES.shell.txt -r ../output_Fe_singleLig/r.allLig.txt -rf ../output_Fe_singleLig/rf.smallest.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -dd shellCutoff 2.640 SON ../output_Fe_singleLig/stats.as -s a s ../output_Fe_singleLig/seqs.ATOM.shell.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -dd shellCutoff 2.640 SON ../output_Fe_singleLig/stats.sb -s s b ../output_Fe_singleLig/seqs.SEQRES.bind.txt &
+
+./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -dd shellCutoff 2.856 ON ../output_Mg_singleLig/stats.ss -s s s ../output_Mg_singleLig/seqs.SEQRES.shell.txt -r ../output_Mg_singleLig/r.allLig.txt -rf ../output_Mg_singleLig/rf.smallest.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -dd shellCutoff 2.856 ON ../output_Mg_singleLig/stats.as -s a s ../output_Mg_singleLig/seqs.ATOM.shell.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -dd shellCutoff 2.856 ON ../output_Mg_singleLig/stats.sb -s s b ../output_Mg_singleLig/seqs.SEQRES.bind.txt &
+
+## 12.19, the one run on interproscan VM was failed again, don't know if it's because background Mg running was messing it up
+## on hemera fedora20@vm
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_2.5single5
+/mlab/data/software/interproscan/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+## on interproscan vm (screen 8)
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_2single6
+/mlab/data/software/interproscan/interproscan_f22.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+## hemera vm worked, and interproscan vm failed
+## set up screen 8 to be hemera vm
+
+## 12.20, finish running 2std and 3std on zinc
+./functional_characterization.R ../output_2.5single5
+./measures.vs.k.R ../output_2.5single5 5
+./cluster_metric_graphs.R ../output_2.5single5
+
+./functional_characterization.R ../output_2.5single6 && ./measures.vs.k.R ../output_2.5single6 6 && ./cluster_metric_graphs.R ../output_2.5single6 &
+./functional_characterization.R ../output_2single5 && ./measures.vs.k.R ../output_2single5 5 && ./cluster_metric_graphs.R ../output_2single5 &
+./functional_characterization.R ../output_2single6 && ./measures.vs.k.R ../output_2single6 6 && ./cluster_metric_graphs.R ../output_2single6 &
+
+## Ca, Na, Fe, Mg
+./seq_alignment.R ../output_Ca_singleLig
+./nonRedundancy.R ../output_Ca_singleLig 
+./write_fasta.R ../output_Ca_singleLig 
+./seq_alignment.R ../output_Ca_chiSquared && ./nonRedundancy.R ../output_Ca_chiSquared && ./write_fasta.R ../output_Ca_chiSquared 
+
+./seq_alignment.R ../output_Na_singleLig && ./nonRedundancy.R ../output_Na_singleLig && ./write_fasta.R ../output_Na_singleLig 
+./seq_alignment.R ../output_Na_chiSquared && ./nonRedundancy.R ../output_Na_chiSquared && ./write_fasta.R ../output_Na_chiSquared 
+
+./seq_alignment.R ../output_Mg_singleLig && ./nonRedundancy.R ../output_Mg_singleLig && ./write_fasta.R ../output_Mg_singleLig 
+./seq_alignment.R ../output_Mg_chiSquared && ./nonRedundancy.R ../output_Mg_chiSquared && ./write_fasta.R ../output_Mg_chiSquared 
+
+./seq_alignment.R ../output_Fe_singleLig && ./nonRedundancy.R ../output_Fe_singleLig && ./write_fasta.R ../output_Fe_singleLig 
+./seq_alignment.R ../output_Fe_chiSquared && ./nonRedundancy.R ../output_Fe_chiSquared && ./write_fasta.R ../output_Fe_chiSquared 
+
+
+## interproscan once write_fasta.R done running
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_Ca_chiSquared
+/mlab/data/software/interproscan/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+## 12.21, do chiSquared first, before # of std is decided
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_Na_chiSquared
+/mlab/data/software/interproscan/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+## try different angle space reduction on zinc with 3 std
+./kmeans.mnr.optimalk.R ../output_single3 3 && ./kmeans.mnr.optimalk.R ../output_single4 4
+
+./functional_characterization.R ../output_single3 && ./functional_characterization.R ../output_single4 &&./measures.vs.k.R ../output_single3 3 && ./measures.vs.k.R ../output_single6 4 && ./cluster_metric_graphs.R ../output_single3 && ./cluster_metric_graphs.R ../output_single4
 
 
 
 
+## duplicate each folder
+#./rf.smallAngle.R ../output_Ca_singleLig
+#./rf.smallAngle.R ../output_Na_singleLig
+#./rf.smallAngle.R ../output_Mg_singleLig
+#./rf.smallAngle.R ../output_Fe_singleLig
+
+#./kmeans.mnr.optimalk.R ../output_Ca_singleLig5 5
+#./kmeans.mnr.optimalk.R ../output_Ca_chiSquared6 6
+#./kmeans.mnr.optimalk.R ../output_Ca_singleLig5 5
+#./kmeans.mnr.optimalk.R ../output_Ca_chiSquared6 6
+
+#./kmeans.mnr.optimalk.R ../output_Na_singleLig5 5
+#./kmeans.mnr.optimalk.R ../output_Na_chiSquared6 6
+#./kmeans.mnr.optimalk.R ../output_Na_singleLig5 5
+#./kmeans.mnr.optimalk.R ../output_Na_chiSquared6 6
+
+#./kmeans.mnr.optimalk.R ../output_Mg_singleLig5 5
+#./kmeans.mnr.optimalk.R ../output_Mg_chiSquared6 6
+#./kmeans.mnr.optimalk.R ../output_Mg_singleLig5 5
+#./kmeans.mnr.optimalk.R ../output_Mg_chiSquared6 6
+
+#./kmeans.mnr.optimalk.R ../output_Fe_singleLig5 5
+#./kmeans.mnr.optimalk.R ../output_Fe_chiSquared6 6
+#./kmeans.mnr.optimalk.R ../output_Fe_singleLig5 5
+#./kmeans.mnr.optimalk.R ../output_Fe_chiSquared6 6
 
 
 

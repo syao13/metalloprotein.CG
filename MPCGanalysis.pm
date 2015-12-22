@@ -431,8 +431,8 @@ sub printSequences
       $chains{$lig->{chainID}} = 1;
       }
 
-    if (scalar (keys %chains) == 0)
-        {print "No protein ligands, $metalId!\n";} 
+    #if (scalar (keys %chains) == 0)
+    #    {print "No protein ligands, $metalId!\n";} 
 
     my $seqOfChain;
     my $seqs; 

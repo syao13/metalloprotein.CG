@@ -4,9 +4,11 @@
 library(randomForest)
 
 options(stringsAsFactors=FALSE)
-setwd("../output_allMetal")
-rawdata <- read.table("rf.chiSquaredLig.txt", header = FALSE)
+#setwd("../output_allMetal")
+args = commandArgs(trailingOnly=TRUE)
+setwd(args[1])
 
+rawdata <- read.table("rf.smallest.txt", header = FALSE)
 id <- rawdata[,1]
 orderid <- order(id)
 data <- rawdata[orderid,2:5]
@@ -81,7 +83,7 @@ prediction.test <- predict(rf.sorted, data.test)
 prediction.all <- predict(rf.sorted, data.all)
 
 rf.sorted$confusion
-save(rf.sorted, prediction.all, file="rf.chiSquaredLig.RData")
+save(rf.sorted, prediction.all, file="rf.results.RData")
 
 ###### Set simple 63 degree cutoff on test data to compare with the prediction results
 compress63 <- function (minAngle) {

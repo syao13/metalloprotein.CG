@@ -9,7 +9,7 @@ options(stringsAsFactors=FALSE)
 args = commandArgs(trailingOnly=TRUE)
 setwd(args[1])
 
-rawdata <- read.table("rAllLig.chiSquaredLig.zn.txt", header=FALSE)
+rawdata <- read.table("r.allLig.txt", header=FALSE)
 colnames(rawdata) <- c("znID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
 
 ############ normal vs. compressed#####################
@@ -18,6 +18,8 @@ angleSapce <- function(angleCombo, num) {
   anglesSort <- sort(angles[2:(length(angles)-1)])
   if (num == 5) { c(angles[1], anglesSort[c(1, floor((length(anglesSort) + 1)/2),length(anglesSort))], angles[length(angles)]) }
   else if (num == 6) { c(angles[1], anglesSort[c(1, floor(quantile(1:length(anglesSort), 0.34)), floor(quantile(1:length(anglesSort), 0.67)), length(anglesSort))], angles[length(angles)]) }
+  else if (num == 4) { c(angles[1], anglesSort[c(1, 2, length(anglesSort)-1, length(anglesSort))], angles[length(angles)]) }
+  else if (num == 3) { c(angles[1], anglesSort[c(1, length(anglesSort)-2, length(anglesSort)-1, length(anglesSort))], angles[length(angles)]) }
 }
 
 ## normal

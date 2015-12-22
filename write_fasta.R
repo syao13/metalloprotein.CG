@@ -3,7 +3,7 @@ library(Biostrings)
 library(magrittr)
 args = commandArgs(trailingOnly=TRUE)
 setwd(args[1])
-non_red <- read.table("znlist.nonredundant.chiSquaredLig.zn.txt", header = TRUE, sep = "\t", row.names = 1, stringsAsFactors = FALSE)
+non_red <- read.table("nonredundant.list.txt", header = TRUE, sep = "\t", row.names = 1, stringsAsFactors = FALSE)
 non_red$chain.id <- paste(non_red$zinc.id, non_red$chain.counts, sep = ":")
 single_chains <- !duplicated(non_red$chain.id)
 non_red <- non_red[single_chains,]
@@ -25,5 +25,5 @@ non_red$ligand.count <- sapply(ligand_locs, length)
 ligand_ranges <- lapply(ligand_locs, function(x){IRanges(x, width = 1)})
 names(ligand_ranges) <- non_red$chain.id
 
-save(non_red, ligand_ranges, file = "non_redundant.chiSquaredLig.zn.RData")
-writeXStringSet(non_red_seq, file = "non_redundant_zinc.chiSquaredLig.zn.fa")
+save(non_red, ligand_ranges, file = "non_redundant.RData")
+writeXStringSet(non_red_seq, file = "non_redundant.fa")

@@ -5,15 +5,17 @@
 ## If the shell ligands spans over multi-chains, consider them all together.
 
 options(stringsAsFactors=FALSE)
-setwd("../output_allMetal")
+#setwd("../output_allMetal")
+args = commandArgs(trailingOnly=TRUE)
+setwd(args[1])
 
 library(Biostrings)
 aaCodes <- toupper(AMINO_ACID_CODE)
 
 ## SEQRES sequences, names of atom2seq are shell headers
-bindFasta <- readAAStringSet("seqs.SEQRES.bind.chiSquaredLig.zn.txt", format="fasta")
-shellFasta <- readAAStringSet("seqs.SEQRES.shell.chiSquaredLig.zn.txt", format="fasta")
-load("atom2seq.chiSquaredLig.zn.RData")
+bindFasta <- readAAStringSet("seqs.SEQRES.bind.txt", format="fasta")
+shellFasta <- readAAStringSet("seqs.SEQRES.shell.txt", format="fasta")
+load("atom2seq.RData")
 
 length(bindFasta)
 length(shellFasta)
@@ -199,7 +201,7 @@ length(uMultiSeqLigs)
 ## if x-ray only, use the min resolution one,
 ## if both x-ray and NMR, if minRes < 2, use the minRes one, otherwise, use latest one
 ######################################################################
-rawdata <- read.table("rAllLig.chiSquaredLig.txt", fill = TRUE)
+rawdata <- read.table("r.allLig.txt", fill = TRUE)
 idMthYrRes <- rawdata[,c(1:4)]
 idMthYrRes[,3] <- date <-sapply(idMthYrRes[,3], function(x) if (x<10) {x <- as.numeric(paste("200", x, sep=""))}
                                 else if (x<50) {x <- as.numeric(paste("20", x, sep=""))}
@@ -238,7 +240,7 @@ for (i in 1:length(uMultiSeqLigs)) {
   }
 }
 
-save(finalZnList, file="finalZnList.chiSquaredLig.RData")
+save(finalZnList, file="finalMetalList.RData")
 
 ################ below is some characterization of the final list ################
 ## size of each non-redundant set
@@ -335,7 +337,7 @@ colnames(znListSeqPos) <- c("zinc id", "total chains", "chain counts", "ligand c
 
 #znListSeqPos[1:5,]
 
-write.table(znListSeqPos, file="znlist.nonredundant.chiSquaredLig.zn.txt", sep="\t")
+write.table(znListSeqPos, file="nonredundant.list.txt", sep="\t")
 
 
 

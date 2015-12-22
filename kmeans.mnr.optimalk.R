@@ -1,13 +1,14 @@
 #!/usr/bin/Rscript
-## set anglesU to change between normal and compressed angles group
+###!/mlab/data/software/R-3.2.1-F22/bin/Rscript
+
 ####################    load data  ####################  
 options(stringsAsFactors=FALSE)
 args = commandArgs(trailingOnly=TRUE)
 setwd(args[1])
 
-load("rf.chiSquaredLig.RData")
-load("finalZnList.chiSquaredLig.RData")
-rawdata <- read.table("rAllLig.chiSquaredLig.zn.txt", header=FALSE)
+load("rf.results.RData")
+load("finalMetalList.RData")
+rawdata <- read.table("r.allLig.txt", header=FALSE)
 colnames(rawdata) <- c("znID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
 
 znList <- rawdata[rawdata[,1] %in% finalZnList & rawdata[,4] < 3, 1]
@@ -55,6 +56,8 @@ angleSapce <- function(angleCombo, num) {
   anglesSort <- sort(angles[2:(length(angles)-1)])
   if (num == 5) { c(angles[1], anglesSort[c(1, floor((length(anglesSort) + 1)/2),length(anglesSort))], angles[length(angles)]) }
   else if (num == 6) { c(angles[1], anglesSort[c(1, floor(quantile(1:length(anglesSort), 0.34)), floor(quantile(1:length(anglesSort), 0.67)), length(anglesSort))], angles[length(angles)]) }
+  else if (num == 4) { c(angles[1], anglesSort[c(1, 2, length(anglesSort)-1, length(anglesSort))], angles[length(angles)]) }
+  else if (num == 3) { c(angles[1], anglesSort[c(1, length(anglesSort)-2, length(anglesSort)-1, length(anglesSort))], angles[length(angles)]) }
 }
 
 ## normal

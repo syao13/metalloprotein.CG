@@ -5,9 +5,9 @@ library(Biobase)
 library(magrittr)
 args = commandArgs(trailingOnly=TRUE)
 setwd(args[1])
-load("non_redundant.singleLig.zn.RData")
+load("non_redundant.RData")
 
-interproRes <- read.table("non_redundant_zinc.singleLig.zn.ipr.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE, fill=TRUE, quote="", comment.char="")
+interproRes <- read.table("non_redundant.ipr.tsv", sep="\t", header=FALSE, stringsAsFactors=FALSE, fill=TRUE, quote="", comment.char="")
 names(interproRes) <- c("id", "md5", "length", "analysis", "sigAccession", "sigDescription", "start", "stop", "score", "status", "date", "iprAccession", "iprDescription", "GO", "Pathways")
 
 iprData <- unique(interproRes[, c("iprAccession", "iprDescription")])
