@@ -321,7 +321,7 @@ sub shellViaAdjustDistStd
 
 #print $ligand->{element}, ", ", $shell->{center}->distance($ligand), ", ", $$blStats{$ligand->{element}}{mean}, ", $resolution, $adjStd, ";
 
-      if ( abs($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mean}) <= $adjStd * 3 )
+      if ( abs($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mean}) <= $adjStd * 2.5 )
 	{ 
         push @$finalShell, $ligand;  
 #print "in\n";

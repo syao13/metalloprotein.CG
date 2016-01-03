@@ -1,7 +1,7 @@
 #!/usr/bin/perl 
 
 my $help = <<HELP;
-  usage: ./metalCoordinations.pl PDBpathsFile metal -i/d [(criteria threshold) statisticsFilePrefix] [-s sequences header sequenceResultsFile] [-r rSpreadsheet (leaveOut) statisticsFile]
+  usage: ./metalCoordinations.pl PDBpathsFile metal -i/d/dd/bs [(criteria threshold) statisticsFilePrefix] [-s sequences header sequenceResultsFile] [-r rSpreadsheet (leaveOut) statisticsFile]
 		[-json jsonFile] [-dumper dumperFile] [-decision] [-angleList angleListMid] [-ec pathToFlat pathToPDB ecFile] [-ligand] [-angleBD angleBreakDownFile]
  
   Parameters:

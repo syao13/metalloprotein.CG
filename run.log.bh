@@ -342,17 +342,72 @@ output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_Na_chiSquared
 ## try different angle space reduction on zinc with 3 std
 ./kmeans.mnr.optimalk.R ../output_single3 3 && ./kmeans.mnr.optimalk.R ../output_single4 4
 
-./functional_characterization.R ../output_single3 && ./functional_characterization.R ../output_single4 &&./measures.vs.k.R ../output_single3 3 && ./measures.vs.k.R ../output_single6 4 && ./cluster_metric_graphs.R ../output_single3 && ./cluster_metric_graphs.R ../output_single4
+## 12.22
+./functional_characterization.R ../output_single3 && ./functional_characterization.R ../output_single4 &&./measures.vs.k.R ../output_single3 3 && ./measures.vs.k.R ../output_single4 4 && ./cluster_metric_graphs.R ../output_single3 && ./cluster_metric_graphs.R ../output_single4
 
 
+## The interproscan VM is good now
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_Fe_chiSquared
+/mlab/data/software/interproscan/interproscan_f22.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_Mg_chiSquared
+/mlab/data/software/interproscan/interproscan_f22.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+## 12.27 run the metals again with 2.5 std for single
+./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -dd shellCutoff 3.302 ON ../output_Na_singleLig/stats.ss -s s s ../output_Na_singleLig/seqs.SEQRES.shell.txt -r ../output_Na_singleLig/r.allLig.txt -rf ../output_Na_singleLig/rf.smallest.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -dd shellCutoff 3.302 ON ../output_Na_singleLig/stats.as -s a s ../output_Na_singleLig/seqs.ATOM.shell.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -dd shellCutoff 3.302 ON ../output_Na_singleLig/stats.sb -s s b ../output_Na_singleLig/seqs.SEQRES.bind.txt &
+
+./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -dd shellCutoff 3.094 O ../output_Ca_singleLig/stats.ss -s s s ../output_Ca_singleLig/seqs.SEQRES.shell.txt -r ../output_Ca_singleLig/r.allLig.txt -rf ../output_Ca_singleLig/rf.smallest.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -dd shellCutoff 3.094 O ../output_Ca_singleLig/stats.as -s a s ../output_Ca_singleLig/seqs.ATOM.shell.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -dd shellCutoff 3.094 O ../output_Ca_singleLig/stats.sb -s s b ../output_Ca_singleLig/seqs.SEQRES.bind.txt &
+
+./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -dd shellCutoff 2.640 SON ../output_Fe_singleLig/stats.ss -s s s ../output_Fe_singleLig/seqs.SEQRES.shell.txt -r ../output_Fe_singleLig/r.allLig.txt -rf ../output_Fe_singleLig/rf.smallest.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -dd shellCutoff 2.640 SON ../output_Fe_singleLig/stats.as -s a s ../output_Fe_singleLig/seqs.ATOM.shell.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -dd shellCutoff 2.640 SON ../output_Fe_singleLig/stats.sb -s s b ../output_Fe_singleLig/seqs.SEQRES.bind.txt &
+
+./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -dd shellCutoff 2.856 ON ../output_Mg_singleLig/stats.ss -s s s ../output_Mg_singleLig/seqs.SEQRES.shell.txt -r ../output_Mg_singleLig/r.allLig.txt -rf ../output_Mg_singleLig/rf.smallest.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -dd shellCutoff 2.856 ON ../output_Mg_singleLig/stats.as -s a s ../output_Mg_singleLig/seqs.ATOM.shell.txt && ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -dd shellCutoff 2.856 ON ../output_Mg_singleLig/stats.sb -s s b ../output_Mg_singleLig/seqs.SEQRES.bind.txt &
 
 
-## duplicate each folder
+## 12.28 added the bond lengths of smallest angle ligands to -rf opt output
+./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -dd shellCutoff 2.856 ON ../output_Mg_singleLig/stats -rf ../output_Mg_singleLig/rf.smallest.mg.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -dd shellCutoff 3.094 O ../output_Ca_singleLig/stats -rf ../output_Ca_singleLig/rf.smallest.ca.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -dd shellCutoff 2.640 SON ../output_Fe_singleLig/stats -rf ../output_Fe_singleLig/rf.smallest.fe.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -dd shellCutoff 3.302 ON ../output_Na_singleLig/stats -rf ../output_Na_singleLig/rf.smallest.na.txt &
+
+## Try above with Zn
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -dd shellCutoff 2.783 SON ../output_2.5single5/stats -rf ../output_2.5single5/rf.smallest.zn.txt &
+
+./seq_alignment.R ../output_Ca_singleLig && ./nonRedundancy.R ../output_Ca_singleLig && ./write_fasta.R ../output_Ca_singleLig
+./seq_alignment.R ../output_Fe_singleLig && ./nonRedundancy.R ../output_Fe_singleLig && ./write_fasta.R ../output_Fe_singleLig
+./seq_alignment.R ../output_Na_singleLig && ./nonRedundancy.R ../output_Na_singleLig && ./write_fasta.R ../output_Na_singleLig
+./seq_alignment.R ../output_Mg_singleLig 
+./nonRedundancy.R ../output_Mg_singleLig && ./write_fasta.R ../output_Mg_singleLig
+
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_Ca_singleLig
+/mlab/data/software/interproscan/interproscan_f22.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_Fe_singleLig
+/mlab/data/software/interproscan/interproscan_f22.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_Na_singleLig
+/mlab/data/software/interproscan/interproscan_f22.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+## 12.29, rename the output_2.5single5 to output_Zn_singleLig5
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_Zn_singleLig5
+/mlab/data/software/interproscan/interproscan_f22.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_Mg_singleLig
+/mlab/data/software/interproscan/interproscan_f22.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+## redo the Ca and Na chiSquared because they were using the 5.15 interproscan on hemera fedora20VM
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_Ca_chiSquared
+/mlab/data/software/interproscan/interproscan_f22.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_Na_chiSquared
+/mlab/data/software/interproscan/interproscan_f22.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+
 #./rf.smallAngle.R ../output_Ca_singleLig
 #./rf.smallAngle.R ../output_Na_singleLig
 #./rf.smallAngle.R ../output_Mg_singleLig
 #./rf.smallAngle.R ../output_Fe_singleLig
 
+## duplicate each folder
 #./kmeans.mnr.optimalk.R ../output_Ca_singleLig5 5
 #./kmeans.mnr.optimalk.R ../output_Ca_chiSquared6 6
 #./kmeans.mnr.optimalk.R ../output_Ca_singleLig5 5

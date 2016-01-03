@@ -453,7 +453,7 @@ sub smallestAngle
     }
 
   map {push @results, $_->{residueName}.".".$_->{atomName}.".".$_->{element} ;} (@smallest);
-  
+
   if ($smallest[0]->resID() eq $smallest[1]->resID())
     { push @results, 1;}
   else
@@ -461,6 +461,8 @@ sub smallestAngle
 
   my $numLig = @$combo;
   push @results, $numLig;
+
+  map {push @results, $center->distance($_);} (@smallest);
 
   return @results;
   }
