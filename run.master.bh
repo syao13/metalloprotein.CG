@@ -57,7 +57,7 @@ echo "separation using random forest done"
 date
 
 ## Run k-means with a certain number of repetitions to get two measures vs k 
-./kmeans.mnr.optimalk.R $output_dir
+./kmeans.mnr.optimalk.R $output_dir $angleSpace
 echo "kmeans clustering done"
 date
 
@@ -77,7 +77,7 @@ echo "functional distances done"
 date
 
 ## Calculate structural distances and all four measures vs. k for determining optimal k 
-./measures.vs.k.R $output_dir
+./measures.vs.k.R $output_dir $angleSpace
 echo "comparing functional and structural distances done"
 date
 
@@ -87,7 +87,7 @@ echo "graphing clustering done"
 date
 
 ## Print the results of cluster centers, counts, and average probabilities
-./cluster.centers.prob.R $output_dir 5 6 7 8
+./cluster.centers.prob.R $output_dir $angleSpace $normalClusterNum $compressedClusterNum $combinedClusterNum
 echo "data out"
 date
 

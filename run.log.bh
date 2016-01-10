@@ -401,32 +401,124 @@ output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_Ca_chiSquared
 output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_Na_chiSquared
 /mlab/data/software/interproscan/interproscan_f22.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
 
+## 2016.1.3, Try the bi-aa criteria to separate the data into normal and compressed baesed on the average bondlength vs. smallest angles group
+./rf.biaa.R ../output_Zn_biaa5
+./rf.biaa.R ../output_Zn_biaa6
+./kmeans.mnr.optimalk.R ../output_Zn_biaa5 5 && ./kmeans.mnr.optimalk.R ../output_Zn_biaa6 6
+./kmeans.mnr.optimalk.R ../output_Zn_biaa3 3 && ./kmeans.mnr.optimalk.R ../output_Zn_biaa4 4
 
-#./rf.smallAngle.R ../output_Ca_singleLig
-#./rf.smallAngle.R ../output_Na_singleLig
-#./rf.smallAngle.R ../output_Mg_singleLig
-#./rf.smallAngle.R ../output_Fe_singleLig
+## 1.4, 
+./functional_characterization.R ../output_Zn_biaa6 && ./measures.vs.k.R ../output_Zn_biaa6 6 && ./cluster_metric_graphs.R ../output_Zn_biaa6 
+./functional_characterization.R ../output_Zn_biaa5 && ./measures.vs.k.R ../output_Zn_biaa5 5 && ./cluster_metric_graphs.R ../output_Zn_biaa5 
+./functional_characterization.R ../output_Zn_biaa4 && ./measures.vs.k.R ../output_Zn_biaa4 4 && ./cluster_metric_graphs.R ../output_Zn_biaa4 
+./functional_characterization.R ../output_Zn_biaa3 && ./measures.vs.k.R ../output_Zn_biaa3 3 && ./cluster_metric_graphs.R ../output_Zn_biaa3 
+
+
+## 1.5, proceed with other metals, and try RF separation and bi-aa separation
+./rf.smallAngle.R ../output_Ca_singleLig 55 65
+./rf.smallAngle.R ../output_Na_singleLig 45 60
+./rf.smallAngle.R ../output_Mg_singleLig 52 68
+./rf.smallAngle.R ../output_Fe_singleLig 63 73
+
+./rf.biaa.R ../output_Ca_biaa6
+./rf.biaa.R ../output_Na_biaa3
+./rf.biaa.R ../output_Mg_biaa6
+
 
 ## duplicate each folder
-#./kmeans.mnr.optimalk.R ../output_Ca_singleLig5 5
-#./kmeans.mnr.optimalk.R ../output_Ca_chiSquared6 6
-#./kmeans.mnr.optimalk.R ../output_Ca_singleLig5 5
-#./kmeans.mnr.optimalk.R ../output_Ca_chiSquared6 6
+./kmeans.mnr.optimalk.R ../output_Ca_single5 5 && ./kmeans.mnr.optimalk.R ../output_Ca_single6 6 && ./kmeans.mnr.optimalk.R ../output_Ca_single3 3 && ./kmeans.mnr.optimalk.R ../output_Ca_single4 4
 
-#./kmeans.mnr.optimalk.R ../output_Na_singleLig5 5
-#./kmeans.mnr.optimalk.R ../output_Na_chiSquared6 6
-#./kmeans.mnr.optimalk.R ../output_Na_singleLig5 5
-#./kmeans.mnr.optimalk.R ../output_Na_chiSquared6 6
+./kmeans.mnr.optimalk.R ../output_Na_single5 5 
+./kmeans.mnr.optimalk.R ../output_Na_single6 6 && ./kmeans.mnr.optimalk.R ../output_Na_single4 4 && ./kmeans.mnr.optimalk.R ../output_Na_single3 3
 
-#./kmeans.mnr.optimalk.R ../output_Mg_singleLig5 5
-#./kmeans.mnr.optimalk.R ../output_Mg_chiSquared6 6
-#./kmeans.mnr.optimalk.R ../output_Mg_singleLig5 5
-#./kmeans.mnr.optimalk.R ../output_Mg_chiSquared6 6
+./kmeans.mnr.optimalk.R ../output_Mg_single5 5 
+./kmeans.mnr.optimalk.R ../output_Mg_single6 6 
+./kmeans.mnr.optimalk.R ../output_Mg_single3 3 
+./kmeans.mnr.optimalk.R ../output_Mg_single4 4
 
-#./kmeans.mnr.optimalk.R ../output_Fe_singleLig5 5
-#./kmeans.mnr.optimalk.R ../output_Fe_chiSquared6 6
-#./kmeans.mnr.optimalk.R ../output_Fe_singleLig5 5
-#./kmeans.mnr.optimalk.R ../output_Fe_chiSquared6 6
+./kmeans.mnr.optimalk.R ../output_Fe_single5 5 && ./kmeans.mnr.optimalk.R ../output_Fe_single6 6 && ./kmeans.mnr.optimalk.R ../output_Fe_single4 4 && ./kmeans.mnr.optimalk.R ../output_Fe_single3 3
+
+## bi-aa
+./kmeans.mnr.optimalk.R ../output_Ca_biaa5 5 && ./kmeans.mnr.optimalk.R ../output_Ca_biaa6 6 
+./kmeans.mnr.optimalk.R ../output_Ca_biaa3 3 && ./kmeans.mnr.optimalk.R ../output_Ca_biaa4 4
+
+./kmeans.mnr.optimalk.R ../output_Na_biaa5 5 && ./kmeans.mnr.optimalk.R ../output_Na_biaa6 6  
+./kmeans.mnr.optimalk.R ../output_Na_biaa4 4 && ./kmeans.mnr.optimalk.R ../output_Na_biaa3 3
+
+./kmeans.mnr.optimalk.R ../output_Mg_biaa5 5 && ./kmeans.mnr.optimalk.R ../output_Mg_biaa6 6 && ./kmeans.mnr.optimalk.R ../output_Mg_biaa3 3 && ./kmeans.mnr.optimalk.R ../output_Mg_biaa4 4
+
+./kmeans.mnr.optimalk.R ../output_Fe_biaa5 5 && ./kmeans.mnr.optimalk.R ../output_Fe_biaa6 6 
+./kmeans.mnr.optimalk.R ../output_Fe_biaa4 4  
+./kmeans.mnr.optimalk.R ../output_Fe_biaa3 3
+
+## 1.6, finish runing everthing, single/biaa & 3/4/5/6
+## ./functional_characterization.R ../output_Mg_single6 && ./measures.vs.k.R ../output_Mg_single6 6 && ./cluster_metric_graphs.R ../output_Mg_single6
+./functional_characterization.R ../output_Mg_single5 && ./measures.vs.k.R ../output_Mg_single5 5 && ./cluster_metric_graphs.R ../output_Mg_single5
+./functional_characterization.R ../output_Mg_single4 && ./measures.vs.k.R ../output_Mg_single4 4 && ./cluster_metric_graphs.R ../output_Mg_single4
+./functional_characterization.R ../output_Mg_single3 && ./measures.vs.k.R ../output_Mg_single3 3 && ./cluster_metric_graphs.R ../output_Mg_single3
+
+date; ./functional_characterization.R ../output_Mg_biaa6 && date; ./measures.vs.k.R ../output_Mg_biaa6 6 && ./cluster_metric_graphs.R ../output_Mg_biaa6
+./functional_characterization.R ../output_Mg_biaa5 && ./measures.vs.k.R ../output_Mg_biaa5 5 && ./cluster_metric_graphs.R ../output_Mg_biaa5
+./functional_characterization.R ../output_Mg_biaa4 && ./measures.vs.k.R ../output_Mg_biaa4 4 && ./cluster_metric_graphs.R ../output_Mg_biaa4
+./functional_characterization.R ../output_Mg_biaa3 && ./measures.vs.k.R ../output_Mg_biaa3 3 && ./cluster_metric_graphs.R ../output_Mg_biaa3
+
+./functional_characterization.R ../output_Ca_single6 && ./measures.vs.k.R ../output_Ca_single6 6 && ./cluster_metric_graphs.R ../output_Ca_single6
+./functional_characterization.R ../output_Ca_single5 && ./measures.vs.k.R ../output_Ca_single5 5 && ./cluster_metric_graphs.R ../output_Ca_single5
+./functional_characterization.R ../output_Ca_single4 && ./measures.vs.k.R ../output_Ca_single4 4 && ./cluster_metric_graphs.R ../output_Ca_single4
+./functional_characterization.R ../output_Ca_single3 && ./measures.vs.k.R ../output_Ca_single3 3 && ./cluster_metric_graphs.R ../output_Ca_single3
+
+./functional_characterization.R ../output_Ca_biaa6 && ./measures.vs.k.R ../output_Ca_biaa6 6 && ./cluster_metric_graphs.R ../output_Ca_biaa6
+./functional_characterization.R ../output_Ca_biaa5 && ./measures.vs.k.R ../output_Ca_biaa5 5 && ./cluster_metric_graphs.R ../output_Ca_biaa5
+./functional_characterization.R ../output_Ca_biaa4 && ./measures.vs.k.R ../output_Ca_biaa4 4 && ./cluster_metric_graphs.R ../output_Ca_biaa4
+./functional_characterization.R ../output_Ca_biaa3 && ./measures.vs.k.R ../output_Ca_biaa3 3 && ./cluster_metric_graphs.R ../output_Ca_biaa3
+
+./functional_characterization.R ../output_Fe_single6 && ./measures.vs.k.R ../output_Fe_single6 6 && ./cluster_metric_graphs.R ../output_Fe_single6
+./functional_characterization.R ../output_Fe_single5 && ./measures.vs.k.R ../output_Fe_single5 5 && ./cluster_metric_graphs.R ../output_Fe_single5
+./functional_characterization.R ../output_Fe_single4 && ./measures.vs.k.R ../output_Fe_single4 4 && ./cluster_metric_graphs.R ../output_Fe_single4
+./functional_characterization.R ../output_Fe_single3 && ./measures.vs.k.R ../output_Fe_single3 3 && ./cluster_metric_graphs.R ../output_Fe_single3
+
+./functional_characterization.R ../output_Fe_biaa6 && ./measures.vs.k.R ../output_Fe_biaa6 6 && ./cluster_metric_graphs.R ../output_Fe_biaa6
+./functional_characterization.R ../output_Fe_biaa5 && ./measures.vs.k.R ../output_Fe_biaa5 5 && ./cluster_metric_graphs.R ../output_Fe_biaa5
+./functional_characterization.R ../output_Fe_biaa4 && ./measures.vs.k.R ../output_Fe_biaa4 4 && ./cluster_metric_graphs.R ../output_Fe_biaa4
+./functional_characterization.R ../output_Fe_biaa3 && ./measures.vs.k.R ../output_Fe_biaa3 3 && ./cluster_metric_graphs.R ../output_Fe_biaa3
+
+./functional_characterization.R ../output_Na_single6 && ./measures.vs.k.R ../output_Na_single6 6 && ./cluster_metric_graphs.R ../output_Na_single6
+./functional_characterization.R ../output_Na_single5 && ./measures.vs.k.R ../output_Na_single5 5 && ./cluster_metric_graphs.R ../output_Na_single5
+./functional_characterization.R ../output_Na_single4 && ./measures.vs.k.R ../output_Na_single4 4 && ./cluster_metric_graphs.R ../output_Na_single4
+./functional_characterization.R ../output_Na_single3 && ./measures.vs.k.R ../output_Na_single3 3 && ./cluster_metric_graphs.R ../output_Na_single3
+
+./functional_characterization.R ../output_Na_biaa6 && ./measures.vs.k.R ../output_Na_biaa6 6 && ./cluster_metric_graphs.R ../output_Na_biaa6
+./functional_characterization.R ../output_Na_biaa5 && ./measures.vs.k.R ../output_Na_biaa5 5 && ./cluster_metric_graphs.R ../output_Na_biaa5
+./functional_characterization.R ../output_Na_biaa4 && ./measures.vs.k.R ../output_Na_biaa4 4 && ./cluster_metric_graphs.R ../output_Na_biaa4
+./functional_characterization.R ../output_Na_biaa3 && ./measures.vs.k.R ../output_Na_biaa3 3 && ./cluster_metric_graphs.R ../output_Na_biaa3
+
+
+## 1.8, after corrected angles
+./kmeans.mnr.optimalk.R ../Mg_results/biaa5_correctedangle 5 && ./kmeans.mnr.optimalk.R ../Mg_results/biaa6_correctedangle 6
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/biaa5_correctedangle 5 && nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/biaa6_correctedangle 6
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/biaa5_correctedangle 5 && nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/biaa6_correctedangle 6
+nice -10 ./kmeans.mnr.optimalk.R ../Fe_results/biaa5_correctedangle 5 && nice -10 ./kmeans.mnr.optimalk.R ../Fe_results/biaa6_correctedangle 6
+nice -10 ./kmeans.mnr.optimalk.R ../Na_results/biaa5_correctedangle 5 && nice -10 ./kmeans.mnr.optimalk.R ../Na_results/biaa6_correctedangle 6
+
+## 1.9
+nice -10 ./functional_characterization.R ../Zn_results/biaa5_correctedangle && ./measures.vs.k.R ../Zn_results/biaa5_correctedangle 5 && ./cluster_metric_graphs.R ../Zn_results/biaa5_correctedangle
+nice -10 ./functional_characterization.R ../Zn_results/biaa6_correctedangle && ./measures.vs.k.R ../Zn_results/biaa6_correctedangle 6 && ./cluster_metric_graphs.R ../Zn_results/biaa6_correctedangle
+
+nice -10 ./functional_characterization.R ../Mg_results/biaa5_correctedangle && ./measures.vs.k.R ../Mg_results/biaa5_correctedangle 5 && ./cluster_metric_graphs.R ../Mg_results/biaa5_correctedangle
+nice -10 ./functional_characterization.R ../Mg_results/biaa6_correctedangle && ./measures.vs.k.R ../Mg_results/biaa6_correctedangle 6 && ./cluster_metric_graphs.R ../Mg_results/biaa6_correctedangle
+
+nice -10 ./functional_characterization.R ../Ca_results/biaa5_correctedangle && ./measures.vs.k.R ../Ca_results/biaa5_correctedangle 5 && ./cluster_metric_graphs.R ../Ca_results/biaa5_correctedangle
+nice -10 ./functional_characterization.R ../Ca_results/biaa6_correctedangle && ./measures.vs.k.R ../Ca_results/biaa6_correctedangle 6 && ./cluster_metric_graphs.R ../Ca_results/biaa6_correctedangle
+
+nice -10 ./functional_characterization.R ../Fe_results/biaa5_correctedangle && ./measures.vs.k.R ../Fe_results/biaa5_correctedangle 5 && ./cluster_metric_graphs.R ../Fe_results/biaa5_correctedangle
+nice -10 ./functional_characterization.R ../Fe_results/biaa6_correctedangle && ./measures.vs.k.R ../Fe_results/biaa6_correctedangle 6 && ./cluster_metric_graphs.R ../Fe_results/biaa6_correctedangle
+
+nice -10 ./functional_characterization.R ../Na_results/biaa5_correctedangle && ./measures.vs.k.R ../Na_results/biaa5_correctedangle 5 && ./cluster_metric_graphs.R ../Na_results/biaa5_correctedangle
+nice -10 ./functional_characterization.R ../Na_results/biaa6_correctedangle && ./measures.vs.k.R ../Na_results/biaa6_correctedangle 6 && ./cluster_metric_graphs.R ../Na_results/biaa6_correctedangle
+
+
+
+
 
 
 

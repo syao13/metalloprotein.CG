@@ -1,4 +1,5 @@
-#!/usr/bin/Rscript
+#!/mlab/data/software/R-3.2.1-F22/bin/Rscript
+##!/usr/bin/Rscript
 
 ### Load the data
 library(cluster) 
@@ -9,12 +10,31 @@ options(stringsAsFactors=FALSE)
 args = commandArgs(trailingOnly=TRUE)
 setwd(args[1])
 
+load("angle.correction.RData")
 rawdata <- read.table("r.allLig.txt", header=FALSE)
 colnames(rawdata) <- c("znID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
 
 ############ normal vs. compressed#####################
-angleSapce <- function(angleCombo, num) {
+#angleSapce <- function(angleCombo, num) {
+#  angles <- as.numeric(strsplit(angleCombo, ",")[[1]])
+#  anglesSort <- sort(angles[2:(length(angles)-1)])
+#  if (num == 5) { c(angles[1], anglesSort[c(1, floor((length(anglesSort) + 1)/2),length(anglesSort))], angles[length(angles)]) }
+#  else if (num == 6) { c(angles[1], anglesSort[c(1, floor(quantile(1:length(anglesSort), 0.34)), floor(quantile(1:length(anglesSort), 0.67)), length(anglesSort))], angles[length(angles)]) }
+#  else if (num == 4) { c(angles[1], anglesSort[c(1, 2, length(anglesSort)-1, length(anglesSort))], angles[length(angles)]) }
+#  else if (num == 3) { c(angles[1], anglesSort[c(1, length(anglesSort)-2, length(anglesSort)-1, length(anglesSort))], angles[length(angles)]) }
+#}
+angleSapce <- function(angleCombo, num, mode="median") {
   angles <- as.numeric(strsplit(angleCombo, ",")[[1]])
+
+  idx.nr <- which(rawdata$angleCombo == angleCombo)
+  id <- rawdata[idx.nr,1]
+  idx.corrected <- which(id == angle.correction$id)[1]
+  idx.minangle <- which(angles == min(angles))[1]
+  if (! is.na(idx.corrected) && abs(min(angles) - angle.correction$org_angle[idx.corrected]) < 1e-5) {
+    if (mode == "mean") {angles[idx.minangle] <- angle.correction$mean_corrected_angle[idx.corrected]}
+    else {angles[idx.minangle] <- angle.correction$median_corrected_angle[idx.corrected]}
+  }
+
   anglesSort <- sort(angles[2:(length(angles)-1)])
   if (num == 5) { c(angles[1], anglesSort[c(1, floor((length(anglesSort) + 1)/2),length(anglesSort))], angles[length(angles)]) }
   else if (num == 6) { c(angles[1], anglesSort[c(1, floor(quantile(1:length(anglesSort), 0.34)), floor(quantile(1:length(anglesSort), 0.67)), length(anglesSort))], angles[length(angles)]) }
