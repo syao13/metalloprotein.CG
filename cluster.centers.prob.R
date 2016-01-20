@@ -10,7 +10,7 @@ load("normal_cluster_assg.RData")
 load("compressed_cluster_assg.RData")
 load("combined_cluster_assg.RData")
 
-rawdata1 <- read.table("rAllLig.txt", header = FALSE)
+rawdata1 <- read.table("r.allLig.txt", header = FALSE)
 colnames(rawdata1) <- c("znID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
 #rawdata2 <- rawdata1 #read.table("four.chi.leaveOut.txt", header = TRUE)
 

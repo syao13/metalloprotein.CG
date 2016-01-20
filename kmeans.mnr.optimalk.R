@@ -6,7 +6,6 @@ options(stringsAsFactors=FALSE)
 args = commandArgs(trailingOnly=TRUE)
 setwd(args[1])
 
-load("angle.correction.RData")
 load("rf.results.RData")
 load("finalMetalList.RData")
 rawdata <- read.table("r.allLig.txt", header=FALSE)
@@ -55,14 +54,14 @@ compressed.nr <- compressed.nr[!ind.comp2, ]
 angleSapce <- function(angleCombo, num, mode="median") {
   angles <- as.numeric(strsplit(angleCombo, ",")[[1]])
 
-  idx.nr <- which(all.nr$angleCombo == angleCombo)
-  id <- all.nr[idx.nr,1]
-  idx.corrected <- which(id == angle.correction$id)[1]
-  idx.minangle <- which(angles == min(angles))[1]
-  if (! is.na(idx.corrected) && abs(min(angles) - angle.correction$org_angle[idx.corrected]) < 1e-5) {
-    if (mode == "mean") {angles[idx.minangle] <- angle.correction$mean_corrected_angle[idx.corrected]}
-    else {angles[idx.minangle] <- angle.correction$median_corrected_angle[idx.corrected]}
-  }
+  #idx.nr <- which(all.nr$angleCombo == angleCombo)
+  #id <- all.nr[idx.nr,1]
+  #idx.corrected <- which(id == angle.correction$id)[1]
+  #idx.minangle <- which(angles == min(angles))[1]
+  #if (! is.na(idx.corrected) && abs(min(angles) - angle.correction$org_angle[idx.corrected]) < 1e-5) {
+  #  if (mode == "mean") {angles[idx.minangle] <- angle.correction$mean_corrected_angle[idx.corrected]}
+  #  else {angles[idx.minangle] <- angle.correction$median_corrected_angle[idx.corrected]}
+  #}
 
   anglesSort <- sort(angles[2:(length(angles)-1)])
   if (num == 5) { c(angles[1], anglesSort[c(1, floor((length(anglesSort) + 1)/2),length(anglesSort))], angles[length(angles)]) }
@@ -71,23 +70,34 @@ angleSapce <- function(angleCombo, num, mode="median") {
   else if (num == 3) { c(angles[1], anglesSort[c(1, length(anglesSort)-2, length(anglesSort)-1, length(anglesSort))], angles[length(angles)]) }
 }
 
+## combined
+angles.all <- all.nr$angleCombo
+length(angles.all)
+angle.sorted.all <- t(sapply(angles.all, function(x) angleSapce(x, args[2])))
+
+#ligNum <- sapply(all.nr$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
+#ligNumStd <- sd(ligNum)
+#angleStd <- sum(apply(angle.sorted.all, 2, sd))/6
+#angle.sorted.all <- cbind(angle.sorted.all, ligNum * angleStd / ligNumStd)
+rownames(angle.sorted.all) <- NULL
+
 ## normal
 angles.norm <- normal.nr$angleCombo
 length(angles.norm)
 angle.sorted.norm <- t(sapply(angles.norm, function(x) angleSapce(x, args[2])))
+
+#ligNum <- sapply(normal.nr$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
+#angle.sorted.norm <- cbind(angle.sorted.norm, ligNum * angleStd / ligNumStd)
 rownames(angle.sorted.norm) <- NULL
 
 ## compressed
 angles.comp <- compressed.nr$angleCombo
 length(angles.comp)
 angle.sorted.comp <- t(sapply(angles.comp, function(x) angleSapce(x, args[2])))
-rownames(angle.sorted.comp) <- NULL
 
-## combined
-angles.all <- all.nr$angleCombo
-length(angles.all)
-angle.sorted.all <- t(sapply(angles.all, function(x) angleSapce(x, args[2])))
-rownames(angle.sorted.all) <- NULL
+#ligNum <- sapply(compressed.nr$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
+#angle.sorted.comp <- cbind(angle.sorted.comp, ligNum * angleStd / ligNumStd)
+rownames(angle.sorted.comp) <- NULL
 
 ####################################################
 

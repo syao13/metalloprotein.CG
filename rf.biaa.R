@@ -8,7 +8,7 @@ options(stringsAsFactors=FALSE)
 args = commandArgs(trailingOnly=TRUE)
 setwd(args[1])
 
-rawdata <- read.table("rf.smallest.fe.txt", header = FALSE)
+rawdata <- read.table("rf.smallest.txt", header = FALSE)
 id <- rawdata[,1]
 orderid <- order(id)
 data <- cbind(rawdata[orderid,2:5], (rawdata[orderid,7] + rawdata[orderid,8])/2)

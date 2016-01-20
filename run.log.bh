@@ -516,14 +516,141 @@ nice -10 ./functional_characterization.R ../Fe_results/biaa6_correctedangle && .
 nice -10 ./functional_characterization.R ../Na_results/biaa5_correctedangle && ./measures.vs.k.R ../Na_results/biaa5_correctedangle 5 && ./cluster_metric_graphs.R ../Na_results/biaa5_correctedangle
 nice -10 ./functional_characterization.R ../Na_results/biaa6_correctedangle && ./measures.vs.k.R ../Na_results/biaa6_correctedangle 6 && ./cluster_metric_graphs.R ../Na_results/biaa6_correctedangle
 
+## 1.10, Use the corrected angles as rules to separate normal vs. compressed angles
+./rf.correctedangle.R ../Zn_results/crtag5_correctedangle
+./rf.correctedangle.R ../Mg_results/crtag5_correctedangle
+./rf.correctedangle.R ../Ca_results/crtag5_correctedangle
+./rf.correctedangle.R ../Fe_results/crtag5_correctedangle
+./rf.correctedangle.R ../Na_results/crtag5_correctedangle
+
+cp -r Zn_results/crtag5_correctedangle/ Zn_results/crtag6_correctedangle/
+cp -r Mg_results/crtag5_correctedangle/ Mg_results/crtag6_correctedangle/
+cp -r Ca_results/crtag5_correctedangle/ Ca_results/crtag6_correctedangle/
+cp -r Fe_results/crtag5_correctedangle/ Fe_results/crtag6_correctedangle/
+cp -r Na_results/crtag5_correctedangle/ Na_results/crtag6_correctedangle/
+
+cp -r Zn_results/crtag5/ Zn_results/crtag6/
+cp -r Mg_results/crtag5/ Mg_results/crtag6/
+cp -r Ca_results/crtag5/ Ca_results/crtag6/
+cp -r Fe_results/crtag5/ Fe_results/crtag6/
+cp -r Na_results/crtag5/ Na_results/crtag6/
+
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/crtag5_correctedangle 5 && nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/crtag6_correctedangle 6
+nice -10 ./kmeans.mnr.optimalk.R ../Mg_results/crtag5_correctedangle 5 && nice -10 ./kmeans.mnr.optimalk.R ../Mg_results/crtag6_correctedangle 6
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/crtag5_correctedangle 5 && nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/crtag6_correctedangle 6
+nice -10 ./kmeans.mnr.optimalk.R ../Fe_results/crtag5_correctedangle 5 && nice -10 ./kmeans.mnr.optimalk.R ../Fe_results/crtag6_correctedangle 6
+nice -10 ./kmeans.mnr.optimalk.R ../Na_results/crtag5_correctedangle 5 && nice -10 ./kmeans.mnr.optimalk.R ../Na_results/crtag6_correctedangle 6
+
+
+## 1.11
+nice -10 ./functional_characterization.R ../Zn_results/crtag5_correctedangle && ./measures.vs.k.R ../Zn_results/crtag5_correctedangle 5 && ./cluster_metric_graphs.R ../Zn_results/crtag5_correctedangle
+nice -10 ./functional_characterization.R ../Zn_results/crtag6_correctedangle && ./measures.vs.k.R ../Zn_results/crtag6_correctedangle 6 && ./cluster_metric_graphs.R ../Zn_results/crtag6_correctedangle
+nice -10 ./functional_characterization.R ../Mg_results/crtag5_correctedangle && ./measures.vs.k.R ../Mg_results/crtag5_correctedangle 5 && ./cluster_metric_graphs.R ../Mg_results/crtag5_correctedangle
+nice -10 ./functional_characterization.R ../Mg_results/crtag6_correctedangle && ./measures.vs.k.R ../Mg_results/crtag6_correctedangle 6 && ./cluster_metric_graphs.R ../Mg_results/crtag6_correctedangle
+nice -10 ./functional_characterization.R ../Ca_results/crtag5_correctedangle && ./measures.vs.k.R ../Ca_results/crtag5_correctedangle 5 && ./cluster_metric_graphs.R ../Ca_results/crtag5_correctedangle
+nice -10 ./functional_characterization.R ../Ca_results/crtag6_correctedangle && ./measures.vs.k.R ../Ca_results/crtag6_correctedangle 6 && ./cluster_metric_graphs.R ../Ca_results/crtag6_correctedangle
+nice -10 ./functional_characterization.R ../Fe_results/crtag5_correctedangle && ./measures.vs.k.R ../Fe_results/crtag5_correctedangle 5 && ./cluster_metric_graphs.R ../Fe_results/crtag5_correctedangle
+nice -10 ./functional_characterization.R ../Fe_results/crtag6_correctedangle && ./measures.vs.k.R ../Fe_results/crtag6_correctedangle 6 && ./cluster_metric_graphs.R ../Fe_results/crtag6_correctedangle
+nice -10 ./functional_characterization.R ../Na_results/crtag5_correctedangle && ./measures.vs.k.R ../Na_results/crtag5_correctedangle 5 && ./cluster_metric_graphs.R ../Na_results/crtag5_correctedangle
+nice -10 ./functional_characterization.R ../Na_results/crtag6_correctedangle && ./measures.vs.k.R ../Na_results/crtag6_correctedangle 6 && ./cluster_metric_graphs.R ../Na_results/crtag6_correctedangle
+
+## comment out kmean and measures using corrected angles
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/crtag5 5 && nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/crtag6 6
+nice -10 ./kmeans.mnr.optimalk.R ../Mg_results/crtag5 5 && nice -10 ./kmeans.mnr.optimalk.R ../Mg_results/crtag6 6
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/crtag5 5 && nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/crtag6 6
+nice -10 ./kmeans.mnr.optimalk.R ../Fe_results/crtag5 5 && nice -10 ./kmeans.mnr.optimalk.R ../Fe_results/crtag6 6
+nice -10 ./kmeans.mnr.optimalk.R ../Na_results/crtag5 5 && nice -10 ./kmeans.mnr.optimalk.R ../Na_results/crtag6 6
+
+## rerun measure graph so the rho is more scalable
+./cluster_metric_graphs.R ../Zn_results/crtag5_correctedangle
+./cluster_metric_graphs.R ../Zn_results/crtag6_correctedangle
+./cluster_metric_graphs.R ../Mg_results/crtag5_correctedangle
+./cluster_metric_graphs.R ../Mg_results/crtag6_correctedangle
+./cluster_metric_graphs.R ../Ca_results/crtag5_correctedangle
+./cluster_metric_graphs.R ../Ca_results/crtag6_correctedangle
+./cluster_metric_graphs.R ../Fe_results/crtag5_correctedangle
+./cluster_metric_graphs.R ../Fe_results/crtag6_correctedangle
+./cluster_metric_graphs.R ../Na_results/crtag5_correctedangle
+./cluster_metric_graphs.R ../Na_results/crtag6_correctedangle
+
+./cluster_metric_graphs.R ../Zn_results/biaa5_correctedangle
+./cluster_metric_graphs.R ../Zn_results/biaa6_correctedangle
+./cluster_metric_graphs.R ../Mg_results/biaa5_correctedangle
+./cluster_metric_graphs.R ../Mg_results/biaa6_correctedangle
+./cluster_metric_graphs.R ../Ca_results/biaa5_correctedangle
+./cluster_metric_graphs.R ../Ca_results/biaa6_correctedangle
+./cluster_metric_graphs.R ../Fe_results/biaa5_correctedangle
+./cluster_metric_graphs.R ../Fe_results/biaa6_correctedangle
+./cluster_metric_graphs.R ../Na_results/biaa5_correctedangle
+./cluster_metric_graphs.R ../Na_results/biaa6_correctedangle
+
+./cluster_metric_graphs.R ../output_Zn_biaa5
+./cluster_metric_graphs.R ../output_Zn_biaa6
+./cluster_metric_graphs.R ../output_Mg_biaa5
+./cluster_metric_graphs.R ../output_Mg_biaa6
+./cluster_metric_graphs.R ../output_Ca_biaa5
+./cluster_metric_graphs.R ../output_Ca_biaa6
+./cluster_metric_graphs.R ../output_Fe_biaa5
+./cluster_metric_graphs.R ../output_Fe_biaa6
+./cluster_metric_graphs.R ../output_Na_biaa5
+./cluster_metric_graphs.R ../output_Na_biaa6
+
+./cluster_metric_graphs.R ../output_Zn_single5
+./cluster_metric_graphs.R ../output_Zn_single6
+./cluster_metric_graphs.R ../output_Mg_single5
+./cluster_metric_graphs.R ../output_Mg_single6
+./cluster_metric_graphs.R ../output_Ca_single5
+./cluster_metric_graphs.R ../output_Ca_single6
+./cluster_metric_graphs.R ../output_Fe_single5
+./cluster_metric_graphs.R ../output_Fe_single6
+./cluster_metric_graphs.R ../output_Na_single5
+./cluster_metric_graphs.R ../output_Na_single6
+
+nice -10 ./functional_characterization.R ../Zn_results/crtag5 && ./measures.vs.k.R ../Zn_results/crtag5 5 && ./cluster_metric_graphs.R ../Zn_results/crtag5
+nice -10 ./functional_characterization.R ../Zn_results/crtag6 && ./measures.vs.k.R ../Zn_results/crtag6 6 && ./cluster_metric_graphs.R ../Zn_results/crtag6
+nice -10 ./functional_characterization.R ../Mg_results/crtag5 && ./measures.vs.k.R ../Mg_results/crtag5 5 && ./cluster_metric_graphs.R ../Mg_results/crtag5
+nice -10 ./functional_characterization.R ../Mg_results/crtag6 && ./measures.vs.k.R ../Mg_results/crtag6 6 && ./cluster_metric_graphs.R ../Mg_results/crtag6
+nice -10 ./functional_characterization.R ../Ca_results/crtag5 && ./measures.vs.k.R ../Ca_results/crtag5 5 && ./cluster_metric_graphs.R ../Ca_results/crtag5
+nice -10 ./functional_characterization.R ../Ca_results/crtag6 && ./measures.vs.k.R ../Ca_results/crtag6 6 && ./cluster_metric_graphs.R ../Ca_results/crtag6
+nice -10 ./functional_characterization.R ../Fe_results/crtag5 && ./measures.vs.k.R ../Fe_results/crtag5 5 && ./cluster_metric_graphs.R ../Fe_results/crtag5
+nice -10 ./functional_characterization.R ../Fe_results/crtag6 && ./measures.vs.k.R ../Fe_results/crtag6 6 && ./cluster_metric_graphs.R ../Fe_results/crtag6
+nice -10 ./functional_characterization.R ../Na_results/crtag5 && ./measures.vs.k.R ../Na_results/crtag5 5 && ./cluster_metric_graphs.R ../Na_results/crtag5
+nice -10 ./functional_characterization.R ../Na_results/crtag6 && ./measures.vs.k.R ../Na_results/crtag6 6 && ./cluster_metric_graphs.R ../Na_results/crtag6
+
+
+## Test on 4-ligand only zinc, Rf with and without corrected angle
+./rf.crf.R ../Zn_results/4crf_6crtag 58 68
+./rf.smallAngle.R ../Zn_results/4rf_6/ 58 68
+
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/4crf_6crtag 6 1
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/4rf_6/ 6 0
+
+nice -10 ./functional_characterization.R ../Zn_results/4crf_6crtag && ./measures.vs.k.R ../Zn_results/4crf_6crtag 6 1 && ./cluster_metric_graphs.R ../Zn_results/4crf_6crtag
+nice -10 ./functional_characterization.R ../Zn_results/4rf_6 && ./measures.vs.k.R ../Zn_results/4rf_6 6 0 && ./cluster_metric_graphs.R ../Zn_results/4rf_6
+## Drop the corrected angles
+
+
+## 1.19, Test to add #Lig as a dimension 
+cp -r root_beforeRF/ rf_6p1
+./rf.smallAngle.R ../Zn_results/rf_6p1 58 68
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/rf_6p1 6
+
+## Use overall angle standard deviation to normalize
+cp -r root_beforeRF/ rf_6plus1
+./rf.smallAngle.R ../Zn_results/rf_6plus1 58 68
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/rf_6plus1 6
+
+cp -r output_Zn_singleLig6 afterkmeans_6plus1
+./measures.vs.k.R ../Zn_results/afterkmeans_6plus1 6 && ./cluster_metric_graphs.R ../Zn_results/afterkmeans_6plus1
+
+nice -10 ./functional_characterization.R ../Zn_results/rf_6p1 6 && ./measures.vs.k.R ../Zn_results/rf_6p1 6 && ./cluster_metric_graphs.R ../Zn_results/rf_6p1
+nice -10 ./functional_characterization.R ../Zn_results/rf_6plus1 6 && ./measures.vs.k.R ../Zn_results/rf_6plus1 6 && ./cluster_metric_graphs.R ../Zn_results/rf_6plus1
 
 
 
 
 
-
-
-
+ 
 
 
 

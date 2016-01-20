@@ -10,30 +10,21 @@ options(stringsAsFactors=FALSE)
 args = commandArgs(trailingOnly=TRUE)
 setwd(args[1])
 
-load("angle.correction.RData")
 rawdata <- read.table("r.allLig.txt", header=FALSE)
 colnames(rawdata) <- c("znID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
 
 ############ normal vs. compressed#####################
-#angleSapce <- function(angleCombo, num) {
-#  angles <- as.numeric(strsplit(angleCombo, ",")[[1]])
-#  anglesSort <- sort(angles[2:(length(angles)-1)])
-#  if (num == 5) { c(angles[1], anglesSort[c(1, floor((length(anglesSort) + 1)/2),length(anglesSort))], angles[length(angles)]) }
-#  else if (num == 6) { c(angles[1], anglesSort[c(1, floor(quantile(1:length(anglesSort), 0.34)), floor(quantile(1:length(anglesSort), 0.67)), length(anglesSort))], angles[length(angles)]) }
-#  else if (num == 4) { c(angles[1], anglesSort[c(1, 2, length(anglesSort)-1, length(anglesSort))], angles[length(angles)]) }
-#  else if (num == 3) { c(angles[1], anglesSort[c(1, length(anglesSort)-2, length(anglesSort)-1, length(anglesSort))], angles[length(angles)]) }
-#}
 angleSapce <- function(angleCombo, num, mode="median") {
   angles <- as.numeric(strsplit(angleCombo, ",")[[1]])
 
-  idx.nr <- which(rawdata$angleCombo == angleCombo)
-  id <- rawdata[idx.nr,1]
-  idx.corrected <- which(id == angle.correction$id)[1]
-  idx.minangle <- which(angles == min(angles))[1]
-  if (! is.na(idx.corrected) && abs(min(angles) - angle.correction$org_angle[idx.corrected]) < 1e-5) {
-    if (mode == "mean") {angles[idx.minangle] <- angle.correction$mean_corrected_angle[idx.corrected]}
-    else {angles[idx.minangle] <- angle.correction$median_corrected_angle[idx.corrected]}
-  }
+  #idx.nr <- which(rawdata$angleCombo == angleCombo)
+  #id <- rawdata[idx.nr,1]
+  #idx.corrected <- which(id == angle.correction$id)[1]
+  #idx.minangle <- which(angles == min(angles))[1]
+  #if (! is.na(idx.corrected) && abs(min(angles) - angle.correction$org_angle[idx.corrected]) < 1e-5) {
+  #  if (mode == "mean") {angles[idx.minangle] <- angle.correction$mean_corrected_angle[idx.corrected]}
+  #  else {angles[idx.minangle] <- angle.correction$median_corrected_angle[idx.corrected]}
+  #}
 
   anglesSort <- sort(angles[2:(length(angles)-1)])
   if (num == 5) { c(angles[1], anglesSort[c(1, floor((length(anglesSort) + 1)/2),length(anglesSort))], angles[length(angles)]) }
@@ -42,11 +33,28 @@ angleSapce <- function(angleCombo, num, mode="median") {
   else if (num == 3) { c(angles[1], anglesSort[c(1, length(anglesSort)-2, length(anglesSort)-1, length(anglesSort))], angles[length(angles)]) }
 }
 
+## combined
+load("combined_cluster_assg.RData")
+data.combined <- rawdata[sapply(combined.1.clusters[,1], function(x) which(rawdata[,1] == x)[1]),]
+angles.comb <- data.combined$angleCombo
+angles.combined <- t(sapply(angles.comb, function(x) angleSapce(x, args[2])))
+
+#ligNum <- sapply(data.combined$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
+#ligNumStd <- sd(ligNum)
+#angleStd <- sum(apply(angles.combined, 2, sd))/6
+#angles.combined <- cbind(angles.combined, ligNum * angleStd / ligNumStd)
+
+rownames(angles.combined) <- NULL
+dim(angles.combined)
+
 ## normal
 load("normal_cluster_assg.RData")
 data.normal <- rawdata[sapply(normal.1.clusters[,1], function(x) which(rawdata[,1] == x)[1]),]
 angles.norm <- data.normal$angleCombo
 angles.normal <- t(sapply(angles.norm, function(x) angleSapce(x, args[2])))
+
+#ligNum <- sapply(data.normal$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
+#angles.normal <- cbind(angles.normal, ligNum * angleStd / ligNumStd)
 rownames(angles.normal) <- NULL
 dim(angles.normal)
 
@@ -55,16 +63,11 @@ load("compressed_cluster_assg.RData")
 data.compressed <- rawdata[sapply(compressed.1.clusters[,1], function(x) which(rawdata[,1] == x)[1]),]
 angles.comp <- data.compressed$angleCombo
 angles.compressed <- t(sapply(angles.comp, function(x) angleSapce(x, args[2])))
+
+#ligNum <- sapply(data.compressed$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
+#angles.compressed <- cbind(angles.compressed, ligNum * angleStd / ligNumStd)
 rownames(angles.compressed) <- NULL
 dim(angles.compressed)
-
-## combined
-load("combined_cluster_assg.RData")
-data.combined <- rawdata[sapply(combined.1.clusters[,1], function(x) which(rawdata[,1] == x)[1]),]
-angles.comb <- data.combined$angleCombo
-angles.combined <- t(sapply(angles.comb, function(x) angleSapce(x, args[2])))
-rownames(angles.combined) <- NULL
-dim(angles.combined)
 
 ###### Compute all distance matrices for all k
 getDistM <- function(selectAngles, clusters) {
