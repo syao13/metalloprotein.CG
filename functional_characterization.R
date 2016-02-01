@@ -96,7 +96,7 @@ normal_combs$n_clust <- get_n_clust(normal_combs[,2])
 normal_funct_dist <- lapply(seq(1, nrow(normal_combs)), function(in_comb){
   annotation_index <- normal_combs[in_comb, 1]
   cluster_index <- normal_combs[in_comb, 2]
-  calculate_functional_distance(annotation_subset_ligands_full[[annotation_index]],
+  calculate_functional_distance2(annotation_subset_ligands_full[[annotation_index]],
                                 normal_clusters[[cluster_index]])
 })
 
@@ -107,7 +107,7 @@ compressed_combs_names <- paste(compressed_combs[,1], compressed_combs[,2], sep 
 compressed_funct_dist <- lapply(seq(1, nrow(compressed_combs)), function(in_comb){
   annotation_index <- compressed_combs[in_comb, 1]
   cluster_index <- compressed_combs[in_comb, 2]
-  calculate_functional_distance(annotation_subset_ligands_full[[annotation_index]],
+  calculate_functional_distance2(annotation_subset_ligands_full[[annotation_index]],
                                 compressed_clusters[[cluster_index]])
 })
 names(compressed_funct_dist) <- compressed_combs_names
@@ -120,7 +120,7 @@ combined_combs$n_clust <- get_n_clust(combined_combs[,2])
 combined_funct_dist <- lapply(seq(1, nrow(combined_combs)), function(in_comb){
   annotation_index <- combined_combs[in_comb, 1]
   cluster_index <- combined_combs[in_comb, 2]
-  calculate_functional_distance(annotation_subset_ligands_full[[annotation_index]],
+  calculate_functional_distance2(annotation_subset_ligands_full[[annotation_index]],
                                 combined_clusters[[cluster_index]])
 })
 

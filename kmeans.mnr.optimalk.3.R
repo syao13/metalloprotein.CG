@@ -1,5 +1,7 @@
 #!/mlab/data/software/R-3.2.1-F22/bin/Rscript
 
+## check a line of ligand atom combo
+
 ###!/usr/bin/Rscript
 ####################    load data  ####################  
 options(stringsAsFactors=FALSE)
@@ -23,6 +25,8 @@ orderid <- order(id)
 data <- rawdata[orderid,]
 
 ligNum <- sapply(data$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
+ligElmt <-sapply(data$ligandCombo, function(x) 
+               paste(sort(matrix(unlist(strsplit(strsplit(x, ",")[[1]], "[.]")), byrow=TRUE, ncol=3)[,3]), collapse=""))
 
 angles <- data$angleCombo
 bidentates <- data$biStatusCombo
@@ -32,8 +36,8 @@ resolution <- data$resolution
 anglesU <- angles
 
 #### Define the data into normal and compressed from rf prediciton on 58-68 angles.
-ind.normal <- prediction.all=="normal" #& ligNum == args[2]
-ind.compress <- prediction.all=="compressed" #& ligNum == args[2]
+ind.normal <- prediction.all=="normal" & (ligElmt == "NNOO" | ligElmt == "NNOOO" | ligElmt == "NNOOOO")
+ind.compress <- prediction.all=="compressed" & (ligElmt == "NNOO" | ligElmt == "NNOOO" | ligElmt == "NNOOOO")
 
 normal <- data[ind.normal,]
 compressed <- data[ind.compress,]

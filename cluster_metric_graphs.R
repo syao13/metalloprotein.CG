@@ -18,7 +18,6 @@ level_order <- c("jaccard", "max - sumdiff", "rho", "-1 * log10(p)")
 
 normal_jaccard <- data.frame(cluster = seq(1, 30), value = jaccard.norm, type = "jaccard", n_lig = "all")
 normal_sumdiff <- data.frame(cluster = seq(1, 30), value = max(sumdiff.norm) - sumdiff.norm, type = "max - sumdiff", n_lig = "all")
-
 normal_rho <- data.frame(cluster = rep(seq(5, 30), 4), 
                          value = c(rhop.1.norm$rho[3:28],
                                    rhop.2.norm$rho[3:28],
@@ -26,6 +25,13 @@ normal_rho <- data.frame(cluster = rep(seq(5, 30), 4),
                                    rhop.4.norm$rho[3:28]),
                          type = "rho",
                          n_lig = rep(c("1", "2", "3", "4"), each = 26))
+normal_rho_0 <- data.frame(cluster = rep(seq(3, 30), 4),
+                         value = c(rhop.1.norm$rho,
+                                   rhop.2.norm$rho,
+                                   rhop.3.norm$rho,
+                                   rhop.4.norm$rho),
+                         type = "rho",
+                         n_lig = rep(c("1", "2", "3", "4"), each = 28))
 normal_p <- data.frame(cluster = rep(seq(3, 30), 4), 
                        value = c(rhop.1.norm$p_value,
                                  rhop.2.norm$p_value,
@@ -51,14 +57,20 @@ dev.off()
 compressed_jaccard <- data.frame(cluster = seq(1, 30), value = jaccard.comp, type = "jaccard", n_lig = "all")
 compressed_sumdiff <- data.frame(cluster = seq(1, 30), value = max(sumdiff.comp) - sumdiff.comp, type = "max - sumdiff", n_lig = "all")
 
-compressed_rho <- data.frame(cluster = rep(seq(5, 30), 4),
+compressed_rho_0 <- data.frame(cluster = rep(seq(5, 30), 4),
                              value = c(rhop.1.comp$rho[3:28],
                                        rhop.2.comp$rho[3:28],
                                        rhop.3.comp$rho[3:28],
                                        rhop.4.comp$rho[3:28]),
                              type = "rho",
                              n_lig = rep(c("1", "2", "3", "4"), each = 26))
-
+compressed_rho <- data.frame(cluster = rep(seq(3, 30), 4),
+                             value = c(rhop.1.comp$rho,
+                                       rhop.2.comp$rho,
+                                       rhop.3.comp$rho,
+                                       rhop.4.comp$rho),
+                             type = "rho",
+                             n_lig = rep(c("1", "2", "3", "4"), each = 28))
 compressed_p <- data.frame(cluster = rep(seq(3, 30), 4),
                            value = c(rhop.1.comp$p_value,
                                      rhop.2.comp$p_value,
@@ -68,7 +80,7 @@ compressed_p <- data.frame(cluster = rep(seq(3, 30), 4),
                            n_lig = rep(c("1", "2", "3", "4"), each = 28))
 compressed_p$value <- -1 * log10(compressed_p$value)
 
-compressed_metrics <- do.call(rbind, list(compressed_jaccard, compressed_sumdiff, compressed_rho, compressed_p))
+compressed_metrics <- do.call(rbind, list(compressed_jaccard, compressed_sumdiff, compressed_rho_0, compressed_p))
 compressed_metrics$type <- ordered(compressed_metrics$type, levels = level_order)
 
 Cairo(file = "Figure8.png", type = "png")
@@ -80,13 +92,20 @@ dev.off()
 all_jaccard <- data.frame(cluster = seq(1, 30), value = jaccard.all, type = "jaccard", n_lig = "all")
 all_sumdiff <- data.frame(cluster = seq(1, 30), value = max(sumdiff.all) - sumdiff.all, type = "max - sumdiff", n_lig = "all")
 
-all_rho <- data.frame(cluster = rep(seq(5, 30), 4), 
+all_rho_0 <- data.frame(cluster = rep(seq(5, 30), 4),
                          value = c(rhop.1.all$rho[3:28],
                                    rhop.2.all$rho[3:28],
                                    rhop.3.all$rho[3:28],
                                    rhop.4.all$rho[3:28]),
                          type = "rho",
                          n_lig = rep(c("1", "2", "3", "4"), each = 26))
+all_rho <- data.frame(cluster = rep(seq(3, 30), 4), 
+                         value = c(rhop.1.all$rho,
+                                   rhop.2.all$rho,
+                                   rhop.3.all$rho,
+                                   rhop.4.all$rho),
+                         type = "rho",
+                         n_lig = rep(c("1", "2", "3", "4"), each = 28))
 all_p <- data.frame(cluster = rep(seq(3, 30), 4), 
                        value = c(rhop.1.all$p_value,
                                  rhop.2.all$p_value,
@@ -99,7 +118,7 @@ min_p <- min(all_p$value[all_p$value != 0])
 all_p$value[all_p$value <= 1e-10] <- 1e-10
 all_p$value <- -1 * log10(all_p$value)
 
-all_metrics <- do.call(rbind, list(all_jaccard, all_sumdiff, all_rho, all_p))
+all_metrics <- do.call(rbind, list(all_jaccard, all_sumdiff, all_rho_0, all_p))
 all_metrics$type <- ordered(all_metrics$type, levels = level_order)
 
 Cairo(file = "FigureS3.png", type = "png")

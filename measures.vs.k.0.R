@@ -13,8 +13,8 @@ setwd(args[1])
 rawdata <- read.table("r.allLig.txt", header=FALSE)
 colnames(rawdata) <- c("metalID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
 
-ligNum <- sapply(rawdata$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
-rawdata <- rawdata[ligNum == as.numeric(substring(args[1], 15,15)),]
+#ligNum <- sapply(rawdata$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
+#rawdata <- rawdata[ligNum == as.numeric(substring(args[1], 15,15)),]
 
 ############ normal vs. compressed#####################
 angleSapce <- function(angleCombo, num) {

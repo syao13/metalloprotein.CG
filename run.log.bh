@@ -646,11 +646,203 @@ cp -r output_Zn_singleLig6 afterkmeans_6plus1
 nice -10 ./functional_characterization.R ../Zn_results/rf_6p1 6 && ./measures.vs.k.R ../Zn_results/rf_6p1 6 && ./cluster_metric_graphs.R ../Zn_results/rf_6p1
 nice -10 ./functional_characterization.R ../Zn_results/rf_6plus1 6 && ./measures.vs.k.R ../Zn_results/rf_6plus1 6 && ./cluster_metric_graphs.R ../Zn_results/rf_6plus1
 
+## Test on 5-ligand zinc, using all-angles space (7 angle space)
+cp -r root_beforeRF 5ligand_7
+./rf.smallAngle.R ../Zn_results/5ligand_7 58 68
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/5ligand_7 7
+nice -10 ./functional_characterization.R ../Zn_results/5ligand_7 && ./measures.vs.k.R ../Zn_results/5ligand_7 7 && ./cluster_metric_graphs.R ../Zn_results/5ligand_7
+
+## Try the 6 angle space and see if that is what was causing lower rho
+cp -r root_beforeRF 5ligand_6
+./rf.smallAngle.R ../Zn_results/5ligand_6 58 68
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/5ligand_6 6 && nice -10 ./functional_characterization.R ../Zn_results/5ligand_6 && ./measures.vs.k.R ../Zn_results/5ligand_6 6 && ./cluster_metric_graphs.R ../Zn_results/5ligand_6
+
+## 10.21, Run all metals with different #lig separately
+mv Mg_results/output_Mg_singleLig Mg_results/root_afterRF
+mv Ca_results/output_Ca_singleLig Ca_results/root_afterRF
+mv Fe_results/output_Fe_singleLig Fe_results/root_afterRF
+mv Na_results/output_Na_singleLig Na_results/root_afterRF
+
+cp -r Mg_results/root_afterRF Mg_results/4ligand_7
+cp -r Ca_results/root_afterRF Ca_results/4ligand_7
+cp -r Fe_results/root_afterRF Fe_results/4ligand_7
+cp -r Na_results/root_afterRF Na_results/4ligand_7
+
+cp -r Mg_results/root_afterRF Mg_results/5ligand_6
+cp -r Mg_results/root_afterRF Mg_results/5ligand_7
+cp -r Ca_results/root_afterRF Ca_results/5ligand_6
+cp -r Ca_results/root_afterRF Ca_results/5ligand_7
+cp -r Fe_results/root_afterRF Fe_results/5ligand_6
+cp -r Fe_results/root_afterRF Fe_results/5ligand_7
+cp -r Na_results/root_afterRF Na_results/5ligand_6
+cp -r Na_results/root_afterRF Na_results/5ligand_7
+
+cp -r Zn_results/root_afterRF Zn_results/6ligand_6
+cp -r Zn_results/root_afterRF Zn_results/6ligand_7
+cp -r Mg_results/root_afterRF Mg_results/6ligand_6
+cp -r Mg_results/root_afterRF Mg_results/6ligand_7
+cp -r Ca_results/root_afterRF Ca_results/6ligand_6
+cp -r Ca_results/root_afterRF Ca_results/6ligand_7
+cp -r Fe_results/root_afterRF Fe_results/6ligand_6
+cp -r Fe_results/root_afterRF Fe_results/6ligand_7
+cp -r Na_results/root_afterRF Na_results/6ligand_6
+cp -r Na_results/root_afterRF Na_results/6ligand_7
+
+cp -r Mg_results/root_afterRF Mg_results/7ligand_6
+cp -r Mg_results/root_afterRF Mg_results/7ligand_7
+cp -r Ca_results/root_afterRF Ca_results/7ligand_6
+cp -r Fe_results/root_afterRF Fe_results/7ligand_7
+cp -r Na_results/root_afterRF Na_results/7ligand_6
+cp -r Na_results/root_afterRF Na_results/7ligand_7
+
+nice -10 ./kmeans.mnr.optimalk.R ../Mg_results/4ligand_7 4 7  
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/4ligand_7 4 7 && nice -10 ./functional_characterization.R ../Ca_results/4ligand_7 && ./measures.vs.k.R ../Ca_results/4ligand_7 7 && ./cluster_metric_graphs.R ../Ca_results/4ligand_7
+nice -10 ./kmeans.mnr.optimalk.R ../Fe_results/4ligand_7 4 7 
+nice -10 ./kmeans.mnr.optimalk.R ../Na_results/4ligand_7 4 7 
+#Some functional analysis failed
+
+nice -10 ./kmeans.mnr.optimalk.R ../Mg_results/5ligand_6 5 6 
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/5ligand_6 5 6 && nice -10 ./functional_characterization.R ../Ca_results/5ligand_6 && ./measures.vs.k.R ../Ca_results/5ligand_6 6 && ./cluster_metric_graphs.R ../Ca_results/5ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Fe_results/5ligand_6 5 6 && nice -10 ./functional_characterization.R ../Fe_results/5ligand_6 && ./measures.vs.k.R ../Fe_results/5ligand_6 6 && ./cluster_metric_graphs.R ../Fe_results/5ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Na_results/5ligand_6 5 6 && nice -10 ./functional_characterization.R ../Na_results/5ligand_6 && ./measures.vs.k.R ../Na_results/5ligand_6 6 && ./cluster_metric_graphs.R ../Na_results/5ligand_6
+
+nice -10 ./kmeans.mnr.optimalk.R ../Mg_results/5ligand_7 5 7 
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/5ligand_7 5 7 && nice -10 ./functional_characterization.R ../Ca_results/5ligand_7 && ./measures.vs.k.R ../Ca_results/5ligand_7 7 && ./cluster_metric_graphs.R ../Ca_results/5ligand_7
+nice -10 ./kmeans.mnr.optimalk.R ../Fe_results/5ligand_7 5 7 && nice -10 ./functional_characterization.R ../Fe_results/5ligand_7 && ./measures.vs.k.R ../Fe_results/5ligand_7 7 && ./cluster_metric_graphs.R ../Fe_results/5ligand_7
+nice -10 ./kmeans.mnr.optimalk.R ../Na_results/5ligand_7 5 7 && nice -10 ./functional_characterization.R ../Na_results/5ligand_7 && ./measures.vs.k.R ../Na_results/5ligand_7 7 && ./cluster_metric_graphs.R ../Na_results/5ligand_7
+
+## After Robert fixed the functional analysis. So maybe test if the new functional analysis works the same for before
+nice -10 ./functional_characterization.R ../Mg_results/output_Mg_single6 & ./measures.vs.k.R ../Mg_results/output_Mg_single6 6 && ./cluster_metric_graphs.R ../Mg_results/output_Mg_single6
+
+nice -10 ./functional_characterization.R ../Fe_results/4ligand_7 && ./measures.vs.k.R ../Fe_results/4ligand_7 7 && ./cluster_metric_graphs.R ../Fe_results/4ligand_7
+## worked!
+
+## still not work, out of boundary; run after another fix
+nice -10 ./functional_characterization.R ../Mg_results/4ligand_7 && ./measures.vs.k.R ../Mg_results/4ligand_7 7 && ./cluster_metric_graphs.R ../Mg_results/4ligand_7
+nice -10 ./functional_characterization.R ../Mg_results/5ligand_6 && ./measures.vs.k.R ../Mg_results/5ligand_6 6 && ./cluster_metric_graphs.R ../Mg_results/5ligand_6
+nice -10 ./functional_characterization.R ../Mg_results/5ligand_7 && ./measures.vs.k.R ../Mg_results/5ligand_7 7 && ./cluster_metric_graphs.R ../Mg_results/5ligand_7
+nice -10 ./functional_characterization.R ../Na_results/4ligand_7 && ./measures.vs.k.R ../Na_results/4ligand_7 7 && ./cluster_metric_graphs.R ../Na_results/4ligand_7
+
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/6ligand_6 6 6 && nice -10 ./functional_characterization.R ../Zn_results/6ligand_6 && ./measures.vs.k.R ../Zn_results/6ligand_6 6 && ./cluster_metric_graphs.R ../Zn_results/6ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Mg_results/6ligand_6 6 6
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/6ligand_6 6 6 && nice -10 ./functional_characterization.R ../Ca_results/6ligand_6 && ./measures.vs.k.R ../Ca_results/6ligand_6 6 && ./cluster_metric_graphs.R ../Ca_results/6ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Fe_results/6ligand_6 6 6 && nice -10 ./functional_characterization.R ../Fe_results/6ligand_6 && ./measures.vs.k.R ../Fe_results/6ligand_6 6 && ./cluster_metric_graphs.R ../Fe_results/6ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Na_results/6ligand_6 6 6 && nice -10 ./functional_characterization.R ../Na_results/6ligand_6 && ./measures.vs.k.R ../Na_results/6ligand_6 6 && ./cluster_metric_graphs.R ../Na_results/6ligand_6
+
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/6ligand_7 6 7 && nice -10 ./functional_characterization.R ../Zn_results/6ligand_7 && ./measures.vs.k.R ../Zn_results/6ligand_7 7 && ./cluster_metric_graphs.R ../Zn_results/6ligand_7
+nice -10 ./kmeans.mnr.optimalk.R ../Mg_results/6ligand_7 6 7 
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/6ligand_7 6 7 && nice -10 ./functional_characterization.R ../Ca_results/6ligand_7 && ./measures.vs.k.R ../Ca_results/6ligand_7 7 && ./cluster_metric_graphs.R ../Ca_results/6ligand_7
+nice -10 ./kmeans.mnr.optimalk.R ../Fe_results/6ligand_7 6 7 && nice -10 ./functional_characterization.R ../Fe_results/6ligand_7 && ./measures.vs.k.R ../Fe_results/6ligand_7 7 && ./cluster_metric_graphs.R ../Fe_results/6ligand_7
+nice -10 ./kmeans.mnr.optimalk.R ../Na_results/6ligand_7 6 7 && nice -10 ./functional_characterization.R ../Na_results/6ligand_7 && ./measures.vs.k.R ../Na_results/6ligand_7 7 && ./cluster_metric_graphs.R ../Na_results/6ligand_7
+
+## out of boundary ones, run after another fix
+nice -10 ./functional_characterization.R ../Mg_results/6ligand_6 && ./measures.vs.k.R ../Mg_results/6ligand_6 6 && ./cluster_metric_graphs.R ../Mg_results/6ligand_6
+nice -10 ./functional_characterization.R ../Mg_results/6ligand_7 && ./measures.vs.k.R ../Mg_results/6ligand_7 7 && ./cluster_metric_graphs.R ../Mg_results/6ligand_7
+
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/7ligand_6 7 6 && nice -10 ./functional_characterization.R ../Ca_results/7ligand_6 && ./measures.vs.k.R ../Ca_results/7ligand_6 6 && ./cluster_metric_graphs.R ../Ca_results/7ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/7ligand_7 7 7 && nice -10 ./functional_characterization.R ../Ca_results/7ligand_7 && ./measures.vs.k.R ../Ca_results/7ligand_7 7 && ./cluster_metric_graphs.R ../Ca_results/7ligand_7
+
+## finish 8-ligand for Ca
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/8ligand_6 8 6 && nice -10 ./functional_characterization.R ../Ca_results/8ligand_6 && ./measures.vs.k.R ../Ca_results/8ligand_6 6 && ./cluster_metric_graphs.R ../Ca_results/8ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/8ligand_7 8 7 && nice -10 ./functional_characterization.R ../Ca_results/8ligand_7 && ./measures.vs.k.R ../Ca_results/8ligand_7 7 && ./cluster_metric_graphs.R ../Ca_results/8ligand_7
+
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/ligNNOO_6 6 6 && nice -10 ./functional_characterization.R ../Zn_results/ligNNOO_6
+## need to change the #lig check in measure
+nice -10 ./measures.vs.k.R ../Zn_results/ligNNOO_6 6 && ./cluster_metric_graphs.R ../Zn_results/ligNNOO_6
 
 
+## index error on #lig
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/4ligand_7correct 4 7 && nice -10 ./functional_characterization.R ../Zn_results/4ligand_7correct && ./measures.vs.k.R ../Zn_results/4ligand_7correct 7 && ./cluster_metric_graphs.R ../Zn_results/4ligand_7correct
 
 
- 
+## move all number of ligand results to obs
+mkdir Mg_results/obs
+mv Mg_results/*ligand* Mg_results/obs/.
+mkdir Ca_results/obs
+mv Ca_results/*ligand* Ca_results/obs/.
+mkdir Na_results/obs
+mv Na_results/*ligand* Na_results/obs/.
+mkdir Fe_results/obs
+mv Fe_results/*ligand* Fe_results/obs/.
+mkdir Zn_results/obs
+Zn_results/*ligand* Zn_results/obs/.
+mv Zn_results/ligNNOO_6 Zn_results/obs/.
 
+#rerun everything
+cp -r Zn_results/root_afterRF Zn_results/4ligand_6
+cp -r Mg_results/root_afterRF Mg_results/4ligand_6
+cp -r Ca_results/root_afterRF Ca_results/4ligand_6
+cp -r Fe_results/root_afterRF Fe_results/4ligand_6
+cp -r Na_results/root_afterRF Na_results/4ligand_6
+
+cp -r Zn_results/root_afterRF Zn_results/5ligand_6
+cp -r Zn_results/root_afterRF Zn_results/5ligand_7
+cp -r Mg_results/root_afterRF Mg_results/5ligand_6
+cp -r Mg_results/root_afterRF Mg_results/5ligand_7
+cp -r Ca_results/root_afterRF Ca_results/5ligand_6
+cp -r Ca_results/root_afterRF Ca_results/5ligand_7
+cp -r Fe_results/root_afterRF Fe_results/5ligand_6
+cp -r Fe_results/root_afterRF Fe_results/5ligand_7
+cp -r Na_results/root_afterRF Na_results/5ligand_6
+cp -r Na_results/root_afterRF Na_results/5ligand_7
+
+cp -r Zn_results/root_afterRF Zn_results/6ligand_6
+cp -r Zn_results/root_afterRF Zn_results/6ligand_7
+cp -r Mg_results/root_afterRF Mg_results/6ligand_6
+cp -r Mg_results/root_afterRF Mg_results/6ligand_7
+cp -r Ca_results/root_afterRF Ca_results/6ligand_6
+cp -r Ca_results/root_afterRF Ca_results/6ligand_7
+cp -r Fe_results/root_afterRF Fe_results/6ligand_6
+cp -r Fe_results/root_afterRF Fe_results/6ligand_7
+cp -r Na_results/root_afterRF Na_results/6ligand_6
+cp -r Na_results/root_afterRF Na_results/6ligand_7
+
+cp -r Ca_results/root_afterRF Ca_results/7ligand_6
+cp -r Ca_results/root_afterRF Ca_results/7ligand_7
+cp -r Ca_results/root_afterRF Ca_results/8ligand_6
+cp -r Ca_results/root_afterRF Ca_results/8ligand_7
+
+
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/4ligand_6 4 6 && nice -10 ./functional_characterization.R ../Zn_results/4ligand_6 && ./measures.vs.k.R ../Zn_results/4ligand_6 6 && ./cluster_metric_graphs.R ../Zn_results/4ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Mg_results/4ligand_6 4 6 && nice -10 ./functional_characterization.R ../Mg_results/4ligand_6 && ./measures.vs.k.R ../Mg_results/4ligand_6 6 && ./cluster_metric_graphs.R ../Mg_results/4ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/4ligand_6 4 6 && nice -10 ./functional_characterization.R ../Ca_results/4ligand_6 && ./measures.vs.k.R ../Ca_results/4ligand_6 6 && ./cluster_metric_graphs.R ../Ca_results/4ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Fe_results/4ligand_6 4 6 && nice -10 ./functional_characterization.R ../Fe_results/4ligand_6 && ./measures.vs.k.R ../Fe_results/4ligand_6 6 && ./cluster_metric_graphs.R ../Fe_results/4ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Na_results/4ligand_6 4 6 && nice -10 ./functional_characterization.R ../Na_results/4ligand_6 && ./measures.vs.k.R ../Na_results/4ligand_6 6 && ./cluster_metric_graphs.R ../Na_results/4ligand_6
+
+
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/5ligand_6 5 6 && nice -10 ./functional_characterization.R ../Zn_results/5ligand_6 && ./measures.vs.k.R ../Zn_results/5ligand_6 6 && ./cluster_metric_graphs.R ../Zn_results/5ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Mg_results/5ligand_6 5 6 && nice -10 ./functional_characterization.R ../Mg_results/5ligand_6 && ./measures.vs.k.R ../Mg_results/5ligand_6 6 && ./cluster_metric_graphs.R ../Mg_results/5ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/5ligand_6 5 6 && nice -10 ./functional_characterization.R ../Ca_results/5ligand_6 && ./measures.vs.k.R ../Ca_results/5ligand_6 6 && ./cluster_metric_graphs.R ../Ca_results/5ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Fe_results/5ligand_6 5 6 && nice -10 ./functional_characterization.R ../Fe_results/5ligand_6 && ./measures.vs.k.R ../Fe_results/5ligand_6 6 && ./cluster_metric_graphs.R ../Fe_results/5ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Na_results/5ligand_6 5 6 && nice -10 ./functional_characterization.R ../Na_results/5ligand_6 && ./measures.vs.k.R ../Na_results/5ligand_6 6 && ./cluster_metric_graphs.R ../Na_results/5ligand_6
+
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/5ligand_7 5 7 && nice -10 ./functional_characterization.R ../Zn_results/5ligand_7 && ./measures.vs.k.R ../Zn_results/5ligand_7 7 && ./cluster_metric_graphs.R ../Zn_results/5ligand_7
+nice -10 ./kmeans.mnr.optimalk.R ../Mg_results/5ligand_7 5 7 && nice -10 ./functional_characterization.R ../Mg_results/5ligand_7 && ./measures.vs.k.R ../Mg_results/5ligand_7 7 && ./cluster_metric_graphs.R ../Mg_results/5ligand_7
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/5ligand_7 5 7 && nice -10 ./functional_characterization.R ../Ca_results/5ligand_7 && ./measures.vs.k.R ../Ca_results/5ligand_7 7 && ./cluster_metric_graphs.R ../Ca_results/5ligand_7
+nice -10 ./kmeans.mnr.optimalk.R ../Fe_results/5ligand_7 5 7 && nice -10 ./functional_characterization.R ../Fe_results/5ligand_7 && ./measures.vs.k.R ../Fe_results/5ligand_7 7 && ./cluster_metric_graphs.R ../Fe_results/5ligand_7
+nice -10 ./kmeans.mnr.optimalk.R ../Na_results/5ligand_7 5 7 && nice -10 ./functional_characterization.R ../Na_results/5ligand_7 && ./measures.vs.k.R ../Na_results/5ligand_7 7 && ./cluster_metric_graphs.R ../Na_results/5ligand_7
+
+
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/6ligand_6 6 6 && nice -10 ./functional_characterization.R ../Zn_results/6ligand_6 && ./measures.vs.k.R ../Zn_results/6ligand_6 6 && ./cluster_metric_graphs.R ../Zn_results/6ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Mg_results/6ligand_6 6 6 && nice -10 ./functional_characterization.R ../Mg_results/6ligand_6 && ./measures.vs.k.R ../Mg_results/6ligand_6 6 && ./cluster_metric_graphs.R ../Mg_results/6ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/6ligand_6 6 6 && nice -10 ./functional_characterization.R ../Ca_results/6ligand_6 && ./measures.vs.k.R ../Ca_results/6ligand_6 6 && ./cluster_metric_graphs.R ../Ca_results/6ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Fe_results/6ligand_6 6 6 && nice -10 ./functional_characterization.R ../Fe_results/6ligand_6 && ./measures.vs.k.R ../Fe_results/6ligand_6 6 && ./cluster_metric_graphs.R ../Fe_results/6ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Na_results/6ligand_6 6 6 && nice -10 ./functional_characterization.R ../Na_results/6ligand_6 && ./measures.vs.k.R ../Na_results/6ligand_6 6 && ./cluster_metric_graphs.R ../Na_results/6ligand_6
+
+nice -10 ./kmeans.mnr.optimalk.R ../Zn_results/6ligand_7 6 7 && nice -10 ./functional_characterization.R ../Zn_results/6ligand_7 && ./measures.vs.k.R ../Zn_results/6ligand_7 7 && ./cluster_metric_graphs.R ../Zn_results/6ligand_7
+nice -10 ./kmeans.mnr.optimalk.R ../Mg_results/6ligand_7 6 7 && nice -10 ./functional_characterization.R ../Mg_results/6ligand_7 && ./measures.vs.k.R ../Mg_results/6ligand_7 7 && ./cluster_metric_graphs.R ../Mg_results/6ligand_7
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/6ligand_7 6 7 && nice -10 ./functional_characterization.R ../Ca_results/6ligand_7 && ./measures.vs.k.R ../Ca_results/6ligand_7 7 && ./cluster_metric_graphs.R ../Ca_results/6ligand_7
+nice -10 ./kmeans.mnr.optimalk.R ../Fe_results/6ligand_7 6 7 && nice -10 ./functional_characterization.R ../Fe_results/6ligand_7 && ./measures.vs.k.R ../Fe_results/6ligand_7 7 && ./cluster_metric_graphs.R ../Fe_results/6ligand_7
+nice -10 ./kmeans.mnr.optimalk.R ../Na_results/6ligand_7 6 7 && nice -10 ./functional_characterization.R ../Na_results/6ligand_7 && ./measures.vs.k.R ../Na_results/6ligand_7 7 && ./cluster_metric_graphs.R ../Na_results/6ligand_7
+
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/7ligand_6 7 6 && nice -10 ./functional_characterization.R ../Ca_results/7ligand_6 && ./measures.vs.k.R ../Ca_results/7ligand_6 6 && ./cluster_metric_graphs.R ../Ca_results/7ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/7ligand_7 7 7 && nice -10 ./functional_characterization.R ../Ca_results/7ligand_7 && ./measures.vs.k.R ../Ca_results/7ligand_7 7 && ./cluster_metric_graphs.R ../Ca_results/7ligand_7
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/8ligand_6 8 6 && nice -10 ./functional_characterization.R ../Ca_results/8ligand_6 && ./measures.vs.k.R ../Ca_results/8ligand_6 6 && ./cluster_metric_graphs.R ../Ca_results/8ligand_6
+nice -10 ./kmeans.mnr.optimalk.R ../Ca_results/8ligand_7 8 7 && nice -10 ./functional_characterization.R ../Ca_results/8ligand_7 && ./measures.vs.k.R ../Ca_results/8ligand_7 7 && ./cluster_metric_graphs.R ../Ca_results/8ligand_7
+
+nice -10 ./kmeans.mnr.optimalk.3.R ../Zn_results/ligNNOO_6 6 6 && nice -10 ./functional_characterization.R ../Zn_results/ligNNOO_6 && nice -10 ./measures.vs.k.0.R ../Zn_results/ligNNOO_6 6 && ./cluster_metric_graphs.R ../Zn_results/ligNNOO_6
+#
+#
+#
 
 

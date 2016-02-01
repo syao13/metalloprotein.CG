@@ -1,43 +1,61 @@
 #!/mlab/data/software/R-3.2.1-F22/bin/Rscript
 
+############################################################
+## try to combine same #ligand from all metals
+############################################################
+
 ###!/usr/bin/Rscript
 ####################    load data  ####################  
 options(stringsAsFactors=FALSE)
 args = commandArgs(trailingOnly=TRUE)
-setwd(args[1])
 
-load("rf.results.RData")
-load("finalMetalList.RData")
-rawdata <- read.table("r.allLig.txt", header=FALSE)
-colnames(rawdata) <- c("metalID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
 
-#ligElmt <-sapply(rawdata$ligandCombo, function(x) 
+## Put all metal data together
+alldata <- NULL
+metalList <- NULL
+predictions <- NULL
+for (metal in c("Zn", "Ca", "Na", "Mg", "Fe")) {
+  setwd(paste("/mlab/data/sen/projects/metal/go_ec_analysis/", metal, "_results/root_afterRF/", sep=""))
+  load("rf.results.RData")
+  load("finalMetalList.RData")
+  rawdata <- read.table("r.allLig.txt", header=FALSE)
+  
+  metalList <- c(metalList, finalZnList)
+  predictions <- c(predictions, prediction.all)
+  
+  id <- rawdata[,1]
+  orderid <- order(id)
+  data <- rawdata[orderid,]
+  
+  alldata <- rbind(alldata, cbind(data, rep(metal, dim(data)[1])))
+}
+colnames(alldata) <- c("metalID", "method", "year", "resolution", "angleCombo", 
+                       "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo",
+                       "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra", "metal")
+
+#ligElmt <-sapply(alldata$ligandCombo, function(x) 
 #		paste(sort(matrix(unlist(strsplit(strsplit(x, ",")[[1]], "[.]")), byrow=TRUE, ncol=3)[,3]), collapse=""))
-#rawdata <- rawdata[ligElmt == "NNOO" | ligElmt == "NNOOO" | ligElmt == "NNOOOO" ,]
-#ligNum <- sapply(rawdata$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
-#rawdata <- rawdata[ligNum == args[2],]
+#alldata <- alldata[ligElmt == "NNOO" | ligElmt == "NNOOO" | ligElmt == "NNOOOO" ,]
+ligNum <- sapply(alldata$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
+#alldata <- alldata[ligNum == args[2],]
 
-znList <- rawdata[rawdata[,1] %in% finalZnList & rawdata[,4] < 3, 1]
-id <- rawdata[,1]
-orderid <- order(id)
-data <- rawdata[orderid,]
+znList <- alldata[alldata[,1] %in% metalList & alldata[,4] < 3, 1]
 
-ligNum <- sapply(data$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
+angles <- alldata$angleCombo
+bidentates <- alldata$biStatusCombo
+ligands <- alldata$ligandCombo
 
-angles <- data$angleCombo
-bidentates <- data$biStatusCombo
-ligands <- data$ligandCombo
-
-resolution <- data$resolution
+resolution <- alldata$resolution
 anglesU <- angles
 
 #### Define the data into normal and compressed from rf prediciton on 58-68 angles.
-ind.normal <- prediction.all=="normal" #& ligNum == args[2]
-ind.compress <- prediction.all=="compressed" #& ligNum == args[2]
+ind.normal <- predictions==2 & ligNum == args[2]
+ind.compress <- predictions==1 & ligNum == args[2]
 
-normal <- data[ind.normal,]
-compressed <- data[ind.compress,]
-all <- data[ind.normal | ind.compress,]
+normal <- alldata[ind.normal,]
+compressed <- alldata[ind.compress,]
+all <- alldata[ind.normal | ind.compress,]
+
 normal.nr <- normal[normal[,1] %in% znList, ]
 compressed.nr <- compressed[compressed[,1] %in% znList, ]
 all.nr <- all[all[,1] %in% znList,]

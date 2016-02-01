@@ -1,5 +1,9 @@
 #!/mlab/data/software/R-3.2.1-F22/bin/Rscript
 
+#############################################
+## try to separate #ligands after kmeans
+#############################################
+
 ###!/usr/bin/Rscript
 ####################    load data  ####################  
 options(stringsAsFactors=FALSE)
@@ -13,16 +17,13 @@ colnames(rawdata) <- c("metalID", "method", "year", "resolution", "angleCombo", 
 
 #ligElmt <-sapply(rawdata$ligandCombo, function(x) 
 #		paste(sort(matrix(unlist(strsplit(strsplit(x, ",")[[1]], "[.]")), byrow=TRUE, ncol=3)[,3]), collapse=""))
-#rawdata <- rawdata[ligElmt == "NNOO" | ligElmt == "NNOOO" | ligElmt == "NNOOOO" ,]
-#ligNum <- sapply(rawdata$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
-#rawdata <- rawdata[ligNum == args[2],]
+ligNum <- sapply(rawdata$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
+rawdata <- rawdata[ligNum == args[2],]
 
 znList <- rawdata[rawdata[,1] %in% finalZnList & rawdata[,4] < 3, 1]
 id <- rawdata[,1]
 orderid <- order(id)
 data <- rawdata[orderid,]
-
-ligNum <- sapply(data$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
 
 angles <- data$angleCombo
 bidentates <- data$biStatusCombo
@@ -32,15 +33,14 @@ resolution <- data$resolution
 anglesU <- angles
 
 #### Define the data into normal and compressed from rf prediciton on 58-68 angles.
-ind.normal <- prediction.all=="normal" #& ligNum == args[2]
-ind.compress <- prediction.all=="compressed" #& ligNum == args[2]
+ind.normal <- prediction.all=="normal"
+ind.compress <- prediction.all=="compressed"
 
 normal <- data[ind.normal,]
 compressed <- data[ind.compress,]
-all <- data[ind.normal | ind.compress,]
 normal.nr <- normal[normal[,1] %in% znList, ]
 compressed.nr <- compressed[compressed[,1] %in% znList, ]
-all.nr <- all[all[,1] %in% znList,]
+all.nr <- data[data[,1] %in% znList,]
 dim(normal.nr) 
 dim(compressed.nr) 
 dim(all.nr) 
@@ -98,7 +98,7 @@ library(clue)
 ## Distance is calculated as sum of (the best match centers' absolute differences)
 ## Jaccard is calulated as sum of intersection/(i+j-intersetion)
 kmeansStab <- function(data, k, nrep){
-  fits <- lapply(1:nrep, function(x) kmeans(data, k, iter.max = 30))
+  fits <- lapply(1:nrep, function(x) kmeans(data, k, iter.max = 3mes(rawdata) <- c("metalID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")0))
   dmat <- matrix(-1, nrow=nrep, ncol=nrep)
   jmat <- matrix(-1, nrow=nrep, ncol=nrep)
   
@@ -106,10 +106,16 @@ kmeansStab <- function(data, k, nrep){
     for (j in (i+1):nrep) {
       cen1 <- fits[[i]]$centers
       cen2 <- fits[[j]]$centers
-      
+      apply(data, 2, function(x) tapply(x, fits[[1]]$cluster, mean))
+ 
       clu1 <- fits[[i]]$cluster
       clu2 <- fits[[j]]$cluster
+ 
+      for (x in 1:names(table(fits[[1]]$cluster))) {
       
+      }
+
+     
       diss <- matrix(0, nrow=k, ncol=k) ## distances of all pair-wise clusters' centers
       for (p in 1:k) {
         for (q in 1:k) {

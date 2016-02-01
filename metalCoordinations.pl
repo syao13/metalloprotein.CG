@@ -261,11 +261,15 @@ if ($rInputOpt)
   #print FID "Chi_prob_Tet\tChi_prob_Bva\tChi_prob_Bvp\tChi_prob_Spv\tChi_prob_Spl\t" if ($statsFile);
   #print FID "\n";
 
+  my %ids;
   foreach my $ligNum ("ten", "nine", "eight", "seven", "six", "five", "four")
     {
     foreach my $metalObj (@{$analyzer->{coordinations}{$ligNum}})
       {
+      next if ($ids{$metalObj->{shellObj}->metalID()});
       print FID $metalObj->{shellObj}->metalID(), "\t";
+      $ids{$metalObj->{shellObj}->metalID()} = 1;
+
       print FID $metalObj->{shellObj}->{center}->{method}, "\t";
       print FID $metalObj->{shellObj}->{center}->{date}, "\t";
       print FID $metalObj->{shellObj}->{center}->{resolution}, "\t";
