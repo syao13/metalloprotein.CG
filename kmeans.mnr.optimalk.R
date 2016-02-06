@@ -22,7 +22,7 @@ id <- rawdata[,1]
 orderid <- order(id)
 data <- rawdata[orderid,]
 
-ligNum <- sapply(data$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
+heme <- sapply(data$ligandCombo, function(x) "HEM" %in% sort(matrix(unlist(strsplit(strsplit(x, ",")[[1]], "[.]")), byrow=TRUE, ncol=3)[,1]))
 
 angles <- data$angleCombo
 bidentates <- data$biStatusCombo
@@ -32,8 +32,8 @@ resolution <- data$resolution
 anglesU <- angles
 
 #### Define the data into normal and compressed from rf prediciton on 58-68 angles.
-ind.normal <- prediction.all=="normal" #& ligNum == args[2]
-ind.compress <- prediction.all=="compressed" #& ligNum == args[2]
+ind.normal <- prediction.all=="normal" & ! heme 
+ind.compress <- prediction.all=="compressed" & ! heme 
 
 normal <- data[ind.normal,]
 compressed <- data[ind.compress,]
@@ -73,19 +73,19 @@ angleSapce <- function(angleCombo, num, mode="median") {
 ## combined
 angles.all <- all.nr$angleCombo
 length(angles.all)
-angle.sorted.all <- t(sapply(angles.all, function(x) angleSapce(x, args[3])))
+angle.sorted.all <- t(sapply(angles.all, function(x) angleSapce(x, args[2])))
 rownames(angle.sorted.all) <- NULL
 
 ## normal
 angles.norm <- normal.nr$angleCombo
 length(angles.norm)
-angle.sorted.norm <- t(sapply(angles.norm, function(x) angleSapce(x, args[3])))
+angle.sorted.norm <- t(sapply(angles.norm, function(x) angleSapce(x, args[2])))
 rownames(angle.sorted.norm) <- NULL
 
 ## compressed
 angles.comp <- compressed.nr$angleCombo
 length(angles.comp)
-angle.sorted.comp <- t(sapply(angles.comp, function(x) angleSapce(x, args[3])))
+angle.sorted.comp <- t(sapply(angles.comp, function(x) angleSapce(x, args[2])))
 rownames(angle.sorted.comp) <- NULL
 
 ####################################################

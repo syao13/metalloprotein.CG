@@ -1,51 +1,50 @@
 #!/mlab/data/software/R-3.2.1-F22/bin/Rscript
 
-############################################################
-## try to combine same #ligand from all metals
-############################################################
+####################################
+## Run on a specific number of ligand 
+####################################
 
 ###!/usr/bin/Rscript
 ####################    load data  ####################  
 options(stringsAsFactors=FALSE)
 args = commandArgs(trailingOnly=TRUE)
+setwd(args[1])
 
-## Put all metal data together
-alldata <- NULL
-metalLists <- NULL
-predictions <- NULL
-for (metal in c("Zn", "Ca", "Na", "Mg", "Fe")) {
-  setwd(paste("/mlab/data/sen/projects/metal/go_ec_analysis/", metal, "_results/root_afterRF/", sep=""))
-  load("rf.results.RData")
-  load("finalMetalList.RData")
-  rawdata <- read.table("r.allLig.txt", header=FALSE)
-  
-  metalLists <- c(metalLists, finalZnList)
-  predictions <- c(predictions, prediction.all)
-  
-  id <- rawdata[,1]
-  orderid <- order(id)
-  data <- rawdata[orderid,]
-  
-  alldata <- rbind(alldata, cbind(data, rep(metal, dim(data)[1])))
-}
-colnames(alldata) <- c("metalID", "method", "year", "resolution", "angleCombo", 
-                       "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo",
-                       "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra", "metal")
+load("rf.results.RData")
+load("finalMetalList.RData")
+rawdata <- read.table("r.allLig.txt", header=FALSE)
+colnames(rawdata) <- c("metalID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
 
-ligNum <- sapply(alldata$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
-metalList <- alldata[alldata[,1] %in% metalLists & alldata[,4] < 3, 1]
+#ligElmt <-sapply(rawdata$ligandCombo, function(x) 
+#		paste(sort(matrix(unlist(strsplit(strsplit(x, ",")[[1]], "[.]")), byrow=TRUE, ncol=3)[,3]), collapse=""))
+#rawdata <- rawdata[ligElmt == "NNOO" | ligElmt == "NNOOO" | ligElmt == "NNOOOO" ,]
+#ligNum <- sapply(rawdata$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
+#rawdata <- rawdata[ligNum == args[2],]
+
+znList <- rawdata[rawdata[,1] %in% finalZnList & rawdata[,4] < 3, 1]
+id <- rawdata[,1]
+orderid <- order(id)
+data <- rawdata[orderid,]
+
+ligNum <- sapply(data$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
+
+angles <- data$angleCombo
+bidentates <- data$biStatusCombo
+ligands <- data$ligandCombo
+
+resolution <- data$resolution
+anglesU <- angles
 
 #### Define the data into normal and compressed from rf prediciton on 58-68 angles.
-ind.normal <- predictions==2 & ligNum == args[2]
-ind.compress <- predictions==1 & ligNum == args[2]
+ind.normal <- prediction.all=="normal" & ligNum == args[2]
+ind.compress <- prediction.all=="compressed" & ligNum == args[2]
 
-normal <- alldata[ind.normal,]
-compressed <- alldata[ind.compress,]
-all <- alldata[ind.normal | ind.compress,]
-
-normal.nr <- normal[normal[,1] %in% metalList, ]
-compressed.nr <- compressed[compressed[,1] %in% metalList, ]
-all.nr <- all[all[,1] %in% metalList,]
+normal <- data[ind.normal,]
+compressed <- data[ind.compress,]
+all <- data[ind.normal | ind.compress,]
+normal.nr <- normal[normal[,1] %in% znList, ]
+compressed.nr <- compressed[compressed[,1] %in% znList, ]
+all.nr <- all[all[,1] %in% znList,]
 dim(normal.nr) 
 dim(compressed.nr) 
 dim(all.nr) 
@@ -75,23 +74,23 @@ angleSapce <- function(angleCombo, num, mode="median") {
   else if (num == 7) { c(angles[1], anglesSort, angles[length(angles)]) }
 }
 
-## combined
-angles.all <- all.nr$angleCombo
-length(angles.all)
-angle.sorted.all <- t(sapply(angles.all, function(x) angleSapce(x, args[3])))
-rownames(angle.sorted.all) <- NULL
-
 ## normal
 angles.norm <- normal.nr$angleCombo
 length(angles.norm)
-angle.sorted.norm <- t(sapply(angles.norm, function(x) angleSapce(x, args[3])))
+angle.sorted.norm <- t(sapply(angles.norm, function(x) angleSapce(x, args[2])))
 rownames(angle.sorted.norm) <- NULL
 
 ## compressed
 angles.comp <- compressed.nr$angleCombo
 length(angles.comp)
-angle.sorted.comp <- t(sapply(angles.comp, function(x) angleSapce(x, args[3])))
+angle.sorted.comp <- t(sapply(angles.comp, function(x) angleSapce(x, args[2])))
 rownames(angle.sorted.comp) <- NULL
+
+## combined
+angles.all <- all.nr$angleCombo
+length(angles.all)
+angle.sorted.all <- t(sapply(angles.all, function(x) angleSapce(x, args[2])))
+rownames(angle.sorted.all) <- NULL
 
 ####################################################
 
@@ -189,7 +188,6 @@ for (i in 1:length(resultList)){
 }
 date()
 
-setwd(paste("/mlab/data/sen/projects/metal/go_ec_analysis/", args[1], sep=""))
 save(list=sapply(1:30, function(x) paste0("normal.", x, ".clusters",  sep="")), file="normal_cluster_assg.RData")
 save(list=sapply(1:30, function(x) paste0("compressed.", x, ".clusters",  sep="")), file="compressed_cluster_assg.RData")
 save(list=sapply(1:30, function(x) paste0("combined.", x, ".clusters",  sep="")), file="combined_cluster_assg.RData")

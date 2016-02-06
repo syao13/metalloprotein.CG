@@ -1,6 +1,8 @@
 #!/mlab/data/software/R-3.2.1-F22/bin/Rscript
 
+####################################
 ## check a line of ligand atom combo
+####################################
 
 ###!/usr/bin/Rscript
 ####################    load data  ####################  
