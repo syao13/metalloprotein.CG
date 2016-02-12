@@ -909,3 +909,34 @@ nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 1 19 && nice 
 nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 1 20 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 1 20
 
 
+## make up for what didn't run correctly before
+
+./measures.vs.k.2.R ../Zn_results/4ligand_6 6 6 1
+./measures.vs.k.2.R ../Zn_results/4ligand_6 6 6 2
+./measures.vs.k.2.R ../Zn_results/4ligand_6 6 6 3
+./measures.vs.k.2.R ../Zn_results/4ligand_6 6 6 4
+./measures.vs.k.2.R ../Zn_results/4ligand_6 6 6 5
+./measures.vs.k.2.R ../Zn_results/4ligand_6 6 6 6
+./measures.vs.k.2.R ../Zn_results/4ligand_6 6 6 7
+./measures.vs.k.2.R ../Zn_results/4ligand_6 6 6 8
+./measures.vs.k.2.R ../Zn_results/4ligand_6 6 6 9
+./measures.vs.k.2.R ../Zn_results/4ligand_6 6 6 10
+
+
+nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 18 13 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 18 13 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 18 13
+nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 18 14 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 18 14 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 18 14
+
+nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 18 15 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 18 15 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 18 15
+nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 18 16 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 18 16 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 18 16
+
+nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 18 17 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 18 17 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 18 17
+nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 18 18 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 18 18 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 18 18
+
+nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 18 19 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 18 19 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 18 19
+
+nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 18 20 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 18 20 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 18 20
+
+
+
+
+

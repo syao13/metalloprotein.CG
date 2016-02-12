@@ -20,7 +20,7 @@ nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 10 && nice -10
 
 echo
 echo "###########################"
-echo "Rep 5-10 done."
+echo "Rep 6-10 done."
 echo "###########################"
 echo
 

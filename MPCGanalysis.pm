@@ -476,7 +476,7 @@ sub compareStats
 
     foreach my $coordination (keys %{$$currStats{$distOrAng}})
       {
-      if ($coordination eq "variance" || $coordination eq "standardDeviation")
+      if ($coordination eq "variance" || $coordination eq "standardDeviation" || $coordination eq "pooledStd" || $coordination eq "pooledVar")
         { return 3 if (abs ($$currStats{$distOrAng}{$coordination} - $$oldStats{$distOrAng}{$coordination}) > $cutoff) ; next;}
 
       return 4 if (! exists $$oldStats{$distOrAng}{$coordination} ); 
@@ -507,7 +507,7 @@ sub compareStats
 
     foreach my $coordination (keys %{$$oldStats{$distOrAng}})
       {
-      if ($coordination eq "variance" || $coordination eq "standardDeviation")
+      if ($coordination eq "variance" || $coordination eq "standardDeviation" || $coordination eq "pooledStd" || $coordination eq "pooledVar")
         { return 12 if ( abs ($$currStats{$distOrAng}{$coordination} - $$oldStats{$distOrAng}{$coordination}) > $cutoff ) ; next;}
 
       return 13 if (! exists $$currStats{$distOrAng}{$coordination} );

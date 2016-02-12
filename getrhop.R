@@ -1,4 +1,7 @@
 #!/usr/bin/Rscript
+
+## args: metal, numLig, normal/compressed/combined, n_lig, k
+
 args = commandArgs(trailingOnly=TRUE)
 
 if (args[1] == "all") {args[1] <- "allMetal"}
