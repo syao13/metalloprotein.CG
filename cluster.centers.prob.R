@@ -52,6 +52,7 @@ angleSapce <- function(angleCombo, num) {
   anglesSort <- sort(angles[2:(length(angles)-1)])
   if (num == 5) { c(angles[1], anglesSort[c(1, floor((length(anglesSort) + 1)/2),length(anglesSort))], angles[length(angles)]) }
   else if (num == 6) { c(angles[1], anglesSort[c(1, floor(quantile(1:length(anglesSort), 0.34)), floor(quantile(1:length(anglesSort), 0.67)), length(anglesSort))], angles[length(angles)]) }
+  else if (num == 7) { c(angles[1], anglesSort, angles[length(angles)]) }
 }
 
 #### normal

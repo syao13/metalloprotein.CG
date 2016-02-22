@@ -22,7 +22,7 @@ id <- rawdata[,1]
 orderid <- order(id)
 data <- rawdata[orderid,]
 
-heme <- sapply(data$ligandCombo, function(x) "HEM" %in% sort(matrix(unlist(strsplit(strsplit(x, ",")[[1]], "[.]")), byrow=TRUE, ncol=3)[,1]))
+#heme <- sapply(data$ligandCombo, function(x) "HEM" %in% sort(matrix(unlist(strsplit(strsplit(x, ",")[[1]], "[.]")), byrow=TRUE, ncol=3)[,1]))
 
 angles <- data$angleCombo
 bidentates <- data$biStatusCombo
@@ -32,8 +32,8 @@ resolution <- data$resolution
 anglesU <- angles
 
 #### Define the data into normal and compressed from rf prediciton on 58-68 angles.
-ind.normal <- prediction.all=="normal" & ! heme 
-ind.compress <- prediction.all=="compressed" & ! heme 
+ind.normal <- prediction.all=="normal" #& ! heme 
+ind.compress <- prediction.all=="compressed" #& ! heme 
 
 normal <- data[ind.normal,]
 compressed <- data[ind.compress,]

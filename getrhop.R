@@ -1,6 +1,6 @@
 #!/usr/bin/Rscript
 
-## args: metal, numLig, normal/compressed/combined, n_lig, k
+## args: metal, numLig, normal/compressed/combined, k, n_lig
 
 args = commandArgs(trailingOnly=TRUE)
 

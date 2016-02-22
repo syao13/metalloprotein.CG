@@ -937,6 +937,14 @@ nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 18 19 && nice -10
 nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 18 20 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 18 20 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 18 20
 
 
+### 2.15, run non-redundant on all metals together
+cat Zn_results/root_afterRF/seqs.SEQRES.shell.txt Mg_results/root_afterRF/seqs.SEQRES.shell.txt Ca_results/root_afterRF/seqs.SEQRES.shell.txt Fe_results/root_afterRF/seqs.SEQRES.shell.txt Na_results/root_afterRF/seqs.SEQRES.shell.txt > allMetal_results/beforeNR/seqs.SEQRES.shell.txt
+cat Zn_results/root_afterRF/seqs.SEQRES.bind.txt Mg_results/root_afterRF/seqs.SEQRES.bind.txt Ca_results/root_afterRF/seqs.SEQRES.bind.txt Fe_results/root_afterRF/seqs.SEQRES.bind.txt Na_results/root_afterRF/seqs.SEQRES.bind.txt > allMetal_results/beforeNR/seqs.SEQRES.bind.txt
+cat Zn_results/root_afterRF/seqs.ATOM.shell.txt Mg_results/root_afterRF/seqs.ATOM.shell.txt Ca_results/root_afterRF/seqs.ATOM.shell.txt Fe_results/root_afterRF/seqs.ATOM.shell.txt Na_results/root_afterRF/seqs.ATOM.shell.txt > allMetal_results/beforeNR/seqs.ATOM.shell.txt
+cat Zn_results/root_afterRF/r.allLig.txt Mg_results/root_afterRF/r.allLig.txt Ca_results/root_afterRF/r.allLig.txt Fe_results/root_afterRF/r.allLig.txt Na_results/root_afterRF/r.allLig.txt > allMetal_results/beforeNR/r.allLig.txt
+cat Zn_results/root_afterRF/rf.smallest.txt Mg_results/root_afterRF/rf.smallest.txt Ca_results/root_afterRF/rf.smallest.txt Fe_results/root_afterRF/rf.smallest.txt Na_results/root_afterRF/rf.smallest.txt > allMetal_results/beforeNR/rf.smallest.txt
+
+./seq_alignment.R ../allMetal_results/beforeNR/
 
 
 

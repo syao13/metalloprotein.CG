@@ -46,6 +46,8 @@ use PentagonalBipyramidal;
 use Cube;
 use SquareAntiprismaticMonocapped;
 use SquareAntiprismaticBicapped;
+use PentagonalBipyramidalVA;
+use PentagonalBipyramidalVP;
 
 use Clone 'clone';
 #use Data::Dumper::Concise; # human readable, code in iaCoordination
@@ -82,10 +84,12 @@ our $cgRelations = [
   {"name" => "SquarePyramidalV", "num" => 4, "parents" => ["SquarePyramidal", "Octahedral"], "children" => [], "siblings" => ["SquarePlanar"]},
   {"name" => "SquarePlanar", "num" => 4, "parents" => ["SquarePyramidal", "Octahedral"], "children" => [], "siblings" => ["SquarePyramidalV"]},
   {"name" => "SquarePyramidal", "num" => 5, "parents" => ["Octahedral"], "children" => ["SquarePlanar", "SquarePyramidalV"], "siblings" => []},
-  {"name" => "PentagonalBipyramidal", "num" => 7, "parents" => [], "children" => [], "siblings" => []},
+  {"name" => "PentagonalBipyramidal", "num" => 7, "parents" => [], "children" => ["PentagonalBipyramidalVA", "PentagonalBipyramidalVP"], "siblings" => []},
   {"name" => "Cube", "num" => 8, "parents" => [], "children" => [], "siblings" => []},
   {"name" => "SquareAntiprismaticMonocapped", "num" => 9, "parents" => [], "children" => [], "siblings" => []},
-  {"name" => "SquareAntiprismaticBicapped", "num" => 10, "parents" => [], "children" => [], "siblings" => []}
+  {"name" => "SquareAntiprismaticBicapped", "num" => 10, "parents" => [], "children" => [], "siblings" => []},
+  {"name" => "PentagonalBipyramidalVA", "num" => 6, "parents" => ["PentagonalBipyramidal"], "children" => [], "siblings" => ["PentagonalBipyramidalVP"]},
+  {"name" => "PentagonalBipyramidalVP", "num" => 6, "parents" => ["PentagonalBipyramidal"], "children" => [], "siblings" => ["PentagonalBipyramidalVA"]}
 ]; 
 
 
