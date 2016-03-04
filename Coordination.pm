@@ -89,6 +89,7 @@ sub distanceChi
       my $resolution = ($$combo[$x]->{resolution} == -1)? 2.5 : $$combo[$x]->{resolution};
       my $adjStd = ($resolution - $$distanceStats{$element}{resolutionAvg}) * $slope + $$distanceStats{$element}{standardDeviation};
       $variance = $adjStd ** 2; 
+#print "$expect, $varianceOld, $resolution, $adjStd, $variance\n";
       }
     else     
       {
@@ -98,6 +99,7 @@ sub distanceChi
       my $adjStd = ($resolution - $$distanceStats{"average"}{resolutionAvg}) * $slope + $$distanceStats{"average"}{standardDeviation};
       $variance = $adjStd ** 2;
       }
+#print $center->distance($$combo[$x]), ", $expect, $variance\n";
 
     $distChi += ($center->distance($$combo[$x]) - $expect) ** 2 / $variance ;
     }
@@ -122,7 +124,6 @@ sub bestDistChi
     if ( (! $bestStat) || $probability > $$bestStat{"probability"} )
       { $bestStat = { "ligands" => $combo, "probability" => $probability , "distChi" => $distChi }; }
     }
-
   $self->{bestCombo} = $bestStat;
   }
 
@@ -139,7 +140,7 @@ sub bestTestStatistic
   my $bestStat;
   my $distChi = 0;
   my $df = 0;
-  
+ 
   foreach my $combo ( @{$self->{combos}} )
     {
     #next if (grep {$_ < 68 ;} (&_anglesBetweenAtoms($combo, $self->{shellObj}->{center})) ); ## remove compressed angle combo. Used on 4.25 & 4.29
@@ -151,6 +152,9 @@ sub bestTestStatistic
       $df = $self->degreeFreedom() ;
       $df = $df - 1 if ($leaveOut eq "l" || $leaveOut eq "leave" || $leaveOut eq "leaveOut");
       }
+
+#my $nn = @{$self->orderedCombinations($combo)};
+#print "$nn, ";
     
     foreach my $orderedCombo (@{$self->orderedCombinations($combo)})
       {
@@ -167,6 +171,7 @@ sub bestTestStatistic
 	
 	my $testStatistics = $angleChi + $distChi;
 	my $probability = &Statistics::Distributions::chisqrprob($df, $testStatistics);
+#print "$angleChi, $distChi, $df, $testStatistics, $probability\n";
 
 	if ( (! $bestStat) || $probability > $$bestStat{"probability"} )
           { $bestStat = { "ligands" => $orderedCombo, "chiStatistic" => $testStatistics, "probability" => $probability , "angleChi" => $angleChi }; }
@@ -175,6 +180,7 @@ sub bestTestStatistic
     }
 
   $self->{bestCombo} = $bestStat;
+print ref $self, ", ", $$bestStat{"angleChi"}, ": ", join (", ", $self->allAngles()), "\n";
   }
 
 

@@ -48,6 +48,13 @@ use SquareAntiprismaticMonocapped;
 use SquareAntiprismaticBicapped;
 use PentagonalBipyramidalVA;
 use PentagonalBipyramidalVP;
+use SquareAntiprismatic;
+use SquareAntiprismaticV;
+use TrigonalPrismatic;
+use TrigonalPrismaticV;
+use HexagonalBipyramidal;
+use HexagonalBipyramidalVA;
+use HexagonalBipyramidalVP;
 
 use Clone 'clone';
 #use Data::Dumper::Concise; # human readable, code in iaCoordination
@@ -75,21 +82,32 @@ our @defaultDataMembers = (
 
 our $cgRelations = [
   {"name" => "Tetrahedral", "num" => 4, "parents" => [], "children" => ["TetrahedralV"], "siblings" => []},
+  #{"name" => "TetrahedralV", "num" => 3, "parents" => ["Tetrahedral"], "children" => [], "siblings" => []},
+
   {"name" => "TrigonalBipyramidal", "num" => 5, "parents" => [], "children" => ["TrigonalBipyramidalVA", "TrigonalBipyramidalVP", "TrigonalPlanar"], "siblings" => []},
-  {"name" => "Octahedral", "num" => 6, "parents" => [], "children" => ["SquarePyramidalV", "SquarePlanar", "SquarePyramidal"], "siblings" => []},
-  {"name" => "TrigonalPlanar", "num" => 3, "parents" => ["TrigonalBipyramidalVA", "TrigonalBipyramidal"], "children" => [], "siblings" => []},
-  {"name" => "TetrahedralV", "num" => 3, "parents" => ["Tetrahedral"], "children" => [], "siblings" => []},
   {"name" => "TrigonalBipyramidalVA", "num" => 4, "parents" => ["TrigonalBipyramidal"], "children" => ["TrigonalPlanar"], "siblings" => ["TrigonalBipyramidalVP"]},
   {"name" => "TrigonalBipyramidalVP", "num" => 4, "parents" => ["TrigonalBipyramidal"], "children" => [], "siblings" => ["TrigonalBipyramidalVA"]},
+  #{"name" => "TrigonalPlanar", "num" => 3, "parents" => ["TrigonalBipyramidalVA", "TrigonalBipyramidal"], "children" => [], "siblings" => []},
+
+  {"name" => "Octahedral", "num" => 6, "parents" => [], "children" => ["SquarePyramidalV", "SquarePlanar", "SquarePyramidal"], "siblings" => []},
+  {"name" => "SquarePyramidal", "num" => 5, "parents" => ["Octahedral"], "children" => ["SquarePlanar", "SquarePyramidalV"], "siblings" => []},
   {"name" => "SquarePyramidalV", "num" => 4, "parents" => ["SquarePyramidal", "Octahedral"], "children" => [], "siblings" => ["SquarePlanar"]},
   {"name" => "SquarePlanar", "num" => 4, "parents" => ["SquarePyramidal", "Octahedral"], "children" => [], "siblings" => ["SquarePyramidalV"]},
-  {"name" => "SquarePyramidal", "num" => 5, "parents" => ["Octahedral"], "children" => ["SquarePlanar", "SquarePyramidalV"], "siblings" => []},
+
+  {"name" => "TrigonalPrismatic", "num" => 6, "parents" => [], "children" => ["TrigonalPrismaticV"], "siblings" => []},
+  {"name" => "TrigonalPrismaticV", "num" => 5, "parents" => ["TrigonalPrismatic"], "children" => [], "siblings" => []},
+
   {"name" => "PentagonalBipyramidal", "num" => 7, "parents" => [], "children" => ["PentagonalBipyramidalVA", "PentagonalBipyramidalVP"], "siblings" => []},
-  {"name" => "Cube", "num" => 8, "parents" => [], "children" => [], "siblings" => []},
-  {"name" => "SquareAntiprismaticMonocapped", "num" => 9, "parents" => [], "children" => [], "siblings" => []},
-  {"name" => "SquareAntiprismaticBicapped", "num" => 10, "parents" => [], "children" => [], "siblings" => []},
   {"name" => "PentagonalBipyramidalVA", "num" => 6, "parents" => ["PentagonalBipyramidal"], "children" => [], "siblings" => ["PentagonalBipyramidalVP"]},
-  {"name" => "PentagonalBipyramidalVP", "num" => 6, "parents" => ["PentagonalBipyramidal"], "children" => [], "siblings" => ["PentagonalBipyramidalVA"]}
+  {"name" => "PentagonalBipyramidalVP", "num" => 6, "parents" => ["PentagonalBipyramidal"], "children" => [], "siblings" => ["PentagonalBipyramidalVA"]},
+
+  {"name" => "SquareAntiprismatic", "num" => 8, "parents" => [], "children" => ["SquareAntiprismaticV"], "siblings" => []},
+  {"name" => "SquareAntiprismaticV", "num" => 7, "parents" => ["SquareAntiprismatic"], "children" => [], "siblings" => []},
+
+  {"name" => "HexagonalBipyramidal", "num" => 8, "parents" => [], "children" => ["HexagonalBipyramidalVA", "HexagonalBipyramidalVP"], "siblings" => []},
+  {"name" => "HexagonalBipyramidalVA", "num" => 7, "parents" => ["HexagonalBipyramidal"], "children" => [], "siblings" => ["HexagonalBipyramidalVP"]},
+  {"name" => "HexagonalBipyramidalVP", "num" => 7, "parents" => ["HexagonalBipyramidal"], "children" => [], "siblings" => ["HexagonalBipyramidalVA"]}
+
 ]; 
 
 
@@ -199,7 +217,7 @@ sub IAcoordination
   while ( $self->compareStats($oldStats) )
     {
     $oldStats = clone($currStats); ## a nested copy
-    $self->{coordinations} = $self->calcChiCoordination($control, $threshold);
+    $self->calcChiCoordination($control, $threshold);
     if ($control eq "n") {$self->calNonModel($threshold);}
 
     $currStats = {};
@@ -282,7 +300,7 @@ sub bindShellViaDist
     {
     my @models;
     #foreach my $cg ("TrigonalPlanar", @{$self->{majorCGs}}, "PentagonalBipyramidal", "Cube", "SquareAntiprismaticMonocapped", "SquareAntiprismaticBicapped")
-    foreach my $cg (@{$self->{majorCGs}}, "PentagonalBipyramidal", "Cube", "SquareAntiprismaticMonocapped", "SquareAntiprismaticBicapped")
+    foreach my $cg (@{$self->{majorCGs}}, "SquareAntiprismatic", "SquareAntiprismaticMonocapped", "SquareAntiprismaticBicapped")
       {
       my $cgObj = $cg->new("shellObj" => $shell);
       $cgObj->bestDistChi($stats);
@@ -548,32 +566,40 @@ sub calcChiCoordination
   my $stats = (@_)? (shift @_) : ($self->{stats});
 
   ## Acquire all CGs from major CGs
-  my %allCGs;
-  foreach my $major (@{$self->{majorCGs}})
-    {
-    $allCGs{$major} = 1;
+  #my %allCGs;
+  #foreach my $major (@{$self->{majorCGs}})
+  #  {
+  #  $allCGs{$major} = 1;
 
-    my $relation = (grep {$$_{"name"} eq $major } (@$cgRelations))[0];
-    map {$allCGs{$_} = 1} (@{$$relation{"children"}});
-    }
+  #  my $relation = (grep {$$_{"name"} eq $major } (@$cgRelations))[0];
+  #  map {$allCGs{$_} = 1} (@{$$relation{"children"}});
+  #  }
+ 
+  ## all CGs in the cgRelations on top, regardless of the major ones passed in from bootstrap. 
+  ## It is a array now compared to a hash as above.
+  my @allCGs = map {$$_{"name"}} (@$cgRelations);
 
-  #print "\n\n";
   my $decisions = {};
   my $coordinations = {};
   foreach my $shell (@{$self->{shells}})
     {
-    #print "\n", $shell->metalID(), "; ";
+print "\n", $shell->metalID(), "; ";
+#my $now_string = localtime;
+#print "$now_string\n";
 
     ## Create all CG objects 
     my @models;
-    foreach my $cg (keys %allCGs)
+    foreach my $cg (@allCGs)
       {
       my $relation = (grep {$$_{"name"} eq $cg } (@$cgRelations))[0];
-      next if ($$relation{"num"} < $self->{minLigNum});
+      next if ($$relation{"num"} < $self->{minLigNum} || $$relation{"num"} > @{$shell->{shell}});
 
       my $cgObj = $cg->new(shellObj => $shell);
       $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-      push @models, $cgObj
+      push @models, $cgObj;
+
+my $now_string = localtime;
+print "$cg, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
       }
     @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} (@models)));
 
@@ -596,7 +622,7 @@ sub calcChiCoordination
 
       if (! defined $tev->{bestCombo} && ! defined $tpl->{bestCombo}) 
 	{ 
-	#print "0;0;0";
+print "0;0;0\n";
 	$$decisions{"012"}++; 
 	}
       else 
@@ -607,15 +633,18 @@ sub calcChiCoordination
           my $modRef = ref $mods[0];
           push @{$$coordinations{$modRef}}, $mods[0];
           $$decisions{"3.". $modRef} += 1;
+print "3lig.$modRef\n";
           }
         else
           {$$decisions{"3.None"} += 1;}
-	#print $mods[0]->{bestCombo}->{probability}, "; ", $mods[1]->{bestCombo}->{probability}, "; 0";
+print $mods[0]->{bestCombo}->{probability}, "; ", $mods[1]->{bestCombo}->{probability}, "; 00\n";
         next;
         }
       }
     else ## 4, 5, 6 ligands
       {
+print $models[0]->{bestCombo}->{probability}, "; 456\n";
+      
       ## set the probability threshold, remove low prob ones from statistics calculation. 
       if ($control eq "p" && $models[0]->{bestCombo}->{probability} < $threshold) 
 	{
@@ -624,15 +653,14 @@ sub calcChiCoordination
 	next;
 	}
 
-	#print $models[0]->{bestCombo}->{probability}, "; ";
-
+      ## Bva prob has to be more than twice of Tet to be considered Bva, otherwise Tet
       if (ref $models[0] eq "TrigonalBipyramidalVA" && ref $models[1] eq "Tetrahedral" && ($models[0]->{bestCombo}->{probability} < (2 * $models[1]->{bestCombo}->{probability})))
         {
         my $modelRef = ref $models[1];
 	push @{$$coordinations{$modelRef}}, $models[1];
 	$$decisions{$maxNum. ".".  $modelRef} += 1;
 
-	#print $models[1]->{bestCombo}->{probability}, "; 2";
+print $models[1]->{bestCombo}->{probability}, "; bva\n";
 	}
       else
 	{
@@ -654,7 +682,7 @@ sub calcChiCoordination
               push @{$$coordinations{$modelRef}}, $models[$i];
 	      $dec = $dec. ".". $modelRef;
               $$decisions{$dec} += 1;
-		#print $models[0]->{bestCombo}->{probability}, "; 1";
+print $models[0]->{bestCombo}->{probability}, "; only $modelRef\n";
 	      }
 	    else
 	      {
@@ -666,7 +694,7 @@ sub calcChiCoordination
 
 	      map {$dec = $dec.".".ref $models[$_]} (0..$maxInd) ;
               $$decisions{$dec} += 1;
-		#print $models[$maxInd]->{bestCombo}->{probability}, "; $modelRef";
+print $models[$maxInd]->{bestCombo}->{probability}, "; major CG to $modelRef\n";
 	      }
 	    last;
 	    }
@@ -767,7 +795,7 @@ sub calcAngleStats
       #$$angleStats{$coordination}{$angle}{"max"} = $stats->max();
       }
     }
- 
+
   my ($pooledVar, $pooledCount);
   map {my $cg = $_; map {$pooledCount += $$angleStats{$cg}{$_}{"count"} - 1; $pooledVar += $$angleStats{$cg}{$_}{"variance"} * ($$angleStats{$cg}{$_}{"count"} - 1) } (keys %{$$coordinationAngles{$cg}})} (keys %$coordinationAngles);
   $pooledVar = $pooledVar / $pooledCount;

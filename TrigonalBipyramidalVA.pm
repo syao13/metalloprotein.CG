@@ -106,6 +106,7 @@ sub angleTestStatistic
     my $invStds = [$std90, $std90, $std90, $std120, $std120, $std120];
     my $chiStat = $self->covMatChi($diff, $invStds, $invCorrM);
 
+print join (", ", @angles), ": $chiStat\n";
     return $chiStat;
     }
   }

@@ -99,18 +99,18 @@ sub angleTestStatistic
     {
     if ($type eq "chi")
       {
-      $mean72 = ($$angleStats{"pentagonalBipyramidal"}{"72"}{"mean"})? ($$angleStats{"pentagonalBipyramidal"}{"72"}{"mean"}) : $expectedAngle90; ## major coordinaiton mean
+      $mean72 = ($$angleStats{"pentagonalBipyramidal"}{"72"}{"mean"})? ($$angleStats{"pentagonalBipyramidal"}{"72"}{"mean"}) : $expectedAngle72; ## major coordinaiton mean
       $mean90 = ($$angleStats{"pentagonalBipyramidal"}{"90"}{"mean"})? ($$angleStats{"pentagonalBipyramidal"}{"90"}{"mean"}) : $expectedAngle90;
-      $mean144 = ($$angleStats{"pentagonalBipyramidal"}{"144"}{"mean"})? ($$angleStats{"pentagonalBipyramidal"}{"144"}{"mean"}) : $expectedAngle90;
+      $mean144 = ($$angleStats{"pentagonalBipyramidal"}{"144"}{"mean"})? ($$angleStats{"pentagonalBipyramidal"}{"144"}{"mean"}) : $expectedAngle144;
       $varianceOrN72 = $$angleStats{"variance"}; ## overall variance
       $varianceOrN90 = $$angleStats{"variance"}; 
       $varianceOrN144 = $$angleStats{"variance"}; 
       }
     else
       {
-      $varianceOrN72 =  $$angleStats{"pentagonalBipyramidal"}{"72"}{"variance"};
-      $varianceOrN90 =  $$angleStats{"pentagonalBipyramidal"}{"90"}{"variance"};
-      $varianceOrN144 =  $$angleStats{"pentagonalBipyramidal"}{"144"}{"variance"};
+      $varianceOrN72 =  $$angleStats{"pentagonalBipyramidalVacancyPlanar"}{"72"}{"variance"};
+      $varianceOrN90 =  $$angleStats{"pentagonalBipyramidalVacancyPlanar"}{"90"}{"variance"};
+      $varianceOrN144 =  $$angleStats{"pentagonalBipyramidalVacancyPlanar"}{"144"}{"variance"};
       }
 
     my @means = ($mean72, $mean72, $mean72, $mean90, $mean90, $mean90, $mean90, $mean90, $mean90, $mean90, $mean90, $mean144, $mean144, $mean144); 
@@ -210,10 +210,10 @@ sub calcExpectedAngleStats
   my $self = shift @_;
   my $angleStats = shift @_;
 
-  push (@{$$angleStats{"pentagonalBipyramidal"}{"72"}}, $_->calcAllAngles72());
-  push (@{$$angleStats{"pentagonalBipyramidal"}{"90"}}, $_->calcAllAngles90());
-  push (@{$$angleStats{"pentagonalBipyramidal"}{"144"}}, $_->calcAllAngles144());
-  push (@{$$angleStats{"pentagonalBipyramidal"}{"180"}}, $_->calcAllAngles180());
+  push (@{$$angleStats{"pentagonalBipyramidalVacancyPlanar"}{"72"}}, $_->calcAllAngles72());
+  push (@{$$angleStats{"pentagonalBipyramidalVacancyPlanar"}{"90"}}, $_->calcAllAngles90());
+  push (@{$$angleStats{"pentagonalBipyramidalVacancyPlanar"}{"144"}}, $_->calcAllAngles144());
+  push (@{$$angleStats{"pentagonalBipyramidalVacancyPlanar"}{"180"}}, $_->calcAllAngles180());
 
   return 0;
   }

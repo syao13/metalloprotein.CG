@@ -60,11 +60,17 @@ sub orderedCombinations
     {
     my @fiveAtoms = grep { my $test = $_; ! (grep { $_ == $test; } (@$twoAtoms)); } (@$combo);
     push (@$orderedCombos, [@$twoAtoms, $fiveAtoms[0], $fiveAtoms[1],$fiveAtoms[2],$fiveAtoms[3], $fiveAtoms[4]]);
+    push (@$orderedCombos, [@$twoAtoms, $fiveAtoms[0], $fiveAtoms[1],$fiveAtoms[2],$fiveAtoms[4], $fiveAtoms[3]]);
     push (@$orderedCombos, [@$twoAtoms, $fiveAtoms[0], $fiveAtoms[1],$fiveAtoms[3],$fiveAtoms[2], $fiveAtoms[4]]);
+    push (@$orderedCombos, [@$twoAtoms, $fiveAtoms[0], $fiveAtoms[1],$fiveAtoms[3],$fiveAtoms[4], $fiveAtoms[2]]);
     push (@$orderedCombos, [@$twoAtoms, $fiveAtoms[0], $fiveAtoms[1],$fiveAtoms[4],$fiveAtoms[2], $fiveAtoms[3]]);
-    push (@$orderedCombos, [@$twoAtoms, $fiveAtoms[0], $fiveAtoms[2],$fiveAtoms[3],$fiveAtoms[1], $fiveAtoms[4]]);
-    push (@$orderedCombos, [@$twoAtoms, $fiveAtoms[0], $fiveAtoms[2],$fiveAtoms[4],$fiveAtoms[1], $fiveAtoms[3]]);
-    push (@$orderedCombos, [@$twoAtoms, $fiveAtoms[0], $fiveAtoms[3],$fiveAtoms[4],$fiveAtoms[1], $fiveAtoms[2]]);
+    push (@$orderedCombos, [@$twoAtoms, $fiveAtoms[0], $fiveAtoms[1],$fiveAtoms[4],$fiveAtoms[3], $fiveAtoms[2]]);
+    push (@$orderedCombos, [@$twoAtoms, $fiveAtoms[0], $fiveAtoms[2],$fiveAtoms[1],$fiveAtoms[3], $fiveAtoms[4]]);
+    push (@$orderedCombos, [@$twoAtoms, $fiveAtoms[0], $fiveAtoms[2],$fiveAtoms[1],$fiveAtoms[4], $fiveAtoms[3]]);
+    push (@$orderedCombos, [@$twoAtoms, $fiveAtoms[0], $fiveAtoms[3],$fiveAtoms[1],$fiveAtoms[2], $fiveAtoms[4]]);
+    push (@$orderedCombos, [@$twoAtoms, $fiveAtoms[0], $fiveAtoms[3],$fiveAtoms[1],$fiveAtoms[4], $fiveAtoms[2]]);
+    push (@$orderedCombos, [@$twoAtoms, $fiveAtoms[0], $fiveAtoms[4],$fiveAtoms[1],$fiveAtoms[2], $fiveAtoms[3]]);
+    push (@$orderedCombos, [@$twoAtoms, $fiveAtoms[0], $fiveAtoms[4],$fiveAtoms[1],$fiveAtoms[3], $fiveAtoms[2]]);
     }
 
   return $orderedCombos;
@@ -99,9 +105,9 @@ sub angleTestStatistic
     {
     if ($type eq "chi")
       {
-      $mean72 = ($$angleStats{"pentagonalBipyramidal"}{"72"}{"mean"})? ($$angleStats{"pentagonalBipyramidal"}{"72"}{"mean"}) : $expectedAngle90; ## major coordinaiton mean
+      $mean72 = ($$angleStats{"pentagonalBipyramidal"}{"72"}{"mean"})? ($$angleStats{"pentagonalBipyramidal"}{"72"}{"mean"}) : $expectedAngle72; ## major coordinaiton mean
       $mean90 = ($$angleStats{"pentagonalBipyramidal"}{"90"}{"mean"})? ($$angleStats{"pentagonalBipyramidal"}{"90"}{"mean"}) : $expectedAngle90;
-      $mean144 = ($$angleStats{"pentagonalBipyramidal"}{"144"}{"mean"})? ($$angleStats{"pentagonalBipyramidal"}{"144"}{"mean"}) : $expectedAngle90;
+      $mean144 = ($$angleStats{"pentagonalBipyramidal"}{"144"}{"mean"})? ($$angleStats{"pentagonalBipyramidal"}{"144"}{"mean"}) : $expectedAngle144;
       $varianceOrN72 = $$angleStats{"variance"}; ## overall variance
       $varianceOrN90 = $$angleStats{"variance"}; 
       $varianceOrN144 = $$angleStats{"variance"}; 

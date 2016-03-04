@@ -1,7 +1,8 @@
 #!/usr/bin/perl 
 
 my $help = <<HELP;
-  usage: ./metalCoordinations.pl PDBpathsFile metal -i/d/dd/bs [(criteria threshold) statisticsFilePrefix] [-s sequences header sequenceResultsFile] [-r rSpreadsheet (leaveOut) statisticsFile]
+  usage: ./metalCoordinations.pl PDBpathsFile metal [shellCutoff shellElmt] -i/d/dd/bs [(criteria threshold) statisticsFilePrefix] 
+		[-s sequences header sequenceResultsFile] [-r rSpreadsheet (leaveOut) statisticsFile]
 		[-json jsonFile] [-dumper dumperFile] [-decision] [-angleList angleListMid] [-ec pathToFlat pathToPDB ecFile] [-ligand] [-angleBD angleBreakDownFile]
  
   Parameters:
@@ -9,7 +10,8 @@ my $help = <<HELP;
     required:
   	PDBpathsFile 
 	metal
-	-i/d [(criteria threshold) statisticsFilePrefix], 
+	-i/d/dd/bs [(criteria threshold) statisticsFilePrefix], 
+		-i: iterative process; -d: get bindinding ligand via chi-squared test; -dd: get binding ligand via single ligand test; -bs: just bootstrap
 		criteria: probability(p)/compressed(c)/nonModel(n); 
 		threshold: threshold for the criteria; 
 		statisticsFilePrefix: the prefix of the statistics file
@@ -67,12 +69,19 @@ use Data::Dumper::Concise;
 my $pathsFile = shift @ARGV;
 my $metal = shift @ARGV;
 
+my ($iaControl, $threshold, $shellCutoff, $shellElement); 
+## bond length cutoff for the first shell in bootstrap
+if ($ARGV[0] =~ /^\d+(\.\d+)?$/)
+  {
+  $shellCutoff = shift @ARGV;
+  $shellElement = shift @ARGV;
+  }
+
 unless ($ARGV[0] eq "-i" || $ARGV[0] eq "-d"|| $ARGV[0] eq "-bs" || $ARGV[0] eq "-dd")
   { print STDERR $help; exit;}
 my $flow = shift @ARGV;
 
 ## This is not really -i/-d specific
-my ($iaControl, $threshold, $shellCutoff, $shellElement); 
 if ($ARGV[0] =~ /^(p|porb|probability)$/)
   {
   shift @ARGV;
@@ -99,21 +108,6 @@ elsif ($ARGV[0] =~ /^(n|non|nonModel)$/) ## nonModel is to remove the zinc shell
     { $threshold = shift @ARGV; }
   else
     { $threshold = 0.001;}
-  }
-elsif ($ARGV[0] =~ /^(s|shellCutoff)$/) ## bond length cutoff for the first shell in bootstrap
-  {
-  shift @ARGV;
-  $iaControl = "s";
-  if ($ARGV[0] =~ /^\d+(\.\d+)?$/)
-    {
-    $shellCutoff = shift @ARGV;
-    $shellElement = shift @ARGV;
-    }
-  else
-    {
-    $shellCutoff = 3.2;
-    $shellElement = "ONS";
-    }
   }
 
 ## Assign names for statistics file for each round

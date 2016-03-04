@@ -946,5 +946,6 @@ cat Zn_results/root_afterRF/rf.smallest.txt Mg_results/root_afterRF/rf.smallest.
 
 ./seq_alignment.R ../allMetal_results/beforeNR/
 
-
+## check rmsd of all metal, all number of ligand
+./cluster.centers.prob.R ../Na_results/5ligand_6/ 7 10 14 11| less
 

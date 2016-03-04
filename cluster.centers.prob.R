@@ -10,9 +10,34 @@ load("normal_cluster_assg.RData")
 load("compressed_cluster_assg.RData")
 load("combined_cluster_assg.RData")
 
+Tet <- c(109.5, 109.5, 109.5, 109.5, 109.5, 109.5)
+Bva <- c(120, 90, 90,120, 120, 90)
+Bvp <- c(180, 90, 90, 90, 90, 120)
+Pyv <- c(180, 90, 90, 90, 90, 90)
+Spl <- c(180, 90, 90, 90, 90, 180)
+
+Tbp <- c(180, 90, 90, 90, 90, 90, 90, 120, 120, 120)
+Spy <- c(180, 90, 90, 90, 90, 90, 90, 90, 180, 90)
+Tpv <- c(131.8, 70.6, 90, 90, 90, 90, 131.8, 131.8, 131.8, 70.6)
+#Ppl <- c(144, 72, 72, 72, 72, 144, 144, 144, 144, 72)
+
+Oct <- c(180, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 180, 180, 90)
+Pva <- c(144, 72, 72, 72, 72, 90, 90, 90, 90, 90, 144, 144, 144, 144, 72)
+Pvp <- c(180, 72, 72, 90, 90, 90, 90, 90, 90, 90, 90, 144, 144, 144, 72)
+Tpr <- c(131.8, 70.6, 70.6, 90, 90, 90, 90, 90, 90, 131.8, 131.8, 131.8, 131.8, 131.8, 70.6)
+
+Pbp <- c(180, 72, 72, 72, 72, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 144, 144, 144, 144, 144, 72)
+Hva <- c(180, 60, 60, 60, 60, 60, 90, 90, 90, 90, 90, 90, 120, 120, 120, 120, 120, 120, 180, 180, 60)
+Hvp <- c(180, 60, 60, 60, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 120, 120, 120, 120, 180, 180, 60)
+Cuv <- c(180, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 180, 180, 70.5)
+Sav <- c(143.6, 70.5, 70.5, 70.5, 70.5, 70.5, 82, 82, 82, 82, 82, 82, 109.5, 109.5, 109.5, 143.6, 143.6, 143.6, 143.6, 143.6, 70.5)
+
+Hbp <- c(180, 60, 60, 60, 60, 60, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 120, 120, 120, 120, 120, 120, 120, 180, 180, 60)
+Cub <- c(180, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 180, 180, 180, 70.5)
+Sqa <- c(143.6, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 82, 82, 82, 82, 82, 82, 82, 82, 109.5, 109.5, 109.5, 109.5, 143.6, 143.6, 143.6, 143.6, 143.6, 143.6, 143.6, 70.5)
+
 rawdata1 <- read.table("r.allLig.txt", header = FALSE)
 colnames(rawdata1) <- c("znID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
-#rawdata2 <- rawdata1 #read.table("four.chi.leaveOut.txt", header = TRUE)
 
 ## Set the number k normal, compressed, and combined
 normal.k <- args[3]
@@ -31,10 +56,7 @@ combined.cluster[,2] <- as.numeric(combined.cluster[,2])
 ## Remove duplicate zinc ids
 dupId <- rawdata1$znID[duplicated(rawdata1$znID)]
 rawdata1 <- rawdata1[! rawdata1$znID %in% dupId,]
-#dupId2 <- rawdata2$znID[duplicated(rawdata2$zn_ID)]
-#rawdata2 <- rawdata2[! rawdata2$znID %in% dupId2,]
 dim(rawdata1)
-#dim(rawdata2)
 
 normal.cluster <- normal.cluster[! normal.cluster[,1] %in% dupId,]
 dim(normal.cluster)
@@ -44,7 +66,6 @@ combined.cluster <- combined.cluster[! combined.cluster[,1] %in% dupId,]
 dim(combined.cluster)
 
 row.names(rawdata1) <- rawdata1$znID
-#row.names(rawdata2) <- rawdata2$znID
 
 ############## cluster centers ###################
 angleSapce <- function(angleCombo, num) {
@@ -55,6 +76,24 @@ angleSapce <- function(angleCombo, num) {
   else if (num == 7) { c(angles[1], anglesSort, angles[length(angles)]) }
 }
 
+rmsdCG <- function(cc) {
+  CGs <- NULL
+  if (ncol(cc) == 6) {
+    CGs <- c("Tet", "Bva", "Bvp", "Pyv", "Spl")
+  } else if (ncol(cc) == 10) {
+    CGs <- c("Tbp", "Spy", "Tpv")
+  } else if (ncol(cc) == 15) {
+    CGs <- c("Oct", "Pva", "Pvp", "Tpr")
+  } else if (ncol(cc) == 21) {
+    CGs <- c("Pbp", "Hva", "Hvp", "Cuv", "Sav")
+  } else if (ncol(cc) == 28) {
+    CGs <- c("Hbp", "Cub", "Sqa")
+  }
+
+  sapply(CGs, function(x) sqrt(rowMeans((sweep(cc, 2, get(x)))^2)))
+}
+
+
 #### normal
 angles.norm <- rawdata1[normal.cluster[,1],]$angleCombo
 length(angles.norm)
@@ -64,7 +103,9 @@ dim(sortedAngles.normal)
 dim(normal.cluster)
 
 print("Table 5")
-round(apply(sortedAngles.normal, 2, function(x) tapply(x, normal.cluster[,2], mean)), digit=1)
+clusterCenters <- round(apply(sortedAngles.normal, 2, function(x) tapply(x, normal.cluster[,2], mean)), digit=1)
+clusterCenters
+round(rmsdCG(clusterCenters),1)
 round(apply(sortedAngles.normal, 2, function(x) tapply(x, normal.cluster[,2], sd)), digit=1)
 round(apply(sortedAngles.normal, 2, function(x) tapply(x, normal.cluster[,2], length))[,1], digit=1)
 
@@ -77,7 +118,9 @@ dim(sortedAngles.compressed)
 dim(compressed.cluster)
 
 print("Table 6")
-round(apply(sortedAngles.compressed, 2, function(x) tapply(x, compressed.cluster[,2], mean)), digit=1)
+clusterCenters <- round(apply(sortedAngles.compressed, 2, function(x) tapply(x, compressed.cluster[,2], mean)), digit=1)
+clusterCenters
+round(rmsdCG(clusterCenters),1)
 round(apply(sortedAngles.compressed, 2, function(x) tapply(x, compressed.cluster[,2], sd)), digit=1)
 round(apply(sortedAngles.compressed, 2, function(x) tapply(x, compressed.cluster[,2], length))[,1], digit=1)
 
@@ -90,7 +133,9 @@ dim(sortedAngles.combined)
 dim(combined.cluster)
 
 print("Table S7")
-round(apply(sortedAngles.combined, 2, function(x) tapply(x, combined.cluster[,2], mean)), digit=1)
+clusterCenters <- round(apply(sortedAngles.combined, 2, function(x) tapply(x, combined.cluster[,2], mean)), digit=1)
+clusterCenters
+round(rmsdCG(clusterCenters),1)
 round(apply(sortedAngles.combined, 2, function(x) tapply(x, combined.cluster[,2], sd)), digit=1)
 round(apply(sortedAngles.combined, 2, function(x) tapply(x, combined.cluster[,2], length))[,1], digit=1)
 

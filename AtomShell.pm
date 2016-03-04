@@ -113,8 +113,8 @@ sub create
   my (@ligElements, @tempShell);
   if ($ligElements)
     {
-    @ligElements = split(//, $ligElements);
-    @tempShell = grep {my $distance = $center->distance($_); my $atom = $_; ($distance >= $minDist && $distance <= $maxDist && grep {$atom->{element} eq $_} (@ligElements) );} (@$atoms);
+    @ligElements = split(/(?=[A-Z]+[^A-Z]?)/, $ligElements);
+    @tempShell = grep {my $distance = $center->distance($_); my $atom = $_; ($distance >= $minDist && $distance <= $maxDist && grep {$atom->{element} eq uc($_)} (@ligElements) );} (@$atoms);
     }
   else 
     { @tempShell = grep {my $distance = $center->distance($_); ($distance >= $minDist && $distance <= $maxDist && $_->{element} ne "H" && ! $atomRadius{$_->{element}} );} (@$atoms); }
