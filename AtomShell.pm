@@ -115,6 +115,9 @@ sub create
     {
     @ligElements = split(/(?=[A-Z]+[^A-Z]?)/, $ligElements);
     @tempShell = grep {my $distance = $center->distance($_); my $atom = $_; ($distance >= $minDist && $distance <= $maxDist && grep {$atom->{element} eq uc($_)} (@ligElements) );} (@$atoms);
+
+#print $center->{PDBid}, ".", $center->{chainID}, ".", $center->{residueNumber}, "\n" if (grep {$center->distance($_) < $minDist && $center->distance($_) > 0} (@$atoms));
+
     }
   else 
     { @tempShell = grep {my $distance = $center->distance($_); ($distance >= $minDist && $distance <= $maxDist && $_->{element} ne "H" && ! $atomRadius{$_->{element}} );} (@$atoms); }

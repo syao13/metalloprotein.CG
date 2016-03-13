@@ -61,6 +61,7 @@ sub read
                         'x' => substr($record, 30, 8),
                         'y' => substr($record, 38, 8), 
                         'z' => substr($record, 46, 8),
+			'occupancy' => substr($record, 54, 6),
 			'bFactor' => substr($record, 60, 6),  
                         'element' => substr($record, 76, 2),
                         'file' => $singlePdbFile, 

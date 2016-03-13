@@ -342,6 +342,7 @@ sub shellViaAdjustDistStd
       my $adjStd = ($resolution - $$blStats{$ligand->{element}}{resolutionAvg}) * $slope + $$blStats{$ligand->{element}}{standardDeviation};
 
 #print $ligand->{element}, ", ", $shell->{center}->distance($ligand), ", ", $$blStats{$ligand->{element}}{mean}, ", $resolution, $adjStd, ";
+print $shell->metalID(), "\n" if ($shell->{center}->distance($ligand) < $$blStats{$ligand->{element}}{mean} - $adjStd * 2.5);
 
       if ( abs($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mean}) <= $adjStd * 2.5 )
 	{ 

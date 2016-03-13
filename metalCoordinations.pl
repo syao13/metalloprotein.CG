@@ -10,6 +10,7 @@ my $help = <<HELP;
     required:
   	PDBpathsFile 
 	metal
+	[shellCutoff shellElmt], if not provided, cutoff is set based on atomic radius, and element includes everything but 'H'
 	-i/d/dd/bs [(criteria threshold) statisticsFilePrefix], 
 		-i: iterative process; -d: get bindinding ligand via chi-squared test; -dd: get binding ligand via single ligand test; -bs: just bootstrap
 		criteria: probability(p)/compressed(c)/nonModel(n); 
@@ -277,7 +278,8 @@ if ($rInputOpt)
 
       map { print FID $_, "\t";} (&coordProbs($metalObj->{shellObj}, $stats, $leaveOut)) if ($statsFile);
       #map { print FID $_->{chiAngle}, "\t";} (@{$metalObj->{bestCombo}->{ligands}});
-    
+   
+      print FID $metalObj->{shellObj}->{center}->{occupancy}, "\t"; 
       print FID "\n";
       }
     }

@@ -949,3 +949,9 @@ cat Zn_results/root_afterRF/rf.smallest.txt Mg_results/root_afterRF/rf.smallest.
 ## check rmsd of all metal, all number of ligand
 ./cluster.centers.prob.R ../Na_results/5ligand_6/ 7 10 14 11| less
 
+
+## Test IA process
+./metalCoordinations.pl test.ca.1.txt Ca 3.094 O -i p 0.001 test
+
+## 3.4, respond to the attackiing paper, too close ligands and metal occupancy
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.783 SON -dd ../Zn_results/root_fcshell/stats -r ../Zn_results/root_fcshell/r.allLig.occupancy.txt  > ../Zn_results/root_fcshell/out.tooclose.txt

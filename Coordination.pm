@@ -180,7 +180,7 @@ sub bestTestStatistic
     }
 
   $self->{bestCombo} = $bestStat;
-print ref $self, ", ", $$bestStat{"angleChi"}, ": ", join (", ", $self->allAngles()), "\n";
+#print ref $self, ", ", $$bestStat{"angleChi"}, ": ", join (", ", $self->allAngles()), "\n";
   }
 
 
