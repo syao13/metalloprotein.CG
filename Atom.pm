@@ -213,5 +213,37 @@ sub _arccos
   atan2( sqrt(1 - $_[0] * $_[0]), $_[0] )
   }
 
+sub coordinates
+  {
+  my $self = shift @_;
 
+  return join (", ", $self->{x}, $self->{y}, $self->{z})
+  }
+
+sub transform
+  {
+  my $self = shift @_;
+  my ($matrix, $crystA, $crystB, $crystC) = @_;
+
+  my $xnew = $$matrix[1][1] * $self->{x} + $$matrix[1][2] * $self->{y} + $$matrix[1][3] * $self->{z} + $$matrix[4][1] + $crystA;
+  my $ynew = $$matrix[2][1] * $self->{x} + $$matrix[2][2] * $self->{y} + $$matrix[2][3] * $self->{z} + $$matrix[4][2] + $crystB;
+  my $znew = $$matrix[3][1] * $self->{x} + $$matrix[3][2] * $self->{y} + $$matrix[3][3] * $self->{z} + $$matrix[4][3] + $crystC;
+
+#print "$xnew, $ynew, $znew\n";
+  my $newAtom = {%$self, "x" => $xnew, "y" => $ynew, "z" => $znew, "chainID" => join("", "#", $self->{chainID})} ; 
+  return bless $newAtom, ref $self;
+  }
+
+sub transformBio
+  {
+  my $self = shift @_;
+  my $matrix = shift @_;
+
+  my $xnew = $$matrix[1][1] * $self->{x} + $$matrix[1][2] * $self->{y} + $$matrix[1][3] * $self->{z} + $$matrix[4][1];
+  my $ynew = $$matrix[2][1] * $self->{x} + $$matrix[2][2] * $self->{y} + $$matrix[2][3] * $self->{z} + $$matrix[4][2];
+  my $znew = $$matrix[3][1] * $self->{x} + $$matrix[3][2] * $self->{y} + $$matrix[3][3] * $self->{z} + $$matrix[4][3];
+
+  my $newAtom = {%$self, "x" => $xnew, "y" => $ynew, "z" => $znew, "chainID" => join("", "*", $self->{chainID})} ;
+  return bless $newAtom, ref $self;
+  }
 

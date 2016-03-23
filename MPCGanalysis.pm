@@ -56,6 +56,7 @@ use HexagonalBipyramidal;
 use HexagonalBipyramidalVA;
 use HexagonalBipyramidalVP;
 
+use Thread::Queue;
 use Clone 'clone';
 #use Data::Dumper::Concise; # human readable, code in iaCoordination
 #use JSON; # For other programs to read back, code in iaCoordination 
@@ -133,12 +134,12 @@ sub readPDB
 
   my $allShells = []; 
   open (PATH, $self->{pathsFile}); 
-  foreach my $file (<PATH>)
+  while (my $file = <PATH>)
     {
     chomp $file;
 
     $file =~ s/[\r\n]+$//;
-    my $pdb = PDBEntry->new("singlePdbFile" => $file);
+    my $pdb = PDBEntry->new("singlePdbFile" => $file, "metal" => $element);
     my $atoms = $pdb->{atoms};
 
     my $shellsOfOnePDB = ($self->{shellCutoff})? AtomShell->createShells($element, $atoms, 1.3, $self->{shellCutoff}, $self->{shellElement}) : AtomShell->createShells($element, $atoms);
@@ -342,7 +343,7 @@ sub shellViaAdjustDistStd
       my $adjStd = ($resolution - $$blStats{$ligand->{element}}{resolutionAvg}) * $slope + $$blStats{$ligand->{element}}{standardDeviation};
 
 #print $ligand->{element}, ", ", $shell->{center}->distance($ligand), ", ", $$blStats{$ligand->{element}}{mean}, ", $resolution, $adjStd, ";
-print $shell->metalID(), "\n" if ($shell->{center}->distance($ligand) < $$blStats{$ligand->{element}}{mean} - $adjStd * 2.5);
+#print $shell->metalID(), "\n" if ($shell->{center}->distance($ligand) < $$blStats{$ligand->{element}}{mean} - $adjStd * 2.5);
 
       if ( abs($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mean}) <= $adjStd * 2.5 )
 	{ 
@@ -603,6 +604,40 @@ my $now_string = localtime;
 print "$cg, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
       }
     @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} (@models)));
+
+    ## Parallel processing of above
+    my $THREADS =10;
+    my $Qwork = new Thread::Queue;
+    my $Qresults = new Thread::Queue;
+
+    foreach my $one (1..@allCGs)
+      { $Qwork->enqueue($one); } #load the shared queue
+    $Qwork->enqueue( (undef) x $THREADS ); # Tell the queue there are no more work items
+
+    my $worker = sub 
+      {
+      my $tid = threads->tid;
+      my( $Qwork, $Qresults ) = @_;
+      while( my $work = $Qwork->dequeue() )
+        {
+        my $relation = (grep {$$_{"name"} eq $work } (@$cgRelations))[0];
+        next if ($$relation{"num"} < $self->{minLigNum} || $$relation{"num"} > @{$shell->{shell}});
+
+        my $cgObj = $work->new(shellObj => $shell);
+        $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+        $Qresults->enqueue($cgObj);
+        }
+      $Qresults->enqueue( undef ); ## Signal this thread is finished
+      };
+
+    my @qmodels;
+    my @thread_pool = map{ threads->create( $worker, $Qwork, $Qresults ) } 1 .. $THREADS;
+    while(my $result = $Qresults->dequeue())
+      {push @qmodels, $result;}
+
+    foreach my $th (@thread_pool)
+      { $th->join; }
+
 
     my $maxNum;
     my $unusables;

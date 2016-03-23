@@ -79,7 +79,7 @@ sub createShells
   my $maxDist = (@_) ? shift @_ : (($atomRadius{$element} > $atomRadius{"ZN"})? ($atomRadius{$element} - $atomRadius{"ZN"} + 3.2): 3.2 );
   my $ligElements = (@_) ? shift @_ : ();
 
-  my @centers = grep { $_->{element} eq $element; } (@$atoms); 
+  my @centers = grep { $_->{element} eq $element && substr($_->{chainID}, 0,1) ne "#"; } (@$atoms); 
 
   ## Rule out clusters
   my %cluster;
@@ -110,17 +110,39 @@ sub create
   my $maxDist = shift @_;
   my $ligElements = shift @_;
 
+  ## if elements are specified, use them; otherwise using everything other than H.
   my (@ligElements, @tempShell);
   if ($ligElements)
     {
     @ligElements = split(/(?=[A-Z]+[^A-Z]?)/, $ligElements);
     @tempShell = grep {my $distance = $center->distance($_); my $atom = $_; ($distance >= $minDist && $distance <= $maxDist && grep {$atom->{element} eq uc($_)} (@ligElements) );} (@$atoms);
-
 #print $center->{PDBid}, ".", $center->{chainID}, ".", $center->{residueNumber}, "\n" if (grep {$center->distance($_) < $minDist && $center->distance($_) > 0} (@$atoms));
-
     }
   else 
     { @tempShell = grep {my $distance = $center->distance($_); ($distance >= $minDist && $distance <= $maxDist && $_->{element} ne "H" && ! $atomRadius{$_->{element}} );} (@$atoms); }
+#print $center->coordinates(), ", center\n";
+#map {print $_->coordinates(), ", ligands\n";} (grep {$_->{residueNumber} == 126} (@$atoms));
+
+#print $center->resID(), "---before\n";
+#map {print $_->resID(), "\n";} (@tempShell);
+
+  my @remove;
+  foreach my $atom (@tempShell)
+    {
+    if (substr ($atom->{chainID}, 0, 1) eq "#") 
+      {
+      foreach my $rest (grep {$_ ne $atom} (@tempShell))
+        {
+        if ($rest->distance($atom) < 0.00001)
+	  { push @remove, $atom; }
+        }
+      }
+    }
+  @tempShell = grep {my $atom = $_; grep {$_ ne $atom} (@remove) ;} (@tempShell) if (@remove);
+
+print $center->{PDBid}, ".", $center->{chainID}, ".", $center->{residueNumber}, "\n" if (@remove);
+#print $center->resID(), "--- after\n";
+#map {print $_->resID(), "\n";} (@tempShell);
 
   return $class->new("center" => $center, 
 		     "shell" => [_remove2ndShell($center, @tempShell)], 

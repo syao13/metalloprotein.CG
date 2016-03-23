@@ -955,3 +955,10 @@ cat Zn_results/root_afterRF/rf.smallest.txt Mg_results/root_afterRF/rf.smallest.
 
 ## 3.4, respond to the attackiing paper, too close ligands and metal occupancy
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.783 SON -dd ../Zn_results/root_fcshell/stats -r ../Zn_results/root_fcshell/r.allLig.occupancy.txt  > ../Zn_results/root_fcshell/out.tooclose.txt
+
+## 3.21, added symmetry related calculation, occupancy, and solvent metal. Test on Zn
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.783 SON -dd test.zn.stats -r test.zn.r.txt 
+
+
+
+
