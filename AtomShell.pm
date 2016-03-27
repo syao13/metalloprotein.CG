@@ -140,7 +140,7 @@ sub create
     }
   @tempShell = grep {my $atom = $_; grep {$_ ne $atom} (@remove) ;} (@tempShell) if (@remove);
 
-print $center->{PDBid}, ".", $center->{chainID}, ".", $center->{residueNumber}, "\n" if (@remove);
+#print $center->{PDBid}, ".", $center->{chainID}, ".", $center->{residueNumber}, "\n" if (@remove);
 #print $center->resID(), "--- after\n";
 #map {print $_->resID(), "\n";} (@tempShell);
 

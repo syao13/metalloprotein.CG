@@ -56,11 +56,12 @@ use HexagonalBipyramidal;
 use HexagonalBipyramidalVA;
 use HexagonalBipyramidalVP;
 
+use threads;
 use Thread::Queue;
 use Clone 'clone';
 #use Data::Dumper::Concise; # human readable, code in iaCoordination
-#use JSON; # For other programs to read back, code in iaCoordination 
-#use JSON -convertBlessedUniversally;
+use JSON; # For other programs to read back, code in iaCoordination 
+use JSON -convert_blessed_universally;
 
 our @defaultDataMembers = (
                           "pathsFile" => 0,  # a file that contains pdb-file paths
@@ -134,13 +135,30 @@ sub readPDB
 
   my $allShells = []; 
   open (PATH, $self->{pathsFile}); 
-  while (my $file = <PATH>)
-    {
-    chomp $file;
 
-    $file =~ s/[\r\n]+$//;
-    my $pdb = PDBEntry->new("singlePdbFile" => $file, "metal" => $element);
+  my $THREADS = 10;
+  my $Qwork = new Thread::Queue;
+
+  while (my $one = <PATH>)
+    { 
+    chomp $one; 
+    $Qwork->enqueue($one); 
+    } #load the queue
+  $Qwork->enqueue( (undef) x $THREADS ); # Tell the queue there are no more work items
+
+  my $worker = sub 
+  {
+  my $tid = threads->tid;
+  my( $Qwork, $workerFile ) = @_;
+  while( my $work = $Qwork->dequeue() )
+    {
+#  while (my $file = <PATH>)
+#    {
+#    chomp $file;
+    $work  =~ s/[\r\n]+$//;
+    my $pdb = PDBEntry->new("singlePdbFile" => $work, "metal" => $element);
     my $atoms = $pdb->{atoms};
+    #print substr($work,42,4), ",", $pdb->{symNum}, "\n";
 
     my $shellsOfOnePDB = ($self->{shellCutoff})? AtomShell->createShells($element, $atoms, 1.3, $self->{shellCutoff}, $self->{shellElement}) : AtomShell->createShells($element, $atoms);
    
@@ -170,19 +188,35 @@ sub readPDB
       $oneShell->{closestAA} = $closestAA;
 
       ## prepare residues for later analysis
-      foreach my $ligand (@{$oneShell->{shellsOfOnePDB}})
-	{
-	map {$ligand->{chiAngle} = $_->chiOneAngle();} (grep {$ligand->resID() eq $_->residueID();} (@$residues));
-	}
+      #foreach my $ligand (@{$oneShell->{shellsOfOnePDB}})
+	#{
+	#map {$ligand->{chiAngle} = $_->chiOneAngle();} (grep {$ligand->resID() eq $_->residueID();} (@$residues));
+	#}
 
       ## store all chain-sequence pair of within its PDB into each shell
       $oneShell->{seqsOfPDB} = $sequences; #if (! $oneShell->{sequence});
       }
 
-    push @$allShells, @$shellsOfOnePDB;
-    }
+     #undef %$pdb;
+     #undef @$atoms;
 
-  $self->{shells} = $allShells;
+    open (JOUT, '>>', $workerFile);
+    foreach my $shell (@$shellsOfOnePDB)
+      {
+      my $jsonObj = JSON->new->allow_blessed->convert_blessed->encode($shell);
+      print JOUT $jsonObj."\n";
+      }
+    close JOUT;
+#    push @$allShells, @$shellsOfOnePDB;
+    }
+  };
+
+  my @thread_pool = map {threads->create( $worker, $Qwork, "../threads/worker.$_.txt" ); } (1 .. $THREADS);
+
+  foreach my $th (@thread_pool)
+    { $th->join; }
+
+  #$self->{shells} = $allShells;
   }
 
 

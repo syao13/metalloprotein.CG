@@ -959,6 +959,8 @@ cat Zn_results/root_afterRF/rf.smallest.txt Mg_results/root_afterRF/rf.smallest.
 ## 3.21, added symmetry related calculation, occupancy, and solvent metal. Test on Zn
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.783 SON -dd test.zn.stats -r test.zn.r.txt 
 
-
+## 3.24, 
+./metalCoordinations.pl test.zn.1000.txt Zn 2.783 SON -dd test.zn.stats -r test.zn.r.txt
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.783 SON -dd test.zn.all.stats -r test.zn.all.r.txt
 
 

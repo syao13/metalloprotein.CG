@@ -35,9 +35,9 @@ sub read
   $self->{_residueIDmap} = {};
 
   if ($singlePdbFile =~ /\.gz$/)
-    { open (PDBFILE, "/bin/zcat $singlePdbFile|") || die "Error in opening $singlePdbFile."; }
+    { open (PDBFILE, "/bin/zcat $singlePdbFile|") || die "Error in opening $singlePdbFile: $!"; }
   else
-    { open (PDBFILE, "<$singlePdbFile") || die "Error in opening $singlePdbFile."; }
+    { open (PDBFILE, "<$singlePdbFile") || die "Error in opening $singlePdbFile: $!"; }
 
   my $modelCount = 0;
   my ($method, $PDBid, $date);
@@ -235,6 +235,7 @@ sub read
   my $inverseO = Math::MatrixReal->new_from_rows([$ortha, $orthb, $orthc]);
   my $bigO = $inverseO->inverse();
 
+  my $numSym = 0;
   my @symAtoms;
   foreach my $i (-1, 0, 1)
     {
@@ -261,6 +262,7 @@ sub read
 
   	  if (($xs[0] < $xmax + 3.5) && ($xs[1] > $xmin - 3.5) && ($ys[0] < $ymax + 3.5) && ($ys[1] > $ymin - 3.5)  && ($zs[0] < $zmax + 3.5) && ($zs[1] > $zmin - 3.5) )
 	    {
+	    $numSym += 1;
 	    my @atomsNew = map { $_->transform($mat, $neighborX, $neighborY, $neighborZ); } (@$atoms);
             push @symAtoms, @atomsNew;
 	    }
@@ -277,6 +279,7 @@ sub read
       }
     }
   push @$atoms, @symAtoms;
+  $self->{symNum} = $numSym;
 
   THEEND:
   return $self;
