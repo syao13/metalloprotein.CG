@@ -223,14 +223,14 @@ sub coordinates
 sub transform
   {
   my $self = shift @_;
-  my ($matrix, $crystA, $crystB, $crystC) = @_;
+  my ($matrix, $crystA, $crystB, $crystC, $sym) = @_;
 
   my $xnew = $$matrix[1][1] * $self->{x} + $$matrix[1][2] * $self->{y} + $$matrix[1][3] * $self->{z} + $$matrix[4][1] + $crystA;
   my $ynew = $$matrix[2][1] * $self->{x} + $$matrix[2][2] * $self->{y} + $$matrix[2][3] * $self->{z} + $$matrix[4][2] + $crystB;
   my $znew = $$matrix[3][1] * $self->{x} + $$matrix[3][2] * $self->{y} + $$matrix[3][3] * $self->{z} + $$matrix[4][3] + $crystC;
 
 #print "$xnew, $ynew, $znew\n";
-  my $newAtom = {%$self, "x" => $xnew, "y" => $ynew, "z" => $znew, "chainID" => join("", "#", $self->{chainID})} ; 
+  my $newAtom = {%$self, "x" => $xnew, "y" => $ynew, "z" => $znew, "chainID" => join("", "#", $self->{chainID}), "symmetry" => $sym} ; 
   return bless $newAtom, ref $self;
   }
 

@@ -108,8 +108,10 @@ our $cgRelations = [
 
   {"name" => "HexagonalBipyramidal", "num" => 8, "parents" => [], "children" => ["HexagonalBipyramidalVA", "HexagonalBipyramidalVP"], "siblings" => []},
   {"name" => "HexagonalBipyramidalVA", "num" => 7, "parents" => ["HexagonalBipyramidal"], "children" => [], "siblings" => ["HexagonalBipyramidalVP"]},
-  {"name" => "HexagonalBipyramidalVP", "num" => 7, "parents" => ["HexagonalBipyramidal"], "children" => [], "siblings" => ["HexagonalBipyramidalVA"]}
+  {"name" => "HexagonalBipyramidalVP", "num" => 7, "parents" => ["HexagonalBipyramidal"], "children" => [], "siblings" => ["HexagonalBipyramidalVA"]},
 
+  {"name" => "SquareAntiprismaticMonocapped", "num" => 9, "parents" => [], "children" => [], "siblings" => []},
+  {"name" => "SquareAntiprismaticBicapped", "num" => 10, "parents" => [], "children" => [], "siblings" => []}
 ]; 
 
 
@@ -136,29 +138,35 @@ sub readPDB
   my $allShells = []; 
   open (PATH, $self->{pathsFile}); 
 
-  my $THREADS = 10;
-  my $Qwork = new Thread::Queue;
+#  my $THREADS = 10;
+#  my $Qwork = new Thread::Queue;
 
-  while (my $one = <PATH>)
-    { 
-    chomp $one; 
-    $Qwork->enqueue($one); 
-    } #load the queue
-  $Qwork->enqueue( (undef) x $THREADS ); # Tell the queue there are no more work items
+#  while (my $one = <PATH>)
+#    { 
+#    chomp $one; 
+#    $Qwork->enqueue($one); 
+#    } #load the queue
+#  $Qwork->enqueue( (undef) x $THREADS ); # Tell the queue there are no more work items
 
-  my $worker = sub 
-  {
-  my $tid = threads->tid;
-  my( $Qwork, $workerFile ) = @_;
-  while( my $work = $Qwork->dequeue() )
-    {
-#  while (my $file = <PATH>)
+#  my $worker = sub 
+#  {
+#  my $tid = threads->tid;
+#  my( $Qwork, $workerFile ) = @_;
+#  while( my $work = $Qwork->dequeue() )
 #    {
-#    chomp $file;
-    $work  =~ s/[\r\n]+$//;
-    my $pdb = PDBEntry->new("singlePdbFile" => $work, "metal" => $element);
+  while (my $file = <PATH>)
+    {
+    chomp $file;
+
+     ## parallel
+#    $work  =~ s/[\r\n]+$//;
+#    my $pdb = PDBEntry->new("singlePdbFile" => $work, "metal" => $element);
+#print substr($work,42,4), ",", $pdb->{symNum}, "\n";
+
+    ## original
+    my $pdb = PDBEntry->new("singlePdbFile" => $file, "metal" => $element);
     my $atoms = $pdb->{atoms};
-    #print substr($work,42,4), ",", $pdb->{symNum}, "\n";
+#print substr($file,42,4), ",", $pdb->{symNum}, "\n";
 
     my $shellsOfOnePDB = ($self->{shellCutoff})? AtomShell->createShells($element, $atoms, 1.3, $self->{shellCutoff}, $self->{shellElement}) : AtomShell->createShells($element, $atoms);
    
@@ -197,26 +205,29 @@ sub readPDB
       $oneShell->{seqsOfPDB} = $sequences; #if (! $oneShell->{sequence});
       }
 
+     ## parallel
      #undef %$pdb;
      #undef @$atoms;
 
-    open (JOUT, '>>', $workerFile);
-    foreach my $shell (@$shellsOfOnePDB)
-      {
-      my $jsonObj = JSON->new->allow_blessed->convert_blessed->encode($shell);
-      print JOUT $jsonObj."\n";
-      }
-    close JOUT;
-#    push @$allShells, @$shellsOfOnePDB;
+#    open (JOUT, '>>', $workerFile);
+#    foreach my $shell (@$shellsOfOnePDB)
+#      {
+#      my $jsonObj = JSON->new->allow_blessed->convert_blessed->encode($shell);
+#      print JOUT $jsonObj."\n";
+#      }
+#    close JOUT;
+ 
+    ## original
+    push @$allShells, @$shellsOfOnePDB;
     }
-  };
+#  };
 
-  my @thread_pool = map {threads->create( $worker, $Qwork, "../threads/worker.$_.txt" ); } (1 .. $THREADS);
+   ## parallel
+#  my @thread_pool = map {threads->create( $worker, $Qwork, "../threads/worker.$_.txt" ); } (1 .. $THREADS);
+#  foreach my $th (@thread_pool)
+#    { $th->join; }
 
-  foreach my $th (@thread_pool)
-    { $th->join; }
-
-  #$self->{shells} = $allShells;
+  $self->{shells} = $allShells;
   }
 
 
@@ -619,32 +630,32 @@ sub calcChiCoordination
   my $coordinations = {};
   foreach my $shell (@{$self->{shells}})
     {
-print "\n", $shell->metalID(), "; ";
+print "\n", $shell->metalID(), "; \n";
 #my $now_string = localtime;
 #print "$now_string\n";
 
     ## Create all CG objects 
-    my @models;
-    foreach my $cg (@allCGs)
-      {
-      my $relation = (grep {$$_{"name"} eq $cg } (@$cgRelations))[0];
-      next if ($$relation{"num"} < $self->{minLigNum} || $$relation{"num"} > @{$shell->{shell}});
+#    my @models;
+#    foreach my $cg (@allCGs)
+#      {
+#      my $relation = (grep {$$_{"name"} eq $cg } (@$cgRelations))[0];
+#      next if ($$relation{"num"} < $self->{minLigNum} || $$relation{"num"} > @{$shell->{shell}});
 
-      my $cgObj = $cg->new(shellObj => $shell);
-      $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-      push @models, $cgObj;
+#      my $cgObj = $cg->new(shellObj => $shell);
+#      $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+#      push @models, $cgObj;
 
-my $now_string = localtime;
-print "$cg, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
-      }
-    @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} (@models)));
+#my $now_string = localtime;
+#print "$cg, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
+#      }
+#    @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} (@models)));
 
     ## Parallel processing of above
     my $THREADS =10;
     my $Qwork = new Thread::Queue;
     my $Qresults = new Thread::Queue;
 
-    foreach my $one (1..@allCGs)
+    foreach my $one (@allCGs)
       { $Qwork->enqueue($one); } #load the shared queue
     $Qwork->enqueue( (undef) x $THREADS ); # Tell the queue there are no more work items
 
@@ -660,18 +671,21 @@ print "$cg, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
         my $cgObj = $work->new(shellObj => $shell);
         $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
         $Qresults->enqueue($cgObj);
+
+my $now_string = localtime;
+print "$work, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
         }
       $Qresults->enqueue( undef ); ## Signal this thread is finished
       };
 
-    my @qmodels;
-    my @thread_pool = map{ threads->create( $worker, $Qwork, $Qresults ) } 1 .. $THREADS;
+    my @models;
+    my @thread_pool = map { threads->create( $worker, $Qwork, $Qresults ) } (1 .. $THREADS);
     while(my $result = $Qresults->dequeue())
-      {push @qmodels, $result;}
-
+      {push @models, $result;}
+    @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} (@models)));
+    
     foreach my $th (@thread_pool)
       { $th->join; }
-
 
     my $maxNum;
     my $unusables;

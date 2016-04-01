@@ -163,7 +163,7 @@ sub read
           $$bioMats[$mat[3]-1][4][$smtryNum] = $mat[7];
 	  }
 	}
-      push @$biomolecules, {"matrices" => $bioMats, "chains" => $matChains} ;
+      push @$biomolecules, {"matrices" => $bioMats, "chains" => $matChains} if @$matChains;
       }
     elsif ($record =~ /^SEQRES/)
       {
@@ -207,13 +207,14 @@ sub read
  
   goto THEEND if $method ne "X-RAY_DIFFRACTION";
 
+#print join ("\n", map {$_->{record}} (grep {$_->{atomName} eq "OE1" & $_->{residueNumber} == 76} (@$atoms))), "\n";
   ## biological symmetry
   my @bioAtoms;
   foreach my $bio (@$biomolecules)
     {
-    next if scalar @{$$bio{matrices}} == 1;
+    next if scalar @{$$bio{"matrices"}} == 1;
 
-    foreach my $num (1..(@{$$bio{matrices}}-1))
+    foreach my $num (1..(@{$$bio{"matrices"}}-1))
       {
       my @atomsChain = grep {my $atom = $_; grep {$_ eq $atom->{chainID};} (@{$$bio{chains}}); } (@$atoms);
       my @atomsNew = map { $_->transformBio($$bio{"matrices"}[$num]); } (@atomsChain);
@@ -234,6 +235,11 @@ sub read
   ## The neighbering cells can be calculated using formula, X' = O(O'(RX + T) + T') = OO'(RX+T) + OT' = RX+T + O[-1/0/1,-1/0/1,-1/0/1] 
   my $inverseO = Math::MatrixReal->new_from_rows([$ortha, $orthb, $orthc]);
   my $bigO = $inverseO->inverse();
+  my @metals = grep { $_->{element} eq $self->{metal} && substr($_->{chainID}, 0,1) ne "#"; } (@$atoms);
+#print "metal: ", scalar @metals, ", ", $metals[0]->{x}, ", ", $metals[0]->{y}, ", ", $metals[0]->{z}, "\n";
+#print "xyz min/max: $xmin, $xmax, $ymin, $ymax, $zmin, $zmax\n";
+#print "matrix:\n";
+#map { print join (", ", @$_), "\n" if $_;} (@{$$crystalMats[2]});
 
   my $numSym = 0;
   my @symAtoms;
@@ -247,26 +253,41 @@ sub read
 	  {
 	  next if ($i == 0 && $j == 0 && $k == 0 && $t == 0);
 	  my $mat = $$crystalMats[$t];
-
 	  my $neighborX = $bigO->element(1,1) * $i + $bigO->element(1,2) * $j + $bigO->element(1,3) * $k;
           my $neighborY = $bigO->element(2,1) * $i + $bigO->element(2,2) * $j + $bigO->element(2,3) * $k;
           my $neighborZ = $bigO->element(3,1) * $i + $bigO->element(3,2) * $j + $bigO->element(3,3) * $k;	
+	  my (@xs, @ys, @zs);
 
-	  my @xs = ($$mat[1][1] * $xmin + $$mat[1][2] * $ymin + $$mat[1][3] * $zmin + $$mat[4][1] + $neighborX, $$mat[1][1] * $xmax + $$mat[1][2] * $ymax + $$mat[1][3] * $zmax + $$mat[4][1] + $neighborX) ;
-          my @ys = ($$mat[2][1] * $xmin + $$mat[2][2] * $ymin + $$mat[2][3] * $zmin + $$mat[4][2] + $neighborX, $$mat[2][1] * $xmax + $$mat[2][2] * $ymax + $$mat[2][3] * $zmax + $$mat[4][2] + $neighborX) ;
-          my @zs = ($$mat[3][1] * $xmin + $$mat[3][2] * $ymin + $$mat[3][3] * $zmin + $$mat[4][3] + $neighborX, $$mat[3][1] * $xmax + $$mat[3][2] * $ymax + $$mat[3][3] * $zmax + $$mat[4][3] + $neighborX) ;
+	  foreach my $xx ($xmin, $xmax) 
+	    {
+            foreach my $yy ($ymin, $ymax)
+              {
+              foreach my $zz ($zmin, $zmax)
+                {
+                push (@xs, ($$mat[1][1] * $xx + $$mat[1][2] * $yy + $$mat[1][3] * $zz + $$mat[4][1] + $neighborX));
+                push (@ys, ($$mat[2][1] * $xx + $$mat[2][2] * $yy + $$mat[2][3] * $zz + $$mat[4][2] + $neighborY));
+                push (@zs, ($$mat[3][1] * $xx + $$mat[3][2] * $yy + $$mat[3][3] * $zz + $$mat[4][3] + $neighborZ));
+                }
+              }
+	    }
 
 	  @xs = sort {$a <=> $b} (@xs);
           @ys = sort {$a <=> $b} (@ys);
           @zs = sort {$a <=> $b} (@zs);
+#print "transform: $i, $j, $k, $t: $xs[0], $ys[0], $zs[0]; $xs[-1], $ys[-1], $zs[-1]; $neighborX, $neighborY, $neighborZ\n" if ($i == 0 && $j == 0 && $k == -1 && $t == 2);
 
-  	  if (($xs[0] < $xmax + 3.5) && ($xs[1] > $xmin - 3.5) && ($ys[0] < $ymax + 3.5) && ($ys[1] > $ymin - 3.5)  && ($zs[0] < $zmax + 3.5) && ($zs[1] > $zmin - 3.5) )
+	  foreach my $metal (@metals)
 	    {
-	    $numSym += 1;
-	    my @atomsNew = map { $_->transform($mat, $neighborX, $neighborY, $neighborZ); } (@$atoms);
-            push @symAtoms, @atomsNew;
+	    if (($xs[0]-3.5 < $metal->{x}) && ($ys[0]-3.5 < $metal->{y}) && ($zs[0]-3.5 < $metal->{z}) && ($xs[-1] + 3.5 > $metal->{x}) && ($ys[-1] + 3.5 > $metal->{y}) && ($zs[-1] + 3.5 > $metal->{z}))
+  	      {
+#print "$i, $j, $k, $t\n";
+	      $numSym += 1;
+	      my @atomsNew = map { $_->transform($mat, $neighborX, $neighborY, $neighborZ, $i.$j.$k.$t); } (@$atoms);
+#print map {$_->coordinates(), ", ",$_->{atomName}, "\n";} (grep {$_->{residueNumber} == 159} (@atomsNew));
+              push @symAtoms, @atomsNew;
+	      last;
+	      }
 	    }
-
 #map { print join (", ", @$_), "\n" if $_;} (@$mat);
 #my $atom = (grep {$_->{residueNumber} == 126 && $_->{atomName} eq "OE1"} (@$atoms))[0];
 #my $newAtom = $atom->transform($mat, $i * $crystA, $j * $crystB, $k * $crystC);

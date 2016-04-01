@@ -963,4 +963,19 @@ cat Zn_results/root_afterRF/rf.smallest.txt Mg_results/root_afterRF/rf.smallest.
 ./metalCoordinations.pl test.zn.1000.txt Zn 2.783 SON -dd test.zn.stats -r test.zn.r.txt
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.783 SON -dd test.zn.all.stats -r test.zn.all.r.txt
 
+## 3.25, run on nyx and print out symmetry number with overall overlapping range check; multi processing with PDB parser
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.783 SON -bs > test.overallSymNum.txt
+
+## 3.27, check metal atoms with symmetry related range, and how many smmetry related sets need to be calculated; single processing with PDB parser
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.783 SON -bs > test.metSym.txt
+R -q -e "x <- read.csv('test.metSym.txt', header = F); summary(x); mean(x[ , 2], na.rm=TRUE)" ## 12.63832
+R -q -e "x <- read.csv('test.overallSymNum.txt', header = F); summary(x); mean(x[ , 2], na.rm=TRUE)" ## 36.55767
+
+## 3.28, fix the neighboring XYZ error
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.783 SON -dd test.stats -r test.zn.r.3.28.txt > test.metSym.txt
+
+
+## 3.30, fix the xyz range error
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.783 SON -dd test.stats -r test.zn.r.3.30.txt > test.metSym.3.30.txt
+
 

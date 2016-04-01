@@ -123,7 +123,7 @@ sub create
 #print $center->coordinates(), ", center\n";
 #map {print $_->coordinates(), ", ligands\n";} (grep {$_->{residueNumber} == 126} (@$atoms));
 
-#print $center->resID(), "---before\n";
+#print $center->{PDBid}, ", ",$center->resID(), "---before\n";
 #map {print $_->resID(), "\n";} (@tempShell);
 
   my @remove;
@@ -138,11 +138,11 @@ sub create
         }
       }
     }
-  @tempShell = grep {my $atom = $_; grep {$_ ne $atom} (@remove) ;} (@tempShell) if (@remove);
+  @tempShell = grep {my $atom = $_; ! grep { $_ eq $atom} (@remove) ;} (@tempShell) if (@remove);
 
-#print $center->{PDBid}, ".", $center->{chainID}, ".", $center->{residueNumber}, "\n" if (@remove);
-#print $center->resID(), "--- after\n";
-#map {print $_->resID(), "\n";} (@tempShell);
+#print "flag".$center->{PDBid}, ".", $center->{chainID}, ".", $center->{residueNumber}, "\n" if (@remove);
+#print $center->{PDBid}, ", ", $center->resID(), "--- after\n";
+#map {print $_->resID(), ", ",$_->{symmetry}, ", ", $center->distance($_), "\n";} (@tempShell);
 
   return $class->new("center" => $center, 
 		     "shell" => [_remove2ndShell($center, @tempShell)], 
