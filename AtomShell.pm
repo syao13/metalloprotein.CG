@@ -142,7 +142,7 @@ sub create
 
 #print "flag".$center->{PDBid}, ".", $center->{chainID}, ".", $center->{residueNumber}, "\n" if (@remove);
 #print $center->{PDBid}, ", ", $center->resID(), "--- after\n";
-#map {print $_->resID(), ", ",$_->{symmetry}, ", ", $center->distance($_), "\n";} (@tempShell);
+#map {print $_->atomID(), ".", $_->{alternateLocation}, ", ",$_->{symmetry}, ", ", $center->distance($_), "\n";} (@tempShell);
 
   return $class->new("center" => $center, 
 		     "shell" => [_remove2ndShell($center, @tempShell)], 

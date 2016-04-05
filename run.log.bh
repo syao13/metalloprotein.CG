@@ -978,4 +978,9 @@ R -q -e "x <- read.csv('test.overallSymNum.txt', header = F); summary(x); mean(x
 ## 3.30, fix the xyz range error
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.783 SON -dd test.stats -r test.zn.r.3.30.txt > test.metSym.3.30.txt
 
+## 4.4, choose the best alterate locations, and remove sites with non-biological symmetry-related ligands
+./metalCoordinations.pl test.ca.2.txt Ca 3.094 O -dd test
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.783 SON -dd test.stats -r test.zn.r.4.4.txt > test.metSym.4.4.txt
+
+
 

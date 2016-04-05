@@ -69,6 +69,12 @@ sub resID
   }
 
 
+sub atomID
+  {
+  my $self = shift @_;
+  return $self->{chainID} . $self->{residueNumber} . "." . $self->{atomName};
+  }
+
 ##  angle
 ###   calculates the angle between the given two points in a triangle, given object point
 ###   uses &distance
@@ -245,5 +251,11 @@ sub transformBio
 
   my $newAtom = {%$self, "x" => $xnew, "y" => $ynew, "z" => $znew, "chainID" => join("", "*", $self->{chainID})} ;
   return bless $newAtom, ref $self;
+  }
+
+sub altLoc 
+  {
+  my $self = shift @_;
+  return $_->{chainID}.$_->{residueNumber}.$_->{atomName}.$_->{alternateLocation};
   }
 

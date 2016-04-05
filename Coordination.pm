@@ -41,6 +41,7 @@ sub calculateCombos
     foreach my $ligands (&_restrictedCombinations($num, @{$self->{shellObj}->{shell}}))
       {
       $m++;
+      #next if (&_alternateLocationExclusion($ligands)); # make sure to include only one alternate location at a time
       my @distances = &_distanceBetweenAtoms($ligands); #eliminates sets with unreasonable atom-atom distances
       if ( scalar(grep { $_ > 1.5 && $_ < $upper_cutoff; } (@distances)) == scalar @distances)
         { push @$combos, $ligands; $n++ }
@@ -201,6 +202,20 @@ sub degreeFreedom
   }
 
 
+sub _alternateLocationExclusion
+  {
+  my $atoms = shift @_;
+
+  my %alternate;
+  foreach my $atom (@$atoms) 
+    {
+    return 0 if ($alternate{$_->atomID()} == 1);
+    $alternate{$_->atomID()} = 1;
+    }
+
+  return 1;
+  }
+
 # distance_between_atoms
 # #    calculates pairwise distances between a list of atoms
 # # Parameters:
@@ -209,9 +224,9 @@ sub _distanceBetweenAtoms
   {
   my $atoms = shift @_;
   my @distances;
-  for (my $x=0; $x < (scalar @$atoms) -1; $x++)
+  for (my $x = 0; $x < (scalar @$atoms) -1; $x++)
     {
-    for (my $y=$x+1; $y < scalar @$atoms; $y++)
+    for (my $y = $x+1; $y < scalar @$atoms; $y++)
       {
       push @distances, $$atoms[$x]->distance($$atoms[$y]) ;
       }

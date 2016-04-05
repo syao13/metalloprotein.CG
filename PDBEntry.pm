@@ -63,6 +63,7 @@ sub read
                         'recordType' => substr($record, 0, 6),
                         'serial' => substr($record, 6, 5), 
                         'atomName'=> substr($record, 12, 4),
+                        'alternateLocation' => substr($record, 16, 1),
                         'residueName'=> substr($record, 17, 3), 
                         'chainID' => substr($record, 21, 1),
                         'residueNumber' => substr($record, 22, 4), 
@@ -183,7 +184,7 @@ sub read
     }
   close(PDBFILE);
 
-  ## comment out residue calc for now, 2016. 3.13, as no longer calc chi dihedreal angles.
+  ## comment out residue calc for now, 2016.3.13, as no longer calc chi dihedreal angles.
   #my $residueMap = $self->{_residueIDmap};
   #foreach my $atom (@$atoms)
   #  {

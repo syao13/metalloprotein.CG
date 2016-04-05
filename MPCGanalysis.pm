@@ -138,32 +138,9 @@ sub readPDB
   my $allShells = []; 
   open (PATH, $self->{pathsFile}); 
 
-#  my $THREADS = 10;
-#  my $Qwork = new Thread::Queue;
-
-#  while (my $one = <PATH>)
-#    { 
-#    chomp $one; 
-#    $Qwork->enqueue($one); 
-#    } #load the queue
-#  $Qwork->enqueue( (undef) x $THREADS ); # Tell the queue there are no more work items
-
-#  my $worker = sub 
-#  {
-#  my $tid = threads->tid;
-#  my( $Qwork, $workerFile ) = @_;
-#  while( my $work = $Qwork->dequeue() )
-#    {
   while (my $file = <PATH>)
     {
     chomp $file;
-
-     ## parallel
-#    $work  =~ s/[\r\n]+$//;
-#    my $pdb = PDBEntry->new("singlePdbFile" => $work, "metal" => $element);
-#print substr($work,42,4), ",", $pdb->{symNum}, "\n";
-
-    ## original
     my $pdb = PDBEntry->new("singlePdbFile" => $file, "metal" => $element);
     my $atoms = $pdb->{atoms};
 #print substr($file,42,4), ",", $pdb->{symNum}, "\n";
@@ -205,27 +182,8 @@ sub readPDB
       $oneShell->{seqsOfPDB} = $sequences; #if (! $oneShell->{sequence});
       }
 
-     ## parallel
-     #undef %$pdb;
-     #undef @$atoms;
-
-#    open (JOUT, '>>', $workerFile);
-#    foreach my $shell (@$shellsOfOnePDB)
-#      {
-#      my $jsonObj = JSON->new->allow_blessed->convert_blessed->encode($shell);
-#      print JOUT $jsonObj."\n";
-#      }
-#    close JOUT;
- 
-    ## original
     push @$allShells, @$shellsOfOnePDB;
     }
-#  };
-
-   ## parallel
-#  my @thread_pool = map {threads->create( $worker, $Qwork, "../threads/worker.$_.txt" ); } (1 .. $THREADS);
-#  foreach my $th (@thread_pool)
-#    { $th->join; }
 
   $self->{shells} = $allShells;
   }
@@ -382,58 +340,94 @@ sub shellViaAdjustDistStd
   foreach my $shell (@{$self->{shells}})
     {
     my $finalShell = [];
+    my %alternates;
+
     foreach my $ligand (@{$shell->{shell}})
+      { $alternates{$ligand->atomID()} += 1; }
+    my @altAtoms = grep {$alternates{$_} > 1} (keys %alternates);
+
+    if (@altAtoms)
       {
-      my $resolution = ($ligand->{resolution} == -1)? 2.5 : $ligand->{resolution};
-      my $adjStd = ($resolution - $$blStats{$ligand->{element}}{resolutionAvg}) * $slope + $$blStats{$ligand->{element}}{standardDeviation};
-
-#print $ligand->{element}, ", ", $shell->{center}->distance($ligand), ", ", $$blStats{$ligand->{element}}{mean}, ", $resolution, $adjStd, ";
-#print $shell->metalID(), "\n" if ($shell->{center}->distance($ligand) < $$blStats{$ligand->{element}}{mean} - $adjStd * 2.5);
-
-      if ( abs($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mean}) <= $adjStd * 2.5 )
-	{ 
-        push @$finalShell, $ligand;  
-#print "in\n";
-	}
-#else {print "out\n";}
-      }
-
-    my @excludeInd; ## eliminate ligands with unreasonable atom-atom distances
-    for (my $x=0; $x < @$finalShell -1; $x++)
-      {
-      for (my $y=$x+1; $y < @$finalShell; $y++)
-        {
-        my $distBtLigs = $$finalShell[$x]->distance($$finalShell[$y]) ;
-        if ($distBtLigs < 1.5 || $distBtLigs > 6.0 )
+      my $altByRes = {};
+      foreach my $ligand (@{$shell->{shell}})
+	{
+	if (grep {(split(/\./, $_))[0] eq $ligand->resID()} (@altAtoms))
 	  {
-	  if ($shell->{center}->distance($$finalShell[$x]) < $shell->{center}->distance($$finalShell[$y]))
-	    { push @excludeInd, $y ;}
-	  else 
-	    { push @excludeInd, $x ;}
+	  my $resolution = ($ligand->{resolution} == -1)? 2.5 : $ligand->{resolution};
+          my $adjStd = ($resolution - $$blStats{$ligand->{element}}{resolutionAvg}) * $slope + $$blStats{$ligand->{element}}{standardDeviation};
+          my $score = abs($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mean})/$adjStd;
+
+#print $shell->metalID(), ", ", $ligand->atomID().".". $ligand->{alternateLocation}, ", ", $shell->{center}->distance($ligand), ", ", $$blStats{$ligand->{element}}{mean}, ", $resolution, $adjStd, $score\n"; 
+	  $$altByRes{$ligand->resID()}{$ligand->{alternateLocation}}{"score"} += $score;
+          push @{$$altByRes{$ligand->resID()}{$ligand->{alternateLocation}}{"shells"}}, $ligand;
+	  }
+	else
+	  {
+	  my $resolution = ($ligand->{resolution} == -1)? 2.5 : $ligand->{resolution};
+          my $adjStd = ($resolution - $$blStats{$ligand->{element}}{resolutionAvg}) * $slope + $$blStats{$ligand->{element}}{standardDeviation};
+          if ( abs($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mean}) <= $adjStd * 2.5 )
+            { push @$finalShell, $ligand; }
+	  }
+ 	}
+      foreach my $res (keys %$altByRes)
+	{
+	foreach my $altID (keys %{$$altByRes{$res}})
+	  { $$altByRes{$res}{$altID}{"score"} = $$altByRes{$res}{$altID}{"score"} / (scalar @{$$altByRes{$res}{$altID}{"shells"}}); }
+	my $minScore = (sort {$a <=> $b} (map {$$_{"score"}} (values %{$$altByRes{$res}})))[0];
+#print $$altByRes{$res}{"A"}{"score"}, ", ", $$altByRes{$res}{"B"}{"score"}, "\n";
+	my $best = (grep {$$_{"score"} == $minScore} (values %{$$altByRes{$res}}))[0];
+	push @$finalShell, @{$$best{"shells"}}
+	}
+      }	
+    else 
+      {
+      foreach my $ligand (@{$shell->{shell}})
+        {
+        my $resolution = ($ligand->{resolution} == -1)? 2.5 : $ligand->{resolution};
+        my $adjStd = ($resolution - $$blStats{$ligand->{element}}{resolutionAvg}) * $slope + $$blStats{$ligand->{element}}{standardDeviation};
+        if ( abs($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mean}) <= $adjStd * 2.5 )
+	  { 
+          push @$finalShell, $ligand;  
 	  }
         }
       }
+#print $shell->metalID(), ": ", join (", ", map { $_->atomID().".". $_->{alternateLocation} } (@$finalShell)), "\n";
 
-    if (@excludeInd)
+    my $excludeInd = 0; ## eliminate ligands with unreasonable atom-atom distances
+    for (my $x=0; $x < @$finalShell -1; $x++)
       {
-      #print STDERR $shell->metalID(), "\n";
-      next;
+      last if ($excludeInd);
+      for (my $y=$x+1; $y < @$finalShell; $y++)
+        {
+	last if ($excludeInd);
+        my $distBtLigs = $$finalShell[$x]->distance($$finalShell[$y]) ;
+        if ($distBtLigs < 1.5 || $distBtLigs > 6.0 )
+	  { print $$finalShell[$x]->resID(), ", ", $$finalShell[$x]->resID(), ", ", "$distBtLigs\n";
+$excludeInd = 1 ; }
+        }
       }
 
-    #map {splice @$finalShell, $_, 1;} (@excludeInd)
+print "tooclose, ", $shell->metalID(), ": ", join (", ", map { $_->atomID().".". $_->{alternateLocation} } (@$finalShell)), "\n" if ($excludeInd);
+    next if ($excludeInd);
+    foreach my $ligand (@$finalShell) ## eliminate symmetry related ligands that is not water
+      {
+      if (substr ($ligand->{chainID}, 0, 1) eq "#" && $ligand->{residueName} ne "HOH")
+	{ 
+	$excludeInd = 1; 
+	last;
+	}
+      }
+print "symmetry, ", $shell->metalID(), ": ", join (", ", map { $_->atomID().".". $_->{alternateLocation} } (@$finalShell)), "\n" if ($excludeInd);
+    next if ($excludeInd);
+    my @waters = grep {$_->{residueName} eq "HOH"} (@$finalShell); ## water cannot be the majority of the ligands
+print "water, ", $shell->metalID(), ": ", join (", ", map { $_->atomID().".". $_->{alternateLocation} } (@$finalShell)), "\n" if ((scalar @waters) * 2 > (scalar @$finalShell));
+    next if ((scalar @waters) * 2 > (scalar @$finalShell));
+
     my $numLig = @$finalShell;
-
-#print $shell->metalID(), "; ";
-#print "$numLig\n";
-
     next if ($numLig < 4 || $numLig > 10);
 
     my $cg =  (grep {$$_{"num"} eq $numLig;} (@$cgRelations))[0];
-
-#print $$cg{"name"}, "\n";
-
     my $shellObj = AtomShell->new("center" => $shell->{center}, "shell" => $finalShell, "seqsOfPDB" => $shell->{seqsOfPDB});
-
     my $cgObj = $$cg{"name"}->new("shellObj" => $shellObj);
     $cgObj->bestDistChi($stats);    
 
