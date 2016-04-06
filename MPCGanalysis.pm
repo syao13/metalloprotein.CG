@@ -342,11 +342,12 @@ sub shellViaAdjustDistStd
     my $finalShell = [];
     my %alternates;
 
+    ## Get the best alternate location.
     foreach my $ligand (@{$shell->{shell}})
       { $alternates{$ligand->atomID()} += 1; }
     my @altAtoms = grep {$alternates{$_} > 1} (keys %alternates);
 
-    if (@altAtoms)
+    if (@altAtoms) ## If there are two alternate atoms
       {
       my $altByRes = {};
       foreach my $ligand (@{$shell->{shell}})
@@ -356,8 +357,6 @@ sub shellViaAdjustDistStd
 	  my $resolution = ($ligand->{resolution} == -1)? 2.5 : $ligand->{resolution};
           my $adjStd = ($resolution - $$blStats{$ligand->{element}}{resolutionAvg}) * $slope + $$blStats{$ligand->{element}}{standardDeviation};
           my $score = abs($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mean})/$adjStd;
-
-#print $shell->metalID(), ", ", $ligand->atomID().".". $ligand->{alternateLocation}, ", ", $shell->{center}->distance($ligand), ", ", $$blStats{$ligand->{element}}{mean}, ", $resolution, $adjStd, $score\n"; 
 	  $$altByRes{$ligand->resID()}{$ligand->{alternateLocation}}{"score"} += $score;
           push @{$$altByRes{$ligand->resID()}{$ligand->{alternateLocation}}{"shells"}}, $ligand;
 	  }
@@ -369,17 +368,17 @@ sub shellViaAdjustDistStd
             { push @$finalShell, $ligand; }
 	  }
  	}
-      foreach my $res (keys %$altByRes)
+
+      foreach my $res (keys %$altByRes) ## choose the best from all alternate locations based on each residue.
 	{
 	foreach my $altID (keys %{$$altByRes{$res}})
 	  { $$altByRes{$res}{$altID}{"score"} = $$altByRes{$res}{$altID}{"score"} / (scalar @{$$altByRes{$res}{$altID}{"shells"}}); }
 	my $minScore = (sort {$a <=> $b} (map {$$_{"score"}} (values %{$$altByRes{$res}})))[0];
-#print $$altByRes{$res}{"A"}{"score"}, ", ", $$altByRes{$res}{"B"}{"score"}, "\n";
 	my $best = (grep {$$_{"score"} == $minScore} (values %{$$altByRes{$res}}))[0];
 	push @$finalShell, @{$$best{"shells"}}
 	}
       }	
-    else 
+    else ## No alternate atoms exist 
       {
       foreach my $ligand (@{$shell->{shell}})
         {
@@ -391,7 +390,6 @@ sub shellViaAdjustDistStd
 	  }
         }
       }
-#print $shell->metalID(), ": ", join (", ", map { $_->atomID().".". $_->{alternateLocation} } (@$finalShell)), "\n";
 
     my $excludeInd = 0; ## eliminate ligands with unreasonable atom-atom distances
     for (my $x=0; $x < @$finalShell -1; $x++)
@@ -402,14 +400,16 @@ sub shellViaAdjustDistStd
 	last if ($excludeInd);
         my $distBtLigs = $$finalShell[$x]->distance($$finalShell[$y]) ;
         if ($distBtLigs < 1.5 || $distBtLigs > 6.0 )
-	  { print $$finalShell[$x]->resID(), ", ", $$finalShell[$x]->resID(), ", ", "$distBtLigs\n";
-$excludeInd = 1 ; }
+	  { 
+print $$finalShell[$x]->resID(), ", ", $$finalShell[$x]->resID(), ", ", "$distBtLigs\n";
+	  $excludeInd = 1 ; 
+	  }
         }
       }
 
 print "tooclose, ", $shell->metalID(), ": ", join (", ", map { $_->atomID().".". $_->{alternateLocation} } (@$finalShell)), "\n" if ($excludeInd);
     next if ($excludeInd);
-    foreach my $ligand (@$finalShell) ## eliminate symmetry related ligands that is not water
+    foreach my $ligand (@$finalShell) ## eliminate symmetry related ligands that is not all water
       {
       if (substr ($ligand->{chainID}, 0, 1) eq "#" && $ligand->{residueName} ne "HOH")
 	{ 
@@ -440,7 +440,6 @@ print "water, ", $shell->metalID(), ": ", join (", ", map { $_->atomID().".". $_
 
   $self->{coordinations} = $coordinations;
   }
-
 
 
 ## After bestDistance, print out sequences in fasta format
@@ -618,13 +617,13 @@ sub calcChiCoordination
  
   ## all CGs in the cgRelations on top, regardless of the major ones passed in from bootstrap. 
   ## It is a array now compared to a hash as above.
-  my @allCGs = map {$$_{"name"}} (@$cgRelations);
+  my @allCGs = map {$$_{"name"}} (grep {$$_{"num"} < 9 } (@$cgRelations));
 
   my $decisions = {};
   my $coordinations = {};
   foreach my $shell (@{$self->{shells}})
     {
-print "\n", $shell->metalID(), "; \n";
+#print "\n", $shell->metalID(), "; \n";
 #my $now_string = localtime;
 #print "$now_string\n";
 
@@ -666,8 +665,8 @@ print "\n", $shell->metalID(), "; \n";
         $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
         $Qresults->enqueue($cgObj);
 
-my $now_string = localtime;
-print "$work, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
+#my $now_string = localtime;
+#print "$work, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
         }
       $Qresults->enqueue( undef ); ## Signal this thread is finished
       };
@@ -700,7 +699,7 @@ print "$work, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
 
       if (! defined $tev->{bestCombo} && ! defined $tpl->{bestCombo}) 
 	{ 
-print "0;0;0\n";
+#print "0;0;0\n";
 	$$decisions{"012"}++; 
 	}
       else 
@@ -711,17 +710,17 @@ print "0;0;0\n";
           my $modRef = ref $mods[0];
           push @{$$coordinations{$modRef}}, $mods[0];
           $$decisions{"3.". $modRef} += 1;
-print "3lig.$modRef\n";
+#print "3lig.$modRef\n";
           }
         else
           {$$decisions{"3.None"} += 1;}
-print $mods[0]->{bestCombo}->{probability}, "; ", $mods[1]->{bestCombo}->{probability}, "; 00\n";
+#print $mods[0]->{bestCombo}->{probability}, "; ", $mods[1]->{bestCombo}->{probability}, "; 00\n";
         next;
         }
       }
     else ## 4, 5, 6 ligands
       {
-print $models[0]->{bestCombo}->{probability}, "; 456\n";
+#print $models[0]->{bestCombo}->{probability}, "; 456\n";
       
       ## set the probability threshold, remove low prob ones from statistics calculation. 
       if ($control eq "p" && $models[0]->{bestCombo}->{probability} < $threshold) 
@@ -738,7 +737,7 @@ print $models[0]->{bestCombo}->{probability}, "; 456\n";
 	push @{$$coordinations{$modelRef}}, $models[1];
 	$$decisions{$maxNum. ".".  $modelRef} += 1;
 
-print $models[1]->{bestCombo}->{probability}, "; bva\n";
+#print $models[1]->{bestCombo}->{probability}, "; bva\n";
 	}
       else
 	{
@@ -760,7 +759,7 @@ print $models[1]->{bestCombo}->{probability}, "; bva\n";
               push @{$$coordinations{$modelRef}}, $models[$i];
 	      $dec = $dec. ".". $modelRef;
               $$decisions{$dec} += 1;
-print $models[0]->{bestCombo}->{probability}, "; only $modelRef\n";
+#print $models[0]->{bestCombo}->{probability}, "; only $modelRef\n";
 	      }
 	    else
 	      {
@@ -772,7 +771,7 @@ print $models[0]->{bestCombo}->{probability}, "; only $modelRef\n";
 
 	      map {$dec = $dec.".".ref $models[$_]} (0..$maxInd) ;
               $$decisions{$dec} += 1;
-print $models[$maxInd]->{bestCombo}->{probability}, "; major CG to $modelRef\n";
+#print $models[$maxInd]->{bestCombo}->{probability}, "; major CG to $modelRef\n";
 	      }
 	    last;
 	    }
@@ -819,6 +818,8 @@ sub printStats
   my $self = shift @_;
   my $i = (@_)? shift @_ : 0;
 
+  my $now_string = localtime;
+  print "$now_string\n";
   if ($i ==0)
     { print "Deviation sorted:" ;}
   else

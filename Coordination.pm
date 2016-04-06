@@ -41,7 +41,12 @@ sub calculateCombos
     foreach my $ligands (&_restrictedCombinations($num, @{$self->{shellObj}->{shell}}))
       {
       $m++;
-      #next if (&_alternateLocationExclusion($ligands)); # make sure to include only one alternate location at a time
+#print "flag, ", $self->{shellObj}->metalID(), ": ", join (", ", map { $_->atomID().".". $_->{alternateLocation} } (@$ligands)), "\n" if (&_alternateLocationExclusion($ligands));
+      next if (&_alternateLocationExclusion($ligands)); # make sure to include only one alternate location at a time
+      next if (grep {substr ($_->{chainID}, 0, 1) eq "#" && $_->{residueName} ne "HOH"} (@$ligands)); ## exclude in symmetry-related atoms are not all water
+      my @waters = grep {$_->{residueName} eq "HOH"} (@$ligands); ## exclude if water is the majority of the ligands
+      next if ((scalar @waters) * 2 > (scalar @$ligands));
+
       my @distances = &_distanceBetweenAtoms($ligands); #eliminates sets with unreasonable atom-atom distances
       if ( scalar(grep { $_ > 1.5 && $_ < $upper_cutoff; } (@distances)) == scalar @distances)
         { push @$combos, $ligands; $n++ }
@@ -206,14 +211,14 @@ sub _alternateLocationExclusion
   {
   my $atoms = shift @_;
 
-  my %alternate;
+  my $alternate = {};
   foreach my $atom (@$atoms) 
     {
-    return 0 if ($alternate{$_->atomID()} == 1);
-    $alternate{$_->atomID()} = 1;
+    return 1 if ($$alternate{$atom->resID()} && $$alternate{$atom->resID()}{$atom->{alternateLocation}} != 1);
+    $$alternate{$atom->resID()}{$atom->{alternateLocation}} = 1;
     }
 
-  return 1;
+  return 0;
   }
 
 # distance_between_atoms
