@@ -982,5 +982,20 @@ R -q -e "x <- read.csv('test.overallSymNum.txt', header = F); summary(x); mean(x
 ./metalCoordinations.pl test.ca.2.txt Ca 3.094 O -dd test
 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.783 SON -dd test.stats -r test.zn.r.4.4.txt > test.metSym.4.4.txt
 
+## 4.6, check if multi-processing at CG level vs. ordered combo level gives the same results
+./metalCoordinations.pl ../new_coordination/pathfile.2.txt Zn 2.783 ONS -i p 0.001 test.combo > test.paraCombo.txt
+./metalCoordinations.pl ../new_coordination/pathfile.2.txt Zn 2.783 ONS -i p 0.001 test.CG >test.paraCG.txt
+
+## 4.7, there are different ones between CG and combo, 1KOG, try rerun
+./metalCoordinations.pl test.zn.1.txt Zn 2.783 ONS -i p 0.001 test.CG > test.CG.txt
+./metalCoordinations.pl test.zn.1.txt Zn 2.783 ONS -i p 0.001 test.combo > test.combo.txt
+
+
+## Start running everything from the beginning
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -bs ../output_zn/stats -r ../output_zn/bondlength.withC.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs ../output_mg/stats -r ../output_mg/bondlength.withC.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -bs ../output_ca/stats -r ../output_ca/bondlength.withC.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -bs ../output_fe/stats -r ../output_fe/bondlength.withC.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -bs ../output_na/stats -r ../output_na/bondlength.withC.txt &
 
 

@@ -194,6 +194,7 @@ sub bootstrapCoordination
   {
   my $self = shift @_;
   my $statOutFileName = (@_)? shift @_: "stats";
+  $statOutFileName = "stats" unless ($statOutFileName);
 
   my $stats = {};
   $self->calcDeviationCoordination();  ## 

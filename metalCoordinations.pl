@@ -257,7 +257,7 @@ if ($rInputOpt)
   #print FID "\n";
 
   my %ids;
-  foreach my $ligNum ("ten", "nine", "eight", "seven", "six", "five", "four")
+  foreach my $ligNum (keys %{$analyzer->{coordinations}}) #("ten", "nine", "eight", "seven", "six", "five", "four")
     {
     foreach my $metalObj (@{$analyzer->{coordinations}{$ligNum}})
       {
@@ -328,7 +328,7 @@ if ($bondLengthOpt)
       {
       my $comboLigands = $metalObj->{bestCombo}->{ligands};
       my $center = $metalObj->{shellObj}->{center};
-      print BLF map {join(", ", $metalObj->{shellObj}->metalID(), $_->resID, $_->{element}, $center->distance($_), $_->{resolution}, $_->{rValue}, $_->{rFree}), "\n" ;} (@$comboLigands);
+      print BLF map {join("\t", $metalObj->{shellObj}->metalID(), $_->resID, $_->{element}, $center->distance($_), $_->{resolution}, $_->{rValue}, $_->{rFree}), "\n" ;} (@$comboLigands);
       }
     }
     close BLF;

@@ -179,13 +179,7 @@ sub calcAllAngles180
   # angles within a pair
   foreach my $pair ($pair1, $pair2)
     {
-    for(my $x = 0; $x < $#$pair; $x++) 
-      {
-      for(my $y = $x+1; $y < @$pair; $y++)
-        {
-	push (@angles, $center->angle($$pair[$x], $$pair[$y])) ;
-        }
-      }
+    push (@angles, $center->angle($$pair[0], $$pair[1])) ;
     }
   return @angles;
   }

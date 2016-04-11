@@ -206,7 +206,7 @@ sub read
   $self->{sequences}->{atom} = Sequence->createATOMseqs($atoms); #ATOM sequences
   $self->{sequences}->{number} = Sequence->createATOMnum($atoms); #ATOM numbers
  
-  goto THEEND if $method ne "X-RAY_DIFFRACTION";
+  return $self if ($method ne "X-RAY_DIFFRACTION");
 
 #print join ("\n", map {$_->{record}} (grep {$_->{atomName} eq "OE1" & $_->{residueNumber} == 76} (@$atoms))), "\n";
   ## biological symmetry
@@ -303,7 +303,6 @@ sub read
   push @$atoms, @symAtoms;
   $self->{symNum} = $numSym;
 
-  THEEND:
   return $self;
   }
 
