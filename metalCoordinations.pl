@@ -114,7 +114,33 @@ elsif ($ARGV[0] =~ /^(n|non|nonModel)$/) ## nonModel is to remove the zinc shell
 ## Assign names for statistics file for each round
 my $statOutFileName = ($ARGV[0] !~ /\-/) ? shift @ARGV : "statistics";
 
-########## read in optional arguments ##########
+######################################## 
+############# main process #############
+########################################
+
+my $analyzer = MPCGanalysis->new("pathsFile" => $pathsFile, 
+				 "element" => uc($metal), 
+				 "majorCGs" => ["Tetrahedral", "TrigonalBipyramidal", "Octahedral", "PentagonalBipyramidal"], 
+				 "minLigNum" => 4,
+				 "shellCutoff" => $shellCutoff,
+				 "shellElement" => $shellElement);
+#print "$metal: ", $analyzer->{numCenter}, "\n";
+#print "Cluster: ", $analyzer->{numCluster}, "\n";
+#print "Usable: ", $analyzer->{usable}, "\n";
+#print "Unusable: ", $analyzer->{unusable}, "\n\n";
+#exit;
+
+$analyzer->bootstrapCoordination($statOutFileName);
+
+## required argument defines the workflow
+if ($flow eq "-i") 
+  { $analyzer->IAcoordination($statOutFileName, $iaControl, $threshold); }
+elsif ($flow eq "-d") 
+  { $analyzer->bindShellViaDist($statOutFileName); }
+elsif ($flow eq "-dd")
+  { $analyzer->shellViaAdjustDistStd($statOutFileName); }
+
+########## Optional arguments ##########
 my ($seqOpt, $seq, $header, $seqFile, $rInputOpt, $rInputFile, $rfOpt, $rfFile, $statsFile, $leaveOut, $jsonOpt, $jsonFile, $dumperOpt, $dumperFile, $decisionOpt, $angleListOpt, $angleListMid);
 my ($ECopt, $pathToFlat, $pathToPDB, $ecFile, $ligandOpt, $angleBreakDownOpt, $angleBreakDownFile, $bondLengthOpt, $bondLengthFile);
 while (@ARGV) 
@@ -125,7 +151,6 @@ while (@ARGV)
 
   if ($option eq "-s")
     {
-    $seqOpt = 1;
     $seq = shift @ARGV;
     $header = shift @ARGV;
     $seqFile = shift @ARGV;
@@ -134,18 +159,25 @@ while (@ARGV)
       { print STDERR $help; exit;}
     unless ($header eq "b" || $header eq "s" || $header eq "ss" || $header eq "c")
       { print STDERR $help; exit;} 
+    $analyzer->printSequences($seqFile, $seq, $header);
     }
   elsif ($option eq "-r")
     {
-    $rInputOpt = 1;
     $rInputFile = shift @ARGV;
     $leaveOut = shift @ARGV if ($ARGV[0] =~ /^(l|leave|leaveOut)$/);
     $statsFile = shift @ARGV if ($ARGV[0] !~ /\-/);
+    &rPrint($analyzer, $rInputFile, $leaveOut, $statsFile) ;
     }
   elsif ($option eq "-rf")
     {
-    $rfOpt = 1;
     $rfFile = shift @ARGV;
+    $statsFile = shift @ARGV if ($ARGV[0] !~ /\-/);
+    &rfPrint($analyzer, $rfFile, $statsFile) ;
+    }
+  elsif ($option eq "-bondLength")
+    {
+    $bondLengthFile = shift @ARGV;
+    &blPrint($analyzer, $bondLengthFile);
     }
   elsif ($option eq "-json")
     {
@@ -182,71 +214,44 @@ while (@ARGV)
     $angleBreakDownOpt = 1;
     $angleBreakDownFile = shift @ARGV;
     }
-  elsif ($option eq "-bondLength")
-    {
-    $bondLengthOpt = 1;
-    $bondLengthFile = shift @ARGV;
-    }
   }
 
+###########################
+## optional args' functions
+###########################
 
-######################################## 
-############# main process #############
-########################################
-
-my $analyzer = MPCGanalysis->new("pathsFile" => $pathsFile, 
-				 "element" => uc($metal), 
-				 "majorCGs" => ["Tetrahedral", "TrigonalBipyramidal", "Octahedral", "PentagonalBipyramidal"], 
-				 "minLigNum" => 4,
-				 "shellCutoff" => $shellCutoff,
-				 "shellElement" => $shellElement);
-#print "$metal: ", $analyzer->{numCenter}, "\n";
-#print "Cluster: ", $analyzer->{numCluster}, "\n";
-#print "Usable: ", $analyzer->{usable}, "\n";
-#print "Unusable: ", $analyzer->{unusable}, "\n\n";
-#exit;
-
-$analyzer->bootstrapCoordination($statOutFileName);
-
-## required argument defines the workflow
-if ($flow eq "-i") 
-  { $analyzer->IAcoordination($statOutFileName, $iaControl, $threshold); }
-elsif ($flow eq "-d") 
-  { $analyzer->bindShellViaDist($statOutFileName); }
-elsif ($flow eq "-dd")
-  { $analyzer->shellViaAdjustDistStd($statOutFileName); }
- 
-## optional args set what to print out
-if ($seqOpt)
+sub rfPrint
   {
-  foreach my $ligNum (keys %{$analyzer->{coordinations}})
-    {$analyzer->printSequences($seqFile, $seq, $header, $ligNum);} ## four ligands
-  }
+  my $analyzer = shift @_;
+  my $rfFile = shift @_;
+  my $statsFile = shift @_;
 
-if ($rfOpt)
-  {  
-  open (FID, ">", $rfFile) or die $!;
+  open (RFID, ">", $rfFile) or die $!;
   my $stats = &readTableFile($statsFile) if ($statsFile);
 
-  foreach my $ligNum ("ten", "nine", "eight", "seven", "six", "five", "four")
+  foreach my $ligNum (keys %{$analyzer->{coordinations}}) #("ten", "nine", "eight", "seven", "six", "five", "four")
     {
     foreach my $metalObj (@{$analyzer->{coordinations}{$ligNum}})
       {
-      print FID $metalObj->{shellObj}->metalID(), "\t";
-      map { print FID "$_\t";} ($metalObj->smallestAngle()); 
+      print RFID $metalObj->{shellObj}->metalID(), "\t";
+      map { print RFID "$_\t";} ($metalObj->smallestAngle()); 
 
-      print FID $metalObj->{shellObj}->{center}->{method}, "\t";
-      print FID $metalObj->{shellObj}->{center}->{date}, "\t";
-      print FID $metalObj->{shellObj}->{center}->{resolution}, "\t";
-      print FID "\n";
+      print RFID $metalObj->{shellObj}->{center}->{method}, "\t";
+      print RFID $metalObj->{shellObj}->{center}->{date}, "\t";
+      print RFID $metalObj->{shellObj}->{center}->{resolution}, "\t";
+      print RFID "\n";
       }
     }
-  close FID;
+  close RFID;
   }
 
-
-if ($rInputOpt)
+sub rPrint
   {
+  my $analyzer = shift @_;
+  my $rInputFile = shift @_;
+  my $leaveOut = shift @_;
+  my $statsFile = shift @_;
+
   open (FID, ">", $rInputFile) or die $!;
   my $stats = &readTableFile($statsFile) if ($statsFile);
 
@@ -287,6 +292,27 @@ if ($rInputOpt)
   close FID;
   }
 
+## Some other supplemental options
+if ($bondLengthOpt)
+  {
+  my $analyzer = shift @_;
+  my $bondLengthFile = shift @_;
+
+  open (BLF, ">", $bondLengthFile) or die $!;
+  print BLF join("\t", "metalID", "residueID", "element", "bondLength", "resolution", "rValue", "rFree"), "\n" ; 
+
+  foreach my $cg (keys %{$analyzer->{coordinations}})
+    {
+    foreach my $metalObj (@{$analyzer->{coordinations}{$cg}})
+      {
+      my $comboLigands = $metalObj->{bestCombo}->{ligands};
+      my $center = $metalObj->{shellObj}->{center};
+      print BLF map {join("\t", $metalObj->{shellObj}->metalID(), $_->resID, $_->{element}, $center->distance($_), $_->{resolution}, $_->{rValue}, $_->{rFree}), "\n" ;} (@$comboLigands);
+      }
+    }
+    close BLF;
+  }
+    
 sub coordProbs
   {
   my $shell = shift @_;
@@ -316,24 +342,6 @@ sub coordProbs
   }
 
 
-## Some other supplemental options
-if ($bondLengthOpt)
-  {
-  open (BLF, ">", $bondLengthFile) or die $!;
-  print BLF join(",", "metalID", "residueID", "element", "bondLength", "resolution", "rValue", "rFree"), "\n" ; 
-
-  foreach my $cg (keys %{$analyzer->{coordinations}})
-    {
-    foreach my $metalObj (@{$analyzer->{coordinations}{$cg}})
-      {
-      my $comboLigands = $metalObj->{bestCombo}->{ligands};
-      my $center = $metalObj->{shellObj}->{center};
-      print BLF map {join("\t", $metalObj->{shellObj}->metalID(), $_->resID, $_->{element}, $center->distance($_), $_->{resolution}, $_->{rValue}, $_->{rFree}), "\n" ;} (@$comboLigands);
-      }
-    }
-    close BLF;
-  }
-    
 
 if ($jsonOpt)
   {

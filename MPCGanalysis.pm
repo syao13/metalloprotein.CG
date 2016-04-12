@@ -185,6 +185,7 @@ sub readPDB
     push @$allShells, @$shellsOfOnePDB;
     }
 
+  close PATH;
   $self->{shells} = $allShells;
   }
 
@@ -402,13 +403,13 @@ sub shellViaAdjustDistStd
         my $distBtLigs = $$finalShell[$x]->distance($$finalShell[$y]) ;
         if ($distBtLigs < 1.5 || $distBtLigs > 6.0 )
 	  { 
-print $$finalShell[$x]->resID(), ", ", $$finalShell[$x]->resID(), ", ", "$distBtLigs\n";
+#print $$finalShell[$x]->resID(), ", ", $$finalShell[$x]->resID(), ", ", "$distBtLigs\n";
 	  $excludeInd = 1 ; 
 	  }
         }
       }
 
-print "tooclose, ", $shell->metalID(), ": ", join (", ", map { $_->atomID().".". $_->{alternateLocation} } (@$finalShell)), "\n" if ($excludeInd);
+#print "tooclose, ", $shell->metalID(), ": ", join (", ", map { $_->atomID().".". $_->{alternateLocation} } (@$finalShell)), "\n" if ($excludeInd);
     next if ($excludeInd);
     foreach my $ligand (@$finalShell) ## eliminate symmetry related ligands that is not all water
       {
@@ -418,10 +419,10 @@ print "tooclose, ", $shell->metalID(), ": ", join (", ", map { $_->atomID().".".
 	last;
 	}
       }
-print "symmetry, ", $shell->metalID(), ": ", join (", ", map { $_->atomID().".". $_->{alternateLocation} } (@$finalShell)), "\n" if ($excludeInd);
+#print "symmetry, ", $shell->metalID(), ": ", join (", ", map { $_->atomID().".". $_->{alternateLocation} } (@$finalShell)), "\n" if ($excludeInd);
     next if ($excludeInd);
     my @waters = grep {$_->{residueName} eq "HOH"} (@$finalShell); ## water cannot be the majority of the ligands
-print "water, ", $shell->metalID(), ": ", join (", ", map { $_->atomID().".". $_->{alternateLocation} } (@$finalShell)), "\n" if ((scalar @waters) * 2 > (scalar @$finalShell));
+#print "water, ", $shell->metalID(), ": ", join (", ", map { $_->atomID().".". $_->{alternateLocation} } (@$finalShell)), "\n" if ((scalar @waters) * 2 > (scalar @$finalShell));
     next if ((scalar @waters) * 2 > (scalar @$finalShell));
 
     my $numLig = @$finalShell;
@@ -450,74 +451,76 @@ sub printSequences
   my $outFile = shift @_;
   my $seqType = shift @_;
   my $headerType = shift @_;
-  my $ligNum = shift @_;
 
   open (my $fileH, ">>", $outFile) or die $!;
-  foreach my $model (@{$self->{coordinations}{$ligNum}}) 
+  foreach my $ligNum (keys %{$self->{coordinations}})
     {
-    my $seqsOfPDB = $model->{shellObj}->{seqsOfPDB};
-    my $metalId = $model->{shellObj}->metalID();
+    foreach my $model (@{$self->{coordinations}{$ligNum}}) 
+      {
+      my $seqsOfPDB = $model->{shellObj}->{seqsOfPDB};
+      my $metalId = $model->{shellObj}->metalID();
 
-    my @headerLigs;
-    if ($headerType eq "b")  ## original ligands
-      { @headerLigs = @{$model->{bestCombo}->{ligands}}; }
-    elsif ($headerType eq "s") ## shell ligands
-      { @headerLigs = @{$model->{shellObj}->{shell}}; }
-    elsif ($headerType eq "ss")  ### sub non-aa with aa in second shell but not binding ligands
-      {
-      my $secShell = [grep {my $temp = $_; ! grep {$_ eq $temp} (@{$model->{bestCombo}->{ligands}}); } (@{$model->{shellObj}->{secondShell}})];
-      foreach my $lig (@{$model->{bestCombo}->{ligands}})
-	{
-	if (&Sequence::_aaCode($lig->{residueName}))
-	  {push @headerLigs, $lig;}
-	else
-	  { 
-	  if ($lig->closest($secShell)) 
-	    {push @headerLigs, $lig->closest($secShell); }
-          else
-	    {print "flag, ", $lig->resID();} 
-	  }
-	} 
-      }
-    elsif ($headerType eq "c")  ### replace non-aa by closest aa
-      {
-      my $closestAA = $model->{shellObj}->{closestAA}; 
-      @headerLigs = (map { $$closestAA{$_}; } (@{$model->{bestCombo}->{ligands}}));
-      }
+      my @headerLigs;
+      if ($headerType eq "b")  ## original ligands
+        { @headerLigs = @{$model->{bestCombo}->{ligands}}; }
+      elsif ($headerType eq "s") ## shell ligands
+        { @headerLigs = @{$model->{shellObj}->{shell}}; }
+      elsif ($headerType eq "ss")  ### sub non-aa with aa in second shell but not binding ligands
+        {
+        my $secShell = [grep {my $temp = $_; ! grep {$_ eq $temp} (@{$model->{bestCombo}->{ligands}}); } (@{$model->{shellObj}->{secondShell}})];
+        foreach my $lig (@{$model->{bestCombo}->{ligands}})
+	  {
+	  if (&Sequence::_aaCode($lig->{residueName}))
+	    {push @headerLigs, $lig;}
+	  else
+	    { 
+	    if ($lig->closest($secShell)) 
+	      {push @headerLigs, $lig->closest($secShell); }
+            else
+	      {print "flag, ", $lig->resID();} 
+	    }
+	  } 
+        }
+      elsif ($headerType eq "c")  ### replace non-aa by closest aa
+        {
+        my $closestAA = $model->{shellObj}->{closestAA}; 
+        @headerLigs = (map { $$closestAA{$_}; } (@{$model->{bestCombo}->{ligands}}));
+        }
 
-    my @ligId = (map {$_->resID().".".$_->{residueName}.".".$_->{atomName}.".".$_->{element} ;} (@headerLigs)); 
-    
-    my %chains;
-    foreach my $lig (@headerLigs)
-      {
-      next if (! &Sequence::_aaCode($lig->{residueName}) ); #non-aa ligands do not count
-      $chains{$lig->{chainID}} = 1;
-      }
+      my @ligId = (map {$_->resID().".".$_->{residueName}.".".$_->{atomName}.".".$_->{element} ;} (@headerLigs)); 
+     
+      my %chains;
+      foreach my $lig (@headerLigs)
+        {
+        next if (! &Sequence::_aaCode($lig->{residueName}) ); #non-aa ligands do not count
+        $chains{$lig->{chainID}} = 1;
+        }
 
     #if (scalar (keys %chains) == 0)
     #    {print "No protein ligands, $metalId!\n";} 
 
-    my $seqOfChain;
-    my $seqs; 
-    if ($seqType eq "s")
-      {$seqs = $seqsOfPDB->{seqres};}
-    elsif ($seqType eq "a")
-      {$seqs = $seqsOfPDB->{atom};}
-    elsif ($seqType eq "n")
-      {$seqs = $seqsOfPDB->{number};}
+      my $seqOfChain;
+      my $seqs; 
+      if ($seqType eq "s")
+        {$seqs = $seqsOfPDB->{seqres};}
+      elsif ($seqType eq "a")
+        {$seqs = $seqsOfPDB->{atom};}
+      elsif ($seqType eq "n")
+        {$seqs = $seqsOfPDB->{number};}
    
-    foreach my $ch (keys %chains)
-      {
-      foreach my $seq (@$seqs)
+      foreach my $ch (keys %chains)
         {
-        if ( substr((split('\|', $seq->{header}))[-1], 0, 1) eq $ch ) 
-          { $seqOfChain = $seq; last; }
-        }
+        foreach my $seq (@$seqs)
+          {
+          if ( substr((split('\|', $seq->{header}))[-1], 0, 1) eq $ch ) 
+            { $seqOfChain = $seq; last; }
+          }
 
-      $seqOfChain->updateHeader($metalId, @ligId);
-      $seqOfChain->printFasta($fileH);
-      }		
-    }  
+        $seqOfChain->updateHeader($metalId, @ligId);
+        $seqOfChain->printFasta($fileH);
+        }		
+      }  
+    }
 
   close $fileH
   }

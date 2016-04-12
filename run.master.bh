@@ -4,12 +4,13 @@
 #
 # edit these variables to their appropriate values before running!
 #
-output_dir=/mlab/data/sen/projects/metal/go_ec_analysis  # should correspond to ../output
+#output_dir=/mlab/data/sen/projects/metal/go_ec_analysis  # should correspond to ../output
+metal=Zn
+output_dir=../output_zn
 PDB_dir=/mlab/data/databases/PDB/2015_02_25
 alias interpro=/mlab/data/software/interproscan/interproscan.sh
 
 #####
-
 date
 echo "Start"
 
@@ -23,10 +24,15 @@ echo "Start"
 #echo "protein_or_both.2015_02_25.txt done"
 #date
 
-## Get zinc binding or shell sequences
-./znCoordinations.pl $output_dir/metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON $output_dir/stats.ss -s s s $output_dir/seqs.SEQRES.shell.txt -r $output_dir/r.allLig.txt -rf $output_dir/rf.smallest.txt
-./znCoordinations.pl $output_dir/metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON $output_dir/stats.as -s a s $output_dir/seqs.ATOM.shell.txt
-./znCoordinations.pl $output_dir/metalPDB/protein_list_Zn.txt Zn -d shellCutoff 2.783 SON $output_dir/stats.sb -s s b $output_dir/seqs.SEQRES.bind.txt
+## Get the initial bond length with all elements except H 
+./metalCoordinations.pl ../metalPDB/protein_list_$metal.txt $metal -bs $output_dir/stats -bondLength $output_dir/bondlength.withC.txt
+
+## Update the cutoff 
+./updateCutoff.R $output_dir/bondlength.withC.txt 
+
+## Updated cutoff based on the results from above 
+## Now get the binding ligands and print out sequences.
+./znCoordinations.pl $output_dir/metalPDB/protein_list_$metal.txt $metal $(cat $output_dir/test.cutoff.txt) -dd $output_dir/stats.ss -r $output_dir/r.allLig.txt -rf $output_dir/rf.smallest.txt -s a s $output_dir/seqs.ATOM.shell.txt -s s s $output_dir/seqs.SEQRES.shell.txt -s s b $output_dir/seqs.SEQRES.bind.txt
 echo "Sequences and r files done!"
 date
 
