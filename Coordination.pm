@@ -146,7 +146,9 @@ sub bestTestStatistic
   my $bestStat;
   my $distChi = 0;
   my $df = 0;
- 
+  my $bestOrder;
+  my $bestScore; 
+
   foreach my $combo ( @{$self->{combos}} )
     {
     #next if (grep {$_ < 68 ;} (&_anglesBetweenAtoms($combo, $self->{shellObj}->{center})) ); ## remove compressed angle combo. Used on 4.25 & 4.29
@@ -168,8 +170,11 @@ sub bestTestStatistic
 	{
 	my $testStatistics = $self->angleTestStatistic($type, $orderedCombo);
 
-	if ( (! $bestStat) || $testStatistics < $$bestStat{"deviation"} )
-	  { $bestStat = { "ligands" => $orderedCombo, "deviation" =>$testStatistics }; }
+	if ( (! $bestScore) || $testStatistics < $bestScore )
+	  { 
+	  $bestOrder = $orderedCombo; 
+	  $bestScore = $testStatistics;
+	  } 
 	}
       else
 	{
@@ -177,13 +182,20 @@ sub bestTestStatistic
 	
 	my $testStatistics = $angleChi + $distChi;
 	my $probability = &Statistics::Distributions::chisqrprob($df, $testStatistics);
-#print "$angleChi, $distChi, $df, $testStatistics, $probability\n";
 
-	if ( (! $bestStat) || $probability > $$bestStat{"probability"} )
-          { $bestStat = { "ligands" => $orderedCombo, "chiStatistic" => $testStatistics, "probability" => $probability , "angleChi" => $angleChi }; }
+	if ((! $bestScore) || $probability > $bestScore)
+	  { 
+	  $bestOrder = $orderedCombo;
+          $bestScore = $probability;
+	  }
 	}
       }
     }
+
+  if ($type eq "dev")
+    {$bestStat = { "ligands" => $bestOrder,  "deviation" =>$bestScore };}
+  else 
+    {$bestStat = { "ligands" => $bestOrder, "probability" => $bestScore }; }
 
   $self->{bestCombo} = $bestStat;
 #print ref $self, ", ", $$bestStat{"angleChi"}, ": ", join (", ", $self->allAngles()), "\n";

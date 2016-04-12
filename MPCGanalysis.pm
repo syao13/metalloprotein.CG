@@ -627,9 +627,9 @@ sub calcChiCoordination
   my $coordinations = {};
   foreach my $shell (@{$self->{shells}})
     {
-#print "\n", $shell->metalID(), "; \n";
-#my $now_string = localtime;
-#print "$now_string\n";
+print "\n", $shell->metalID(), "; \n";
+my $now_string = localtime;
+print "$now_string\n";
 
     ## Create all CG objects 
 #    my @models;
@@ -669,8 +669,8 @@ sub calcChiCoordination
         $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
         $Qresults->enqueue($cgObj);
 
-#my $now_string = localtime;
-#print "$work, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
+my $now_string = localtime;
+print "$work, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
         }
       $Qresults->enqueue( undef ); ## Signal this thread is finished
       };
@@ -703,7 +703,7 @@ sub calcChiCoordination
 
       if (! defined $tev->{bestCombo} && ! defined $tpl->{bestCombo}) 
 	{ 
-#print "0;0;0\n";
+print "0;0;0\n";
 	$$decisions{"012"}++; 
 	}
       else 
@@ -714,17 +714,17 @@ sub calcChiCoordination
           my $modRef = ref $mods[0];
           push @{$$coordinations{$modRef}}, $mods[0];
           $$decisions{"3.". $modRef} += 1;
-#print "3lig.$modRef\n";
+print "3lig.$modRef\n";
           }
         else
           {$$decisions{"3.None"} += 1;}
-#print $mods[0]->{bestCombo}->{probability}, "; ", $mods[1]->{bestCombo}->{probability}, "; 00\n";
+print $mods[0]->{bestCombo}->{probability}, "; ", $mods[1]->{bestCombo}->{probability}, "; 00\n";
         next;
         }
       }
     else ## 4, 5, 6 ligands
       {
-#print $models[0]->{bestCombo}->{probability}, "; 456\n";
+print $models[0]->{bestCombo}->{probability}, "; 456\n";
       
       ## set the probability threshold, remove low prob ones from statistics calculation. 
       if ($control eq "p" && $models[0]->{bestCombo}->{probability} < $threshold) 
@@ -741,7 +741,7 @@ sub calcChiCoordination
 	push @{$$coordinations{$modelRef}}, $models[1];
 	$$decisions{$maxNum. ".".  $modelRef} += 1;
 
-#print $models[1]->{bestCombo}->{probability}, "; bva\n";
+print $models[1]->{bestCombo}->{probability}, "; bva\n";
 	}
       else
 	{
@@ -763,7 +763,7 @@ sub calcChiCoordination
               push @{$$coordinations{$modelRef}}, $models[$i];
 	      $dec = $dec. ".". $modelRef;
               $$decisions{$dec} += 1;
-#print $models[0]->{bestCombo}->{probability}, "; only $modelRef\n";
+print $models[0]->{bestCombo}->{probability}, "; only $modelRef\n";
 	      }
 	    else
 	      {
@@ -775,7 +775,7 @@ sub calcChiCoordination
 
 	      map {$dec = $dec.".".ref $models[$_]} (0..$maxInd) ;
               $$decisions{$dec} += 1;
-#print $models[$maxInd]->{bestCombo}->{probability}, "; major CG to $modelRef\n";
+print $models[$maxInd]->{bestCombo}->{probability}, "; major CG to $modelRef\n";
 	      }
 	    last;
 	    }
