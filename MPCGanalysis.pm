@@ -623,6 +623,28 @@ sub calcChiCoordination
   ## It is a array now compared to a hash as above.
   my @allCGs = map {$$_{"name"}} (grep {$$_{"num"} < 9 } (@$cgRelations));
 
+  my $worker = sub 
+    {
+    my $tid = threads->tid;
+    my ($shell, $Qwork, $Qresults ) = @_;
+    while( my $work = $Qwork->dequeue() )
+      {
+      my $relation = (grep {$$_{"name"} eq $work } (@$cgRelations))[0];
+
+#print $work, ", ", $$relation{"num"}, ", ", $self->{minLigNum}, ", ", scalar @{$shell->{shell}}, "\n";
+      next if ($$relation{"num"} < $self->{minLigNum} || $$relation{"num"} > @{$shell->{shell}});
+
+      my $cgObj = $work->new("shellObj" => $shell);
+      $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+      #$Qresults->enqueue($work, $cgObj->{bestCombo}->{probability});
+      $Qresults->enqueue($cgObj);
+
+my $now_string = localtime;
+print "$work, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
+      }
+    $Qresults->enqueue( undef ); ## Signal this thread is finished
+    };
+
   my $decisions = {};
   my $coordinations = {};
   foreach my $shell (@{$self->{shells}})
@@ -631,24 +653,8 @@ print "\n", $shell->metalID(), "; \n";
 my $now_string = localtime;
 print "$now_string\n";
 
-    ## Create all CG objects 
-#    my @models;
-#    foreach my $cg (@allCGs)
-#      {
-#      my $relation = (grep {$$_{"name"} eq $cg } (@$cgRelations))[0];
-#      next if ($$relation{"num"} < $self->{minLigNum} || $$relation{"num"} > @{$shell->{shell}});
-
-#      my $cgObj = $cg->new(shellObj => $shell);
-#      $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-#      push @models, $cgObj;
-
-#my $now_string = localtime;
-#print "$cg, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
-#      }
-#    @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} (@models)));
-
-    ## Parallel processing of above
-    my $THREADS =10;
+    ## Parallel processing 
+    my $THREADS = 8;
     my $Qwork = new Thread::Queue;
     my $Qresults = new Thread::Queue;
 
@@ -656,34 +662,17 @@ print "$now_string\n";
       { $Qwork->enqueue($one); } #load the shared queue
     $Qwork->enqueue( (undef) x $THREADS ); # Tell the queue there are no more work items
 
-    my $worker = sub 
-      {
-      my $tid = threads->tid;
-      my( $Qwork, $Qresults ) = @_;
-      while( my $work = $Qwork->dequeue() )
-        {
-        my $relation = (grep {$$_{"name"} eq $work } (@$cgRelations))[0];
-        next if ($$relation{"num"} < $self->{minLigNum} || $$relation{"num"} > @{$shell->{shell}});
-
-        my $cgObj = $work->new(shellObj => $shell);
-        $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-        $Qresults->enqueue($cgObj);
-
-my $now_string = localtime;
-print "$work, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
-        }
-      $Qresults->enqueue( undef ); ## Signal this thread is finished
-      };
-
     my @models;
-    my @thread_pool = map { threads->create( $worker, $Qwork, $Qresults ) } (1 .. $THREADS);
+    my @thread_pool = map { threads->create( $worker, $shell, $Qwork, $Qresults ) } (1 .. $THREADS);
     while(my $result = $Qresults->dequeue())
       {push @models, $result;}
-    @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} (@models)));
-    
     foreach my $th (@thread_pool)
       { $th->join; }
 
+print join(", ", map {ref $_,  $_->{bestCombo}->{probability}} (@models)), ": before\n";
+    @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} (@models)));
+print join(", ", map {ref $_,  $_->{bestCombo}->{probability}} (@models)), ": after\n";
+   
     my $maxNum;
     my $unusables;
     ## Find the maximum number of ligands each metal structure has
