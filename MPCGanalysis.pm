@@ -342,14 +342,16 @@ sub shellViaAdjustDistStd
   foreach my $shell (@{$self->{shells}})
     {
     my $finalShell = [];
-    my %alternates;
 
     ## Get the best alternate location.
+    my $alternate = {};
+    my @altAtoms;
     foreach my $ligand (@{$shell->{shell}})
-      { $alternates{$ligand->atomID()} += 1; }
-    my @altAtoms = grep {$alternates{$_} > 1} (keys %alternates);
+      { 
+      push (@altAtoms, $ligand->resID()) if ($$alternate{$ligand->resID()} && $$alternate{$ligand->resID()}{$ligand->{alternateLocation}} != 1);
+      $$alternate{$ligand->resID()}{$ligand->{alternateLocation}} = 1;
+      }
 
-print @altAtoms, "\n";
     if (@altAtoms) ## If there are two alternate atoms
       {
       my $altByRes = {};
@@ -394,7 +396,7 @@ print @altAtoms, "\n";
         }
       }
 
-print join(", ", "before", $shell->metalID(), map {$_->resID();} (@$finalShell)), "\n";
+#print join(", ", "before", $shell->metalID(), map {$_->resID();} (@$finalShell)), "\n";
     my $excludeInd = 0; ## eliminate ligands with unreasonable atom-atom distances
     for (my $x=0; $x < @$finalShell -1; $x++)
       {
@@ -427,7 +429,7 @@ print join(", ", "before", $shell->metalID(), map {$_->resID();} (@$finalShell))
 #print "water, ", $shell->metalID(), ": ", join (", ", map { $_->atomID().".". $_->{alternateLocation} } (@$finalShell)), "\n" if ((scalar @waters) * 2 > (scalar @$finalShell));
     next if ((scalar @waters) * 2 > (scalar @$finalShell));
 
-print join(", ", "after", $shell->metalID(), map {$_->resID();} (@$finalShell)), "\n";
+#print join(", ", "after", $shell->metalID(), map {$_->resID();} (@$finalShell)), "\n";
     my $numLig = @$finalShell;
     next if ($numLig < 4 || $numLig > 10);
 
