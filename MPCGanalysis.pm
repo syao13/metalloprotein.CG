@@ -342,12 +342,15 @@ sub shellViaAdjustDistStd
   foreach my $shell (@{$self->{shells}})
     {
     my $finalShell = [];
-    my %alternates;
 
     ## Get the best alternate location.
+    my $alternate = {};
+    my @altAtoms;
     foreach my $ligand (@{$shell->{shell}})
-      { $alternates{$ligand->atomID()} += 1; }
-    my @altAtoms = grep {$alternates{$_} > 1} (keys %alternates);
+      { 
+      push (@altAtoms, $ligand->resID()) if ($$alternate{$ligand->resID()} && $$alternate{$ligand->resID()}{$ligand->{alternateLocation}} != 1);
+      $$alternate{$ligand->resID()}{$ligand->{alternateLocation}} = 1;
+      }
 
     if (@altAtoms) ## If there are two alternate atoms
       {
@@ -393,6 +396,7 @@ sub shellViaAdjustDistStd
         }
       }
 
+#print join(", ", "before", $shell->metalID(), map {$_->resID();} (@$finalShell)), "\n";
     my $excludeInd = 0; ## eliminate ligands with unreasonable atom-atom distances
     for (my $x=0; $x < @$finalShell -1; $x++)
       {
@@ -425,6 +429,7 @@ sub shellViaAdjustDistStd
 #print "water, ", $shell->metalID(), ": ", join (", ", map { $_->atomID().".". $_->{alternateLocation} } (@$finalShell)), "\n" if ((scalar @waters) * 2 > (scalar @$finalShell));
     next if ((scalar @waters) * 2 > (scalar @$finalShell));
 
+#print join(", ", "after", $shell->metalID(), map {$_->resID();} (@$finalShell)), "\n";
     my $numLig = @$finalShell;
     next if ($numLig < 4 || $numLig > 10);
 
@@ -433,6 +438,7 @@ sub shellViaAdjustDistStd
     my $cgObj = $$cg{"name"}->new("shellObj" => $shellObj);
     $cgObj->bestDistChi($stats);    
 
+#print ref $cgObj, ", ";
 #print $cgObj->{bestCombo}->{probability}, "\n\n"; 
 
     my %numToLet = ( 2 => "two", 3 => "three", 4 => "four", 5 => "five", 6 => "six", 7 => "seven", 8 => "eight", 9 => "nine", 10 => "ten");
@@ -462,7 +468,9 @@ sub printSequences
 
       my @headerLigs;
       if ($headerType eq "b")  ## original ligands
-        { @headerLigs = @{$model->{bestCombo}->{ligands}}; }
+        { 
+print $model->{shellObj}->metalID(), "\n" if (ref $model->{bestCombo}->{ligands} ne "ARRAY");
+	@headerLigs = @{$model->{bestCombo}->{ligands}}; }
       elsif ($headerType eq "s") ## shell ligands
         { @headerLigs = @{$model->{shellObj}->{shell}}; }
       elsif ($headerType eq "ss")  ### sub non-aa with aa in second shell but not binding ligands
