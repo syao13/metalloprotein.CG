@@ -80,7 +80,7 @@ sub distanceChi
   my $distanceStats = shift @_;
 
   my $distChi = 0;
-
+print @$combo, "\n";
   my $center = $self->{shellObj}->{center};
   for(my $x = 0; $x < @$combo; $x++)
     {
@@ -95,7 +95,7 @@ sub distanceChi
       my $resolution = ($$combo[$x]->{resolution} == -1)? 2.5 : $$combo[$x]->{resolution};
       my $adjStd = ($resolution - $$distanceStats{$element}{resolutionAvg}) * $slope + $$distanceStats{$element}{standardDeviation};
       $variance = $adjStd ** 2; 
-#print "$expect, $varianceOld, $resolution, $adjStd, $variance\n";
+#print "exist, $element, $expect, $varianceOld, $resolution, $adjStd, $variance\n";
       }
     else     
       {
@@ -104,6 +104,7 @@ sub distanceChi
       my $resolution = ($$combo[$x]->{resolution} == -1)? 2.5 : $$combo[$x]->{resolution};
       my $adjStd = ($resolution - $$distanceStats{"average"}{resolutionAvg}) * $slope + $$distanceStats{"average"}{standardDeviation};
       $variance = $adjStd ** 2;
+#print "not exist, $element, $expect, $varianceOld, $resolution, $adjStd, $variance\n";
       }
 #print $center->distance($$combo[$x]), ", $expect, $variance\n";
 
@@ -127,6 +128,7 @@ sub bestDistChi
     my $distChi = $self->distanceChi($combo, $$angleDistStats{"distance"}) ;
     my $probability = &Statistics::Distributions::chisqrprob($df, $distChi);
 
+print "$distChi, $probability, ";
     if ( (! $bestStat) || $probability > $$bestStat{"probability"} )
       { $bestStat = { "ligands" => $combo, "probability" => $probability , "distChi" => $distChi }; }
     }
@@ -480,6 +482,8 @@ sub smallestAngle
 
   map {push @results, $_->{residueName}.".".$_->{atomName}.".".$_->{element} ;} (@smallest);
 
+print join(", ", @anglelist) if ($self->{shellObj}->metalID() eq "1K07.A.1");
+print $self->{shellObj}->metalID(), "\n" if ( (! defined $smallest[0]) || (! defined $smallest[1]) ) ;
   if ($smallest[0]->resID() eq $smallest[1]->resID())
     { push @results, 1;}
   else
