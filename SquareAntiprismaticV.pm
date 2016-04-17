@@ -3,6 +3,8 @@
 package SquareAntiprismaticV;
 use strict;
 use AtomShell;
+use Time::HiRes qw(time);
+use POSIX qw(strftime);
 
 use base "Coordination";
 
@@ -14,6 +16,7 @@ our $expectedAngle70 = 70.5;
 our $expectedAngle82 = 82;
 our $expectedAngle109 = 109.5;
 our $expectedAngle143 = 143.6;
+
 
 our $invCorrM = [
 	[ 0.304, -0.054, -0.047, -0.052, -0.007, -0.008, -0.113, -0.037,  0.067, -0.039, -0.110,  0.064,  0.076,  0.079, -0.091,  0.102,  0.004,  0.011,  0.102,  0.011,  0.002],
@@ -39,63 +42,47 @@ our $invCorrM = [
 	[ 0.002,  0.030,  0.039, -0.146,  0.018, -0.076, -0.012, -0.040,  0.047, -0.040, -0.060,  0.040,  0.038, -0.110, -0.001, -0.106, -0.013, -0.083, -0.011, -0.007,  0.233]
 ];
 
-our $indicesLists = [0 x 2520];
-
 sub new
   {
   my $class = shift @_;
   my $self = Coordination->new(@defaultDataMembers, @_);
+
   bless $self, ref $class || $class;
 
-  $self->getIndOrders();
-
-#print map {join (", ", @$_), "\n";} (@$indicesLists);
   return $self;
-  }
-
-sub getIndOrders
-  {
-  my $self = shift @_;
-
-  my $xx = 0;
-  foreach my $topInds (&Coordination::_restrictedCombinations(4, (0..($self->{numAtoms}-1))))
-    {
-    my $orderedTop = [0 x 24];
-    my $yy = 0;
-    foreach my $i (0..3)
-      {
-      foreach my $j (0..3)
-        {
-        next if ($j == $i);
-        foreach my $k (0..3)
-          {
-          next if ($k == $i || $k ==$j);
-          my $idx = (grep {$_ != $i && $_ != $j && $_ != $k; } (0..3))[0];
-          $$orderedTop[$yy] = [$$topInds[$i], $$topInds[$j], $$topInds[$k], $$topInds[$idx]];
-	  $yy += 1;
-          }
-        }
-      }
-    my @bottomInds = grep { my $test = $_; ! (grep { $_ == $test; } (@$topInds)); } (0..($self->{numAtoms}-1));
-
-    foreach my $top (@$orderedTop)
-      {
-      $$indicesLists[$xx] = [@$top, $bottomInds[0], $bottomInds[1], $bottomInds[2]];
-      $xx += 1;
-      $$indicesLists[$xx] = [@$top, $bottomInds[1], $bottomInds[2], $bottomInds[0]];
-      $xx += 1;
-      $$indicesLists[$xx] = [@$top, $bottomInds[2], $bottomInds[0], $bottomInds[1]];
-      $xx += 1;
-      }
-    }
   }
 
 sub orderedCombinations 
   {
   my $self = shift @_;
   my $combo = shift @_;
-print map {join (", ", @$_), "\n";} (@$indicesLists);
-  my $orderedCombos = [map {my $inds = $_; [map {$$combo[$_]} (@$inds)]} (@$indicesLists)];
+
+  my $orderedCombos;
+  foreach my $topAtoms (&Coordination::_restrictedCombinations(4, @$combo))
+    {
+    my $orderedTop;
+    foreach my $i (0..3) 
+      {
+      foreach my $j (0..3) 
+	{
+	next if ($j == $i);
+	foreach my $k (0..3)
+	  {
+	  next if ($k == $i || $k ==$j);
+	  my $idx = (grep {$_ != $i && $_ != $j && $_ != $k; } (0..3))[0];
+	  push (@$orderedTop, [$$topAtoms[$i], $$topAtoms[$j], $$topAtoms[$k], $$topAtoms[$idx]]);
+	  }
+	}
+      }
+    my @bottomAtoms = grep { my $test = $_; ! (grep { $_ == $test; } (@$topAtoms)); } (@$combo);
+
+    foreach my $top (@$orderedTop)
+      {
+      push (@$orderedCombos, [@$top, $bottomAtoms[0], $bottomAtoms[1], $bottomAtoms[2]]);
+      push (@$orderedCombos, [@$top, $bottomAtoms[1], $bottomAtoms[2], $bottomAtoms[0]]);
+      push (@$orderedCombos, [@$top, $bottomAtoms[2], $bottomAtoms[0], $bottomAtoms[1]]);
+      }
+    }
 
   return $orderedCombos;
   }

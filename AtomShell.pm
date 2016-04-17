@@ -95,7 +95,6 @@ sub createShells
       }
     }
   @centers = (grep {! exists $cluster{$_}; } (@centers));
-  #print scalar @centers, "\n";
 
   return [ map { $class->create($_,$atoms,$minDist,$maxDist,$ligElements); } (@centers) ];
   }

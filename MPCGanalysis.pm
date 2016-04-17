@@ -62,6 +62,8 @@ use Clone 'clone';
 #use Data::Dumper::Concise; # human readable, code in iaCoordination
 use JSON; # For other programs to read back, code in iaCoordination 
 use JSON -convert_blessed_universally;
+use Time::HiRes qw(time);
+use POSIX qw(strftime);
 
 our @defaultDataMembers = (
                           "pathsFile" => 0,  # a file that contains pdb-file paths
@@ -138,14 +140,19 @@ sub readPDB
   my $allShells = []; 
   open (PATH, $self->{pathsFile}); 
 
+#my $now_string = localtime;
+#print "start, $now_string", "\n";
   while (my $file = <PATH>)
     {
     chomp $file;
     my $pdb = PDBEntry->new("singlePdbFile" => $file, "metal" => $element);
     my $atoms = $pdb->{atoms};
-#print substr($file,42,4), ",", $pdb->{symNum}, "\n";
-
+#my $now_string = localtime;
+#print "\n", substr($file,42,4), ",", $pdb->{symNum}, ", $now_string\n";
     my $shellsOfOnePDB = ($self->{shellCutoff})? AtomShell->createShells($element, $atoms, 1.3, $self->{shellCutoff}, $self->{shellElement}) : AtomShell->createShells($element, $atoms);
+
+#my $now_string = localtime;
+#print "after getting shells, $now_string\n";
    
     ## Calculating number of zinc clusters
     my $metal = scalar (grep {$_->{"element"} eq $element} (@$atoms)); 
@@ -162,15 +169,16 @@ sub readPDB
       else { $self->{unusable} += 1; }
 
       ## if an atom in the shell is not standard aa, mark its closest aa ligand
-      my $closestAA = {};
-      foreach my $lig (@{$oneShell->{shell}})
-	{
-	if (&Sequence::_aaCode($lig->{residueName}))
-	  { $$closestAA{$lig} = $lig; }
-	else 
-	  { $$closestAA{$lig} = $lig->closest($atoms); }
-	}
-      $oneShell->{closestAA} = $closestAA;
+      ## commented out due to taking too long to run. 16.4.15
+      #my $closestAA = {};
+      #foreach my $lig (@{$oneShell->{shell}})
+	#{
+	#if (&Sequence::_aaCode($lig->{residueName}))
+	#  { $$closestAA{$lig} = $lig; }
+	#else 
+	#  { $$closestAA{$lig} = $lig->closest($atoms); }
+	#}
+      #$oneShell->{closestAA} = $closestAA;
 
       ## prepare residues for later analysis
       #foreach my $ligand (@{$oneShell->{shellsOfOnePDB}})
@@ -184,6 +192,9 @@ sub readPDB
 
     push @$allShells, @$shellsOfOnePDB;
     }
+
+#my $now_string = localtime;
+#print "end, $now_string", "\n";
 
   close PATH;
   $self->{shells} = $allShells;
@@ -639,7 +650,7 @@ sub calcChiCoordination
       {
       my $relation = (grep {$$_{"name"} eq $work } (@$cgRelations))[0];
 
-#print $work, ", ", $$relation{"num"}, ", ", $self->{minLigNum}, ", ", scalar @{$shell->{shell}}, "\n";
+print $work, ", ", $$relation{"num"}, ", ", $self->{minLigNum}, ", ", scalar @{$shell->{shell}}, "\n";
       next if ($$relation{"num"} < $self->{minLigNum} || $$relation{"num"} > @{$shell->{shell}});
 
       my $cgObj = $work->new("shellObj" => $shell);
@@ -655,9 +666,10 @@ print "$work, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
 
   my $decisions = {};
   my $coordinations = {};
-  foreach my $shell (@{$self->{shells}})
+  foreach my $ (@{$self->{shells}})
     {
-print "\n", $shell->metalID(), "; \n";
+    my $shell = $$self{"shells"}[$i];
+print "\n", $shell->metalID(), "; ";
 my $now_string = localtime;
 print "$now_string\n";
 
@@ -672,15 +684,43 @@ print "$now_string\n";
 
     my @models;
     my @thread_pool = map { threads->create( $worker, $shell, $Qwork, $Qresults ) } (1 .. $THREADS);
+
+my $leftW = $Qwork->pending();
+my $leftR = $Qresults->pending();
+print "before, $leftW, $leftR.\n";  
+
     while(my $result = $Qresults->dequeue())
       {push @models, $result;}
+my $leftW = $Qwork->pending();
+my $leftR = $Qresults->pending();
+print "middle, $leftW, $leftR.\n";
     foreach my $th (@thread_pool)
       { $th->join; }
+my $leftW = $Qwork->pending();
+my $leftR = $Qresults->pending();
+print "after, $leftW, $leftR.\n";
 
 print join(", ", map {ref $_,  $_->{bestCombo}->{probability}} (@models)), ": before\n";
     @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} (@models)));
 print join(", ", map {ref $_,  $_->{bestCombo}->{probability}} (@models)), ": after\n";
-   
+
+    ## Create all CG objects, single thread processing
+#    my @models;
+#    foreach my $cg (@allCGs)
+#      {
+#      my $relation = (grep {$$_{"name"} eq $cg } (@$cgRelations))[0];
+#      next if ($$relation{"num"} < $self->{minLigNum} || $$relation{"num"} > @{$shell->{shell}});
+
+#      my $cgObj = $cg->new(shellObj => $shell);
+#      $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+#      push @models, $cgObj;
+    
+#my $now_string = localtime;
+#print "$cg, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
+#      }
+#    @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} (@models)));
+    
+    
     my $maxNum;
     my $unusables;
     ## Find the maximum number of ligands each metal structure has

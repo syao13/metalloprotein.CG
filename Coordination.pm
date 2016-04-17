@@ -6,6 +6,8 @@ use Atom;
 use AtomShell;
 use Distributions;
 use Math::MatrixReal;
+use Time::HiRes qw(time);
+use POSIX qw(strftime);
 
 our @defaultDataMembers = (
                             "shellObj" => 0, # ref to AtomShell object
@@ -159,10 +161,7 @@ sub bestTestStatistic
       $df = $df - 1 if ($leaveOut eq "l" || $leaveOut eq "leave" || $leaveOut eq "leaveOut");
       }
 
-#my $nn = @{$self->orderedCombinations($combo)};
-#print "$nn, ";
-    
-    foreach my $orderedCombo (@{$self->orderedCombinations($combo)})
+   foreach my $orderedCombo (@{$self->orderedCombinations($combo)})
       {
       if ($type eq "dev")
 	{
@@ -177,7 +176,6 @@ sub bestTestStatistic
       else
 	{
 	my $angleChi = $self->angleTestStatistic($type, $orderedCombo, $$angleDistStats{"angle"}, $leaveOut);
-	
 	my $testStatistics = $angleChi + $distChi;
 	my $probability = &Statistics::Distributions::chisqrprob($df, $testStatistics);
 

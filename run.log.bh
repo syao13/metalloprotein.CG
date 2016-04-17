@@ -1001,16 +1001,27 @@ R -q -e "x <- read.csv('test.overallSymNum.txt', header = F); summary(x); mean(x
 ## The above should use -bondLength option
 date; ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.782 SON -dd ../output_zn/stats.r -r ../output_zn/r.allLig.txt -rf ../output_zn/rf.smallest.txt -s a s ../output_zn/seqs.ATOM.shell.txt -s s s ../output_zn/seqs.SEQRES.shell.txt -s s b ../output_zn/seqs.SEQRES.bind.txt -bondLength ../output_zn/bondlength.noC.txt; date
 
-#date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.782 SON -dd ../output_mg/stats.r -r ../output_mg/r.allLig.txt -s a s ../output_mg/seqs.ATOM.shell.txt -s s s ../output_mg/seqs.SEQRES.shell.txt -s s b ../output_mg/seqs.SEQRES.bind.txt -rf ../output_mg/rf.smallest.txt; date
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 SON -dd ../output_mg/stats.r -r ../output_mg/r.allLig.txt -s a s ../output_mg/seqs.ATOM.shell.txt -s s s ../output_mg/seqs.SEQRES.shell.txt -s s b ../output_mg/seqs.SEQRES.bind.txt -rf ../output_mg/rf.smallest.txt; date
 date; ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -dd ../output_ca/stats.r -r ../output_ca/r.allLig.txt -s a s ../output_ca/seqs.ATOM.shell.txt -s s s ../output_ca/seqs.SEQRES.shell.txt -s s b ../output_ca/seqs.SEQRES.bind.txt -rf ../output_ca/rf.smallest.txt; date
 date; ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.638 SON -dd ../output_fe/stats.r -r ../output_fe/r.allLig.txt -s a s ../output_fe/seqs.ATOM.shell.txt -s s s ../output_fe/seqs.SEQRES.shell.txt -s s b ../output_fe/seqs.SEQRES.bind.txt -rf ../output_fe/rf.smallest.txt; date
-#date; ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 ON -dd ../output_na/stats.r -r ../output_na/r.allLig.txt -s a s ../output_na/seqs.ATOM.shell.txt -s s s ../output_na/seqs.SEQRES.shell.txt -s s b ../output_na/seqs.SEQRES.bind.txt -rf ../output_na/rf.smallest.txt; date
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 ON -dd ../output_na/stats.r -r ../output_na/r.allLig.txt -s a s ../output_na/seqs.ATOM.shell.txt -s s s ../output_na/seqs.SEQRES.shell.txt -s s b ../output_na/seqs.SEQRES.bind.txt -rf ../output_na/rf.smallest.txt; date
 
+## 4.14, fixed an error in selecting ligands at the -dd step, it could affect both -rf and -sb
+mv ../output_ca/seqs.SEQRES.bind.txt ../output_ca/seqs.SEQRES.bind.old.txt ## to compare with the new one
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.782 SON -dd ../output_zn/stats.r -rf ../output_zn/rf.smallest.txt -s s b ../output_zn/seqs.SEQRES.bind.txt ; date
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -dd ../output_ca/stats.r -rf ../output_ca/rf.smallest.txt -s s b ../output_ca/seqs.SEQRES.bind.txt ; date
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.638 SON -dd ../output_fe/stats.r -s s b ../output_fe/seqs.SEQRES.bind.txt -rf ../output_fe/rf.smallest.txt; date
+## Problem fixed!
 
+## rerun all options
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.782 SON -dd ../output_zn/stats.r -r ../output_zn/r.allLig.txt -rf ../output_zn/rf.smallest.txt -s a s ../output_zn/seqs.ATOM.shell.txt -s s s ../output_zn/seqs.SEQRES.shell.txt -s s b ../output_zn/seqs.SEQRES.bind.txt; date
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 ON -dd ../output_na/stats.r -r ../output_na/r.allLig.txt -s a s ../output_na/seqs.ATOM.shell.txt -s s s ../output_na/seqs.SEQRES.shell.txt -s s b ../output_na/seqs.SEQRES.bind.txt -rf ../output_na/rf.smallest.txt; date
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 SON -dd ../output_mg/stats.r -r ../output_mg/r.allLig.txt -s a s ../output_mg/seqs.ATOM.shell.txt -s s s ../output_mg/seqs.SEQRES.shell.txt -s s b ../output_mg/seqs.SEQRES.bind.txt -rf ../output_mg/rf.smallest.txt; date
 
-
-
-
+## Zn: 5h. Na: 9.5h.
+## 4.16, rerun Ca and Fe
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -dd ../output_ca/stats.r -r ../output_ca/r.allLig.txt -s a s ../output_ca/seqs.ATOM.shell.txt -s s s ../output_ca/seqs.SEQRES.shell.txt -s s b ../output_ca/seqs.SEQRES.bind.txt -rf ../output_ca/rf.smallest.txt; date
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.638 SON -dd ../output_fe/stats.r -r ../output_fe/r.allLig.txt -s a s ../output_fe/seqs.ATOM.shell.txt -s s s ../output_fe/seqs.SEQRES.shell.txt -s s b ../output_fe/seqs.SEQRES.bind.txt -rf ../output_fe/rf.smallest.txt; date
 
 
 
