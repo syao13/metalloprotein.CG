@@ -293,7 +293,7 @@ sub rPrint
   }
 
 ## Some other supplemental options
-if ($bondLengthOpt)
+sub blPrint
   {
   my $analyzer = shift @_;
   my $bondLengthFile = shift @_;

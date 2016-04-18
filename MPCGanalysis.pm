@@ -140,20 +140,13 @@ sub readPDB
   my $allShells = []; 
   open (PATH, $self->{pathsFile}); 
 
-#my $now_string = localtime;
-#print "start, $now_string", "\n";
   while (my $file = <PATH>)
     {
     chomp $file;
     my $pdb = PDBEntry->new("singlePdbFile" => $file, "metal" => $element);
     my $atoms = $pdb->{atoms};
-#my $now_string = localtime;
-#print "\n", substr($file,42,4), ",", $pdb->{symNum}, ", $now_string\n";
     my $shellsOfOnePDB = ($self->{shellCutoff})? AtomShell->createShells($element, $atoms, 1.3, $self->{shellCutoff}, $self->{shellElement}) : AtomShell->createShells($element, $atoms);
 
-#my $now_string = localtime;
-#print "after getting shells, $now_string\n";
-   
     ## Calculating number of zinc clusters
     my $metal = scalar (grep {$_->{"element"} eq $element} (@$atoms)); 
     my $cluster = $metal - scalar @$shellsOfOnePDB;
@@ -628,47 +621,40 @@ sub calcChiCoordination
   my $threshold = shift @_;
   my $stats = (@_)? (shift @_) : ($self->{stats});
 
-  ## Acquire all CGs from major CGs
-  #my %allCGs;
-  #foreach my $major (@{$self->{majorCGs}})
-  #  {
-  #  $allCGs{$major} = 1;
-
-  #  my $relation = (grep {$$_{"name"} eq $major } (@$cgRelations))[0];
-  #  map {$allCGs{$_} = 1} (@{$$relation{"children"}});
-  #  }
- 
-  ## all CGs in the cgRelations on top, regardless of the major ones passed in from bootstrap. 
+  ## All CGs in the cgRelations on top, regardless of the major ones passed in from bootstrap. 
   ## It is a array now compared to a hash as above.
   my @allCGs = map {$$_{"name"}} (grep {$$_{"num"} < 9 } (@$cgRelations));
 
   my $worker = sub 
     {
     my $tid = threads->tid;
-    my ($shell, $Qwork, $Qresults ) = @_;
+    my ($Qwork, $Qresults ) = @_;
     while( my $work = $Qwork->dequeue() )
       {
-      my $relation = (grep {$$_{"name"} eq $work } (@$cgRelations))[0];
-
-print $work, ", ", $$relation{"num"}, ", ", $self->{minLigNum}, ", ", scalar @{$shell->{shell}}, "\n";
+      my $ind = (split(",", $work))[0];
+      my $cg = (split(",", $work))[1];
+      my $shell = $$self{"shells"}[$ind];
+      my $relation = (grep {$$_{"name"} eq $cg } (@$cgRelations))[0];
       next if ($$relation{"num"} < $self->{minLigNum} || $$relation{"num"} > @{$shell->{shell}});
 
-      my $cgObj = $work->new("shellObj" => $shell);
+      my $cgObj = $cg->new("shellObj" => $shell);
       $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-      #$Qresults->enqueue($work, $cgObj->{bestCombo}->{probability});
-      $Qresults->enqueue($cgObj);
+      my $probability = ($cgObj->{bestCombo}->{probability})? $cgObj->{bestCombo}->{probability} : 0;
+      $Qresults->enqueue($ind.",".$cg.",".$probability);
+      #$Qresults->enqueue($cgObj);
 
 my $now_string = localtime;
-print "$work, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
+print "$cg, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
       }
     $Qresults->enqueue( undef ); ## Signal this thread is finished
     };
 
   my $decisions = {};
   my $coordinations = {};
-  foreach my $ (@{$self->{shells}})
+  foreach my $i (0..(@{$self->{shells}}-1))
     {
     my $shell = $$self{"shells"}[$i];
+
 print "\n", $shell->metalID(), "; ";
 my $now_string = localtime;
 print "$now_string\n";
@@ -679,54 +665,32 @@ print "$now_string\n";
     my $Qresults = new Thread::Queue;
 
     foreach my $one (@allCGs)
-      { $Qwork->enqueue($one); } #load the shared queue
+      { $Qwork->enqueue($i.",".$one); } #load the shared queue
     $Qwork->enqueue( (undef) x $THREADS ); # Tell the queue there are no more work items
 
     my @models;
-    my @thread_pool = map { threads->create( $worker, $shell, $Qwork, $Qresults ) } (1 .. $THREADS);
+    my @thread_pool = map { threads->create( $worker, $Qwork, $Qresults ) } (1 .. $THREADS);
 
-my $leftW = $Qwork->pending();
-my $leftR = $Qresults->pending();
-print "before, $leftW, $leftR.\n";  
+    for ( 1 .. $THREADS )
+      {
+      while (my $result =$Qresults->dequeue())
+        { push @models, $result; }
+      }
 
-    while(my $result = $Qresults->dequeue())
-      {push @models, $result;}
-my $leftW = $Qwork->pending();
-my $leftR = $Qresults->pending();
-print "middle, $leftW, $leftR.\n";
     foreach my $th (@thread_pool)
-      { $th->join; }
-my $leftW = $Qwork->pending();
-my $leftR = $Qresults->pending();
-print "after, $leftW, $leftR.\n";
+      { $th->join(); }
 
-print join(", ", map {ref $_,  $_->{bestCombo}->{probability}} (@models)), ": before\n";
-    @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} (@models)));
-print join(", ", map {ref $_,  $_->{bestCombo}->{probability}} (@models)), ": after\n";
+print join("; ", @models), ": before\n";
+    #@models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} (@models)));
+    @models = sort { (split(",", $b))[2] <=> (split(",", $a))[2]} (grep { (split(",", $_))[2] != 0; } (@models));
+print join("; ", @models), ": after\n";
 
-    ## Create all CG objects, single thread processing
-#    my @models;
-#    foreach my $cg (@allCGs)
-#      {
-#      my $relation = (grep {$$_{"name"} eq $cg } (@$cgRelations))[0];
-#      next if ($$relation{"num"} < $self->{minLigNum} || $$relation{"num"} > @{$shell->{shell}});
-
-#      my $cgObj = $cg->new(shellObj => $shell);
-#      $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
-#      push @models, $cgObj;
-    
-#my $now_string = localtime;
-#print "$cg, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
-#      }
-#    @models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} (@models)));
-    
-    
     my $maxNum;
     my $unusables;
     ## Find the maximum number of ligands each metal structure has
     foreach my $model (@models)
       {
-      my $relation = (grep {$$_{"name"} eq ref $model} (@$cgRelations))[0];
+      my $relation = (grep {$$_{"name"} eq (split(",", $model))[1]} (@$cgRelations))[0];
       my $num = $$relation{"num"};
       if ($num > $maxNum) {$maxNum = $num;}
       }
@@ -761,7 +725,7 @@ print $mods[0]->{bestCombo}->{probability}, "; ", $mods[1]->{bestCombo}->{probab
       }
     else ## 4, 5, 6 ligands
       {
-print $models[0]->{bestCombo}->{probability}, "; 456\n";
+print $models[0], "; 456\n";
       
       ## set the probability threshold, remove low prob ones from statistics calculation. 
       if ($control eq "p" && $models[0]->{bestCombo}->{probability} < $threshold) 
@@ -772,13 +736,16 @@ print $models[0]->{bestCombo}->{probability}, "; 456\n";
 	}
 
       ## Bva prob has to be more than twice of Tet to be considered Bva, otherwise Tet
-      if (ref $models[0] eq "TrigonalBipyramidalVA" && ref $models[1] eq "Tetrahedral" && ($models[0]->{bestCombo}->{probability} < (2 * $models[1]->{bestCombo}->{probability})))
+      if ((split(",",$models[0]))[1] eq "TrigonalBipyramidalVA" && (split(",",$models[1]))[1] eq "Tetrahedral" && (split(",",$models[0]))[2] < (2 * (split(",",$models[1]))[2]) ) 
         {
-        my $modelRef = ref $models[1];
-	push @{$$coordinations{$modelRef}}, $models[1];
+        my $modelRef = (split(",",$models[1]))[1];
+        my $cgObj = $modelRef->new("shellObj" => $shell);
+        $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+
+	push @{$$coordinations{$modelRef}}, $cgObj;
 	$$decisions{$maxNum. ".".  $modelRef} += 1;
 
-print $models[1]->{bestCombo}->{probability}, "; bva\n";
+print $models[1], "; bva to tet\n";
 	}
       else
 	{
@@ -786,33 +753,40 @@ print $models[1]->{bestCombo}->{probability}, "; bva\n";
 	my @track;
 	for (my $i = 0; $i <= $#models; $i++)
 	  {
-          my $modelRef = ref $models[$i];
+          my $modelRef = (split(",",$models[$i]))[1] ;
 	  my $relation = (grep {$$_{"name"} eq $modelRef} (@$cgRelations))[0];
 
-	  if ( grep {ref $models[$i+1] eq $_;} (@{$$relation{"parents"}}) )
+	  if ( grep {(split(",",$models[$i+1]))[1] eq $_;} (@{$$relation{"parents"}}) )
 	    { push @track, "p"; }
-          elsif ( grep {ref $models[$i+1] eq $_;} (@{$$relation{"siblings"}}, @{$$relation{"children"}}) )
+          elsif ( grep {(split(",",$models[$i+1]))[1] eq $_;} (@{$$relation{"siblings"}}, @{$$relation{"children"}}) )
             { push @track, "s"; }
 	  else
 	    {
 	    if ($i == 0)
-	      {	
-              push @{$$coordinations{$modelRef}}, $models[$i];
+	      {
+              my $modelRef = (split(",",$models[$i]))[1];
+              my $cgObj = $modelRef->new("shellObj" => $shell);
+              $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+	
+              push @{$$coordinations{$modelRef}}, $cgObj;
 	      $dec = $dec. ".". $modelRef;
               $$decisions{$dec} += 1;
-print $models[0]->{bestCombo}->{probability}, "; only $modelRef\n";
+print $models[0], "; only $modelRef\n";
 	      }
 	    else
 	      {
 	      while ($track[-1] eq "s") {pop @track;}
 	      my $maxInd = @track;
 
-	      $modelRef = ref $models[$maxInd];
-              push @{$$coordinations{$modelRef}}, $models[$maxInd];
+	      $modelRef = (split(",",$models[$maxInd]))[1] ;
+              my $cgObj = $modelRef->new("shellObj" => $shell);
+              $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+
+              push @{$$coordinations{$modelRef}}, $cgObj;
 
 	      map {$dec = $dec.".".ref $models[$_]} (0..$maxInd) ;
               $$decisions{$dec} += 1;
-print $models[$maxInd]->{bestCombo}->{probability}, "; major CG to $modelRef\n";
+print $models[$maxInd], "; major CG to $modelRef\n";
 	      }
 	    last;
 	    }
@@ -894,8 +868,10 @@ sub calcAngleStats
   my $totaln = 0;
   foreach my $coordination (keys %$coordinationAngles)
     {
+print "coordination: $coordination\n";
     foreach my $angle (keys %{$$coordinationAngles{$coordination}})
       {
+print "angle: $angle\n";
       my $stats = RawStatistics->new("variables" => $$coordinationAngles{$coordination}{$angle} ) ;
       my $mean = $stats->calcMean() ;
       my $deviation = $stats->calcDeviation() ;

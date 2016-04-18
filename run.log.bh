@@ -1023,5 +1023,5 @@ date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 SON -dd .
 date; ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -dd ../output_ca/stats.r -r ../output_ca/r.allLig.txt -s a s ../output_ca/seqs.ATOM.shell.txt -s s s ../output_ca/seqs.SEQRES.shell.txt -s s b ../output_ca/seqs.SEQRES.bind.txt -rf ../output_ca/rf.smallest.txt; date
 date; ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.638 SON -dd ../output_fe/stats.r -r ../output_fe/r.allLig.txt -s a s ../output_fe/seqs.ATOM.shell.txt -s s s ../output_fe/seqs.SEQRES.shell.txt -s s b ../output_fe/seqs.SEQRES.bind.txt -rf ../output_fe/rf.smallest.txt; date
 
-
+## Ca: 5h. Fe: 5h.
 
