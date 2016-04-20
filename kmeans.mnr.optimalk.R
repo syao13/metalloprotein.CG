@@ -1,5 +1,9 @@
 #!/mlab/data/software/R-3.2.1-F22/bin/Rscript
 
+###############################################
+## Original on all number of ligands together
+###############################################
+
 ###!/usr/bin/Rscript
 ####################    load data  ####################  
 options(stringsAsFactors=FALSE)
@@ -8,8 +12,8 @@ setwd(args[1])
 
 load("rf.results.RData")
 load("finalMetalList.RData")
-rawdata <- read.table("r.allLig.txt", header=FALSE)
-colnames(rawdata) <- c("metalID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
+rawdata <- read.table("r.allLig.txt", header=FALSE, comment.char = "")
+colnames(rawdata) <- c("metalID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "amaineN", "occupancy", "solvent")
 
 #ligElmt <-sapply(rawdata$ligandCombo, function(x) 
 #		paste(sort(matrix(unlist(strsplit(strsplit(x, ",")[[1]], "[.]")), byrow=TRUE, ncol=3)[,3]), collapse=""))

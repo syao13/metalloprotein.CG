@@ -8,10 +8,8 @@ options(stringsAsFactors=FALSE)
 args = commandArgs(trailingOnly=TRUE)
 setwd(args[1])
 
-rawdata <- read.table("rf.smallest.txt", header = FALSE)
-id <- rawdata[,1]
-orderid <- order(id)
-data <- rawdata[orderid,2:5]
+data <- read.table("rf.smallest.txt", header = FALSE)
+data <- data[,2:5]
 
 ########## ligand Encoding ########### 
 ligs <- c(data[,2], data[,3])

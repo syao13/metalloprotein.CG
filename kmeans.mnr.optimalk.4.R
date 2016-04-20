@@ -12,8 +12,8 @@ setwd(args[1])
 
 load("rf.results.RData")
 load("finalMetalList.RData")
-rawdata <- read.table("r.allLig.txt", header=FALSE)
-colnames(rawdata) <- c("metalID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
+rawdata <- read.table("r.allLig.txt", header=FALSE, comment.char = "")
+colnames(rawdata) <- c("metalID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "amaineN", "occupancy", "solvent")
 
 #ligElmt <-sapply(rawdata$ligandCombo, function(x) 
 #		paste(sort(matrix(unlist(strsplit(strsplit(x, ",")[[1]], "[.]")), byrow=TRUE, ncol=3)[,3]), collapse=""))
@@ -77,19 +77,19 @@ angleSapce <- function(angleCombo, num, mode="median") {
 ## normal
 angles.norm <- normal.nr$angleCombo
 length(angles.norm)
-angle.sorted.norm <- t(sapply(angles.norm, function(x) angleSapce(x, args[2])))
+angle.sorted.norm <- t(sapply(angles.norm, function(x) angleSapce(x, args[3])))
 rownames(angle.sorted.norm) <- NULL
 
 ## compressed
 angles.comp <- compressed.nr$angleCombo
 length(angles.comp)
-angle.sorted.comp <- t(sapply(angles.comp, function(x) angleSapce(x, args[2])))
+angle.sorted.comp <- t(sapply(angles.comp, function(x) angleSapce(x, args[3])))
 rownames(angle.sorted.comp) <- NULL
 
 ## combined
 angles.all <- all.nr$angleCombo
 length(angles.all)
-angle.sorted.all <- t(sapply(angles.all, function(x) angleSapce(x, args[2])))
+angle.sorted.all <- t(sapply(angles.all, function(x) angleSapce(x, args[3])))
 rownames(angle.sorted.all) <- NULL
 
 ####################################################

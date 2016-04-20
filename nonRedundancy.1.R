@@ -312,9 +312,9 @@ for (i in res3metalList) {
   
   for (j in idx) {
     seq <- seqMat[j, 3]
-    shellH <- seqMat[j,1]
+    bindH <- seqMat[j,1]
     
-    items <- strsplit(shellH, '[|]')[[1]]
+    items <- strsplit(bindH, '[|]')[[1]]
     chain <- substring(tail(items,1), 1, 1)
     chainStart <- as.numeric(substring(tail(items,1), 2))
     
@@ -332,7 +332,7 @@ for (i in res3metalList) {
       seqLig1 <- as.character(substring(seq, ligPos, ligPos))
       seqLig3 <- aaCodes[seqLig1]
       if (is.na(seqLig3) || seqLig3 != strsplit(items[k], '[.]')[[1]][2] ) {
-        #print(shellH)
+        #print(bindH)
         #print(items[k])
         next
       }  

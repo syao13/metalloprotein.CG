@@ -118,7 +118,7 @@ getOneChainDomain <- function (seqMatItem, outNum) {
   start5 <- start - 5
   end5 <- end + 5
   if (start5 < 1) {start5 <- 1}
-  if (end5 > nchar(seq)) {end5 <- length(seq)}
+  if (end5 > nchar(seq)) {end5 <- nchar(seq)}
   
   substring(seq, start5, end5)
 }
@@ -187,7 +187,6 @@ length(multiSeqLigs)
 uMultiSeqLigs <- unique(multiSeqLigs)[unique(multiSeqLigs) != "error"]
 #print("Total non-redundant set is 6501")
 length(uMultiSeqLigs)
-## 6501
 ## uMultiSeqLigs and finalZnList have the same dimention
 
 
@@ -201,8 +200,8 @@ length(uMultiSeqLigs)
 ## if x-ray only, use the min resolution one,
 ## if both x-ray and NMR, if minRes < 2, use the minRes one, otherwise, use latest one
 ######################################################################
-rawdata <- read.table("r.allLig.txt", fill = TRUE)
-idMthYrRes <- rawdata[,c(1:4)]
+rawdata <- read.table("r.allLig.txt", comment.char = "")
+idMthYrRes <- rawdata[,c(1:4, 15)] ## add occupancy
 idMthYrRes[,3] <- date <-sapply(idMthYrRes[,3], function(x) if (x<10) {x <- as.numeric(paste("200", x, sep=""))}
                                 else if (x<50) {x <- as.numeric(paste("20", x, sep=""))}
                                 else {x <- as.numeric(paste("19", x, sep=""))})
@@ -223,7 +222,15 @@ for (i in 1:length(uMultiSeqLigs)) {
     next
   }
   
-  mthYrRes <- t(sapply(zincId, function(x) idMthYrRes[which(idMthYrRes[,1] == x), 2:4]))  
+  mthYrRes <- t(sapply(zincId, function(x) idMthYrRes[which(idMthYrRes[,1] == x ), ])) 
+  highOcc <- max(unlist(mthYrRes[mthYrRes[,5] <= 1,5])) ## choose the highest occupancy items and restrict to be no more than 1, but may cause the item to be NULL 
+  ids <- mthYrRes[mthYrRes[,5] == highOcc, ]
+  if (length(ids)==5) {
+    finalZnList <- c(finalZnList, ids[[1]])
+    next
+  }
+
+  mthYrRes <- ids[,2:5]
   if (sum(unlist(mthYrRes[,1])=="X-RAY_DIFFRACTION") == 0 ) {
     latest <- max(unlist(mthYrRes[,2]))
     finalZnList <- c(finalZnList, names(which(unlist(mthYrRes[,2])==latest))[1] )    
@@ -288,7 +295,6 @@ save(finalZnList, file="finalMetalList.RData")
 data<- rawdata[rawdata[,1] %in% finalZnList, ]
 res3znList <- data[data[,4]<3, 1]
 
-#print("With resolution greater than 3: 6199")
 length(res3znList)
 
 znListSeqPos <- NULL
@@ -297,9 +303,9 @@ for (i in res3znList) {
   
   for (j in idx) {
     seq <- seqMat[j, 3]
-    shellH <- seqMat[j,1]
+    bindH <- seqMat[j,1]
     
-    items <- strsplit(shellH, '[|]')[[1]]
+    items <- strsplit(bindH, '[|]')[[1]]
     chain <- substring(tail(items,1), 1, 1)
     chainStart <- as.numeric(substring(tail(items,1), 2))
     
@@ -317,7 +323,7 @@ for (i in res3znList) {
       seqLig1 <- as.character(substring(seq, ligPos, ligPos))
       seqLig3 <- aaCodes[seqLig1]
       if (is.na(seqLig3) || seqLig3 != strsplit(items[k], '[.]')[[1]][2] ) {
-        #print(shellH)
+        #print(bindH)
         #print(items[k])
         next
       }  

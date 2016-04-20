@@ -1021,7 +1021,53 @@ date; ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 SON -dd .
 ## Zn: 5h. Na: 9.5h.
 ## 4.16, rerun Ca and Fe
 date; ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -dd ../output_ca/stats.r -r ../output_ca/r.allLig.txt -s a s ../output_ca/seqs.ATOM.shell.txt -s s s ../output_ca/seqs.SEQRES.shell.txt -s s b ../output_ca/seqs.SEQRES.bind.txt -rf ../output_ca/rf.smallest.txt; date
-date; ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.638 SON -dd ../output_fe/stats.r -r ../output_fe/r.allLig.txt -s a s ../output_fe/seqs.ATOM.shell.txt -s s s ../output_fe/seqs.SEQRES.shell.txt -s s b ../output_fe/seqs.SEQRES.bind.txt -rf ../output_fe/rf.smallest.txt; date
+date; ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.639 SON -dd ../output_fe/stats.r -r ../output_fe/r.allLig.txt -s a s ../output_fe/seqs.ATOM.shell.txt -s s s ../output_fe/seqs.SEQRES.shell.txt -s s b ../output_fe/seqs.SEQRES.bind.txt -rf ../output_fe/rf.smallest.txt; date
 
-## Ca: 5h. Fe: 5h.
+## Ca: 5h. Fe: 5h. Mg: 27h
+## Rerun bondlength option
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -bs ../output_zn/stats -bondLength ../output_zn/bondlength.withC.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -bs ../output_ca/stats -bondLength ../output_ca/bondlength.withC.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -bs ../output_fe/stats -bondLength ../output_fe/bondlength.withC.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -bs ../output_na/stats -bondLength ../output_na/bondlength.withC.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs ../output_mg/stats -bondLength ../output_mg/bondlength.withC.txt &
+
+## proceed with sequence alignment
+./seq_alignment.R ../output_zn/
+./seq_alignment.R ../output_mg/ && ./seq_alignment.R ../output_ca/ && ./seq_alignment.R ../output_fe/ && ./seq_alignment.R ../output_na/
+
+./nonRedundancy.R ../output_zn/ 
+./nonRedundancy.R ../output_mg/ && ./nonRedundancy.R ../output_ca/ && ./nonRedundancy.R ../output_fe/ && ./nonRedundancy.R ../output_na/
+
+## 4.19
+./write_fasta.R ../output_zn/
+./write_fasta.R ../output_mg/ && ./write_fasta.R ../output_ca/ && ./write_fasta.R ../output_fe/ && ./write_fasta.R ../output_na/
+
+## copy everything into root_beforeRF folder
+mkdir output_mg/root_beforeRF
+cp output_mg/* output_mg/root_beforeRF/
+
+./rf.smallAngle.R ../output_zn 58 68
+./rf.smallAngle.R ../output_mg 52 68
+./rf.smallAngle.R ../output_ca 55 65
+./rf.smallAngle.R ../output_fe 63 73
+./rf.smallAngle.R ../output_na 45 60
+
+./kmeans.mnr.optimalk.R ../output_zn/allLigand/ 6
+./kmeans.mnr.optimalk.4.R ../output_zn/4ligand/ 4 6
+#./kmeans.mnr.optimalk.4.R ../output_zn/5ligand/ 5 6
+#./kmeans.mnr.optimalk.4.R ../output_zn/6ligand/ 6 6
+
+## To make r and rf files match, rerun to remove all duplicated metal ids
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.782 SON -dd ../output_zn/stats.r -r ../output_zn/r.allLig.txt -rf ../output_zn/rf.smallest.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 SON -dd ../output_mg/stats.r -r ../output_mg/r.allLig.txt -rf ../output_mg/rf.smallest.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -dd ../output_ca/stats.r -r ../output_ca/r.allLig.txt -rf ../output_ca/rf.smallest.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.639 SON -dd ../output_fe/stats.r -r ../output_fe/r.allLig.txt -rf ../output_fe/rf.smallest.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 ON -dd ../output_na/stats.r -r ../output_na/r.allLig.txt -rf ../output_na/rf.smallest.txt &
+
+
+
+
+
+
+
 

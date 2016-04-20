@@ -644,46 +644,45 @@ sub calcChiCoordination
       #$Qresults->enqueue($cgObj);
 
 my $now_string = localtime;
-print "$cg, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
+print "$work, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
       }
     $Qresults->enqueue( undef ); ## Signal this thread is finished
     };
+
+  ## Parallel processing 
+  my $THREADS = 8;
+  my $Qwork = new Thread::Queue;
+  my $Qresults = new Thread::Queue;
 
   my $decisions = {};
   my $coordinations = {};
   foreach my $i (0..(@{$self->{shells}}-1))
     {
+    foreach my $one (@allCGs)
+      { $Qwork->enqueue($i.",".$one); } #load the shared queue
+    }
+  $Qwork->enqueue( (undef) x $THREADS ); # Tell the queue there are no more work items
+
+  my @thread_pool = map { threads->create( $worker, $Qwork, $Qresults ) } (1 .. $THREADS);
+  my @allModels;
+  for ( 1 .. $THREADS )
+    {
+    while (my $result =$Qresults->dequeue())
+      { push @allModels, $result; }
+    }
+
+  foreach my $th (@thread_pool)
+    { $th->join(); }
+
+  foreach my $i (0..(@{$self->{shells}}-1))
+    {
     my $shell = $$self{"shells"}[$i];
+    my @models = grep { (split(",", $_))[0] == $i; } (@allModels);
+    @models = sort { (split(",", $b))[2] <=> (split(",", $a))[2]} (grep { (split(",", $_))[2] != 0; } (@models));
 
 print "\n", $shell->metalID(), "; ";
 my $now_string = localtime;
 print "$now_string\n";
-
-    ## Parallel processing 
-    my $THREADS = 8;
-    my $Qwork = new Thread::Queue;
-    my $Qresults = new Thread::Queue;
-
-    foreach my $one (@allCGs)
-      { $Qwork->enqueue($i.",".$one); } #load the shared queue
-    $Qwork->enqueue( (undef) x $THREADS ); # Tell the queue there are no more work items
-
-    my @models;
-    my @thread_pool = map { threads->create( $worker, $Qwork, $Qresults ) } (1 .. $THREADS);
-
-    for ( 1 .. $THREADS )
-      {
-      while (my $result =$Qresults->dequeue())
-        { push @models, $result; }
-      }
-
-    foreach my $th (@thread_pool)
-      { $th->join(); }
-
-print join("; ", @models), ": before\n";
-    #@models = (sort {$b->{bestCombo}->{probability} <=> $a->{bestCombo}->{probability}} (grep {defined $_->{bestCombo} && $_->{bestCombo}->{probability} != 0;} (@models)));
-    @models = sort { (split(",", $b))[2] <=> (split(",", $a))[2]} (grep { (split(",", $_))[2] != 0; } (@models));
-print join("; ", @models), ": after\n";
 
     my $maxNum;
     my $unusables;
@@ -775,7 +774,7 @@ print $models[0], "; only $modelRef\n";
 	      }
 	    else
 	      {
-	      while ($track[-1] eq "s") {pop @track;}
+	      while ($track[-1] eq "s" || ((split(",",$models[$#track+1]))[2] * 2 < (split(",",$models[0]))[2]) ) {pop @track;} ## The major prob cannot be smaller than half of the highest 
 	      my $maxInd = @track;
 
 	      $modelRef = (split(",",$models[$maxInd]))[1] ;
@@ -868,10 +867,8 @@ sub calcAngleStats
   my $totaln = 0;
   foreach my $coordination (keys %$coordinationAngles)
     {
-print "coordination: $coordination\n";
     foreach my $angle (keys %{$$coordinationAngles{$coordination}})
       {
-print "angle: $angle\n";
       my $stats = RawStatistics->new("variables" => $$coordinationAngles{$coordination}{$angle} ) ;
       my $mean = $stats->calcMean() ;
       my $deviation = $stats->calcDeviation() ;

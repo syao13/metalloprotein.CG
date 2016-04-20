@@ -229,13 +229,16 @@ sub rfPrint
   open (RFID, ">", $rfFile) or die $!;
   my $stats = &readTableFile($statsFile) if ($statsFile);
 
+  my %ids;
+  map { my $ligNum = $_; map { $ids{$_->{shellObj}->metalID()} += 1; } (@{$analyzer->{coordinations}{$ligNum}}); } (keys %{$analyzer->{coordinations}});
   foreach my $ligNum (keys %{$analyzer->{coordinations}}) #("ten", "nine", "eight", "seven", "six", "five", "four")
     {
     foreach my $metalObj (@{$analyzer->{coordinations}{$ligNum}})
       {
+      next if ($ids{$metalObj->{shellObj}->metalID()}) > 1;
+
       print RFID $metalObj->{shellObj}->metalID(), "\t";
       map { print RFID "$_\t";} ($metalObj->smallestAngle()); 
-
       print RFID $metalObj->{shellObj}->{center}->{method}, "\t";
       print RFID $metalObj->{shellObj}->{center}->{date}, "\t";
       print RFID $metalObj->{shellObj}->{center}->{resolution}, "\t";
@@ -262,13 +265,13 @@ sub rPrint
   #print FID "\n";
 
   my %ids;
+  map { my $ligNum = $_; map { $ids{$_->{shellObj}->metalID()} += 1; } (@{$analyzer->{coordinations}{$ligNum}}); } (keys %{$analyzer->{coordinations}});
   foreach my $ligNum (keys %{$analyzer->{coordinations}}) #("ten", "nine", "eight", "seven", "six", "five", "four")
     {
     foreach my $metalObj (@{$analyzer->{coordinations}{$ligNum}})
       {
-      next if ($ids{$metalObj->{shellObj}->metalID()});
+      next if ($ids{$metalObj->{shellObj}->metalID()}) > 1;
       print FID $metalObj->{shellObj}->metalID(), "\t";
-      $ids{$metalObj->{shellObj}->metalID()} = 1;
 
       print FID $metalObj->{shellObj}->{center}->{method}, "\t";
       print FID $metalObj->{shellObj}->{center}->{date}, "\t";
