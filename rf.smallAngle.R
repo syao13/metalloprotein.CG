@@ -8,13 +8,14 @@ options(stringsAsFactors=FALSE)
 args = commandArgs(trailingOnly=TRUE)
 setwd(args[1])
 
-data <- read.table("rf.smallest.txt", header = FALSE)
-data <- data[,2:5]
+rawdata <- read.table("rf.smallest.txt", header = FALSE)
+data <- rawdata[, 2:5]
+table(rawdata[,6])
 
 ########## ligand Encoding ########### 
 ligs <- c(data[,2], data[,3])
 length(table(ligs))
-sort(table(ligs),decreasing=TRUE)[1:100]
+sort(table(ligs),decreasing=TRUE)[1:20]
 #sum(sort(table(ligs),decreasing=TRUE)[9:108])
 
 ligRank <- names(sort(table(ligs),decreasing=TRUE))

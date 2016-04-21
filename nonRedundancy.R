@@ -201,10 +201,11 @@ length(uMultiSeqLigs)
 ## if both x-ray and NMR, if minRes < 2, use the minRes one, otherwise, use latest one
 ######################################################################
 rawdata <- read.table("r.allLig.txt", comment.char = "")
-idMthYrRes <- rawdata[,c(1:4, 15)] ## add occupancy
-idMthYrRes[,3] <- date <-sapply(idMthYrRes[,3], function(x) if (x<10) {x <- as.numeric(paste("200", x, sep=""))}
-                                else if (x<50) {x <- as.numeric(paste("20", x, sep=""))}
-                                else {x <- as.numeric(paste("19", x, sep=""))})
+data <- rawdata[! grepl("#", rawdata[,11]), ]
+idMthYrRes <- data[,c(1:4, 15)] ## add occupancy
+idMthYrRes[,3] <-sapply(idMthYrRes[,3], function(x) if (x<10) {x <- as.numeric(paste("200", x, sep=""))}
+                        else if (x<50) {x <- as.numeric(paste("20", x, sep=""))}
+                        else {x <- as.numeric(paste("19", x, sep=""))})
 
 
 finalZnList <- NULL
@@ -247,6 +248,7 @@ for (i in 1:length(uMultiSeqLigs)) {
   }
 }
 
+length(finalZnList)
 save(finalZnList, file="finalMetalList.RData")
 
 ################ below is some characterization of the final list ################

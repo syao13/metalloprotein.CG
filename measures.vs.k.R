@@ -10,8 +10,8 @@ options(stringsAsFactors=FALSE)
 args = commandArgs(trailingOnly=TRUE)
 setwd(args[1])
 
-rawdata <- read.table("r.allLig.txt", header=FALSE)
-colnames(rawdata) <- c("metalID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
+rawdata <- read.table("r.allLig.txt", header=FALSE, comment.char = "")
+colnames(data) <- c("metalID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "amaineN", "occupancy", "solvent")
 
 ############ normal vs. compressed#####################
 angleSapce <- function(angleCombo, num) {

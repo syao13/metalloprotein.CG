@@ -1064,10 +1064,41 @@ cp output_mg/* output_mg/root_beforeRF/
 ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.639 SON -dd ../output_fe/stats.r -r ../output_fe/r.allLig.txt -rf ../output_fe/rf.smallest.txt &
 ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 ON -dd ../output_na/stats.r -r ../output_na/r.allLig.txt -rf ../output_na/rf.smallest.txt &
 
+## 4.20 remove metal sites with symmetry ligands
+./nonRedundancy.R ../output_zn/
+./nonRedundancy.R ../output_ca/ 
+./nonRedundancy.R ../output_fe/ 
+./nonRedundancy.R ../output_na/
+
+./write_fasta.R ../output_zn/ && ./write_fasta.R ../output_ca/ && ./write_fasta.R ../output_fe/ && ./write_fasta.R ../output_na/
+./rf.smallAngle.R ../output_zn 58 68
+./rf.smallAngle.R ../output_ca 55 65
+./rf.smallAngle.R ../output_fe 63 73
+./rf.smallAngle.R ../output_na 45 60
+
+## change the metal accordingly, :1079,1092s/ca/zn/g
+mkdir output_zn/root_afterRF
+cp output_zn/* output_zn/root_afterRF/
+cp -r output_zn/root_afterRF output_zn/allLig
+cp -r output_zn/root_afterRF output_zn/4ligand
+cp -r output_zn/root_afterRF output_zn/5ligand
+cp -r output_zn/root_afterRF output_zn/6ligand
+cp -r output_zn/root_afterRF output_zn/7ligand
+
+nice -10 ./kmeans.mnr.optimalk.R ../output_zn/allLig all 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_zn/4ligand 4 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_zn/5ligand 5 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_zn/6ligand 6 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_zn/7ligand 7 6
 
 
+ssh interproscan
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_mg
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
 
-
-
+## 4.21 
+./nonRedundancy.R ../output_mg/ 
+./write_fasta.R ../output_mg/
+./rf.smallAngle.R ../output_mg 52 68
 
 
