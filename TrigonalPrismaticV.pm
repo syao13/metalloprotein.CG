@@ -65,6 +65,7 @@ sub angleTestStatistic
   my $type = shift @_;
   my $combo = shift @_;
   my $angleStats = shift @_;
+  my $leaveOut = (@_)? shift @_: 0;
 
   my ($mean90, $mean70, $mean131, $varianceOrN90, $varianceOrN70, $varianceOrN131);
 
@@ -101,6 +102,14 @@ sub angleTestStatistic
     my @means = ($mean90, $mean90, $mean90, $mean90, $mean70, $mean70, $mean131, $mean131, $mean131, $mean131); ## major mean
     my @angles = ($self->calcAllAngles90($combo), $self->calcAllAngles70($combo), $self->calcAllAngles131($combo));
     my $diff = [map { $angles[$_] - $means[$_]; } (0..(@angles-1))];
+
+    if ($leaveOut eq "l" || $leaveOut eq "leave" || $leaveOut eq "leaveOut")
+      {
+      my $n = 0;
+      for(my $x = 1; $x <= $#angles; $x++)
+        { if ($angles[$x] < $angles[$n]) {$n = $x;} }
+      $$diff[$n] = 0;
+      }
 
     my $std90 = 1/sqrt($varianceOrN90);
     my $std70 = 1/sqrt($varianceOrN70);

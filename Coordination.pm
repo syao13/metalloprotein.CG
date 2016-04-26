@@ -5,9 +5,9 @@ use strict;
 use Atom;
 use AtomShell;
 use Distributions;
-use Math::MatrixReal;
-use Time::HiRes qw(time);
-use POSIX qw(strftime);
+#use Math::MatrixReal;
+#use Time::HiRes qw(time);
+#use POSIX qw(strftime);
 
 our @defaultDataMembers = (
                             "shellObj" => 0, # ref to AtomShell object
@@ -270,12 +270,19 @@ sub covMatChi
   {
   my ($self, $diff, $invStds, $invCorr) = @_;
 
-  my $diff1xN = Math::MatrixReal->new_from_rows([$diff]);
-  my $diffNx1 = Math::MatrixReal->new_from_cols([$diff]);
-  my $invStdM = Math::MatrixReal->new_diag($invStds);
-  my $invCorrM = Math::MatrixReal->new_from_rows($invCorr);
+  my $invCov = []; 
+  map {my $i = $_; map {my $j = $_; $$invCov[$i][$j] = $$invCorr[$i][$j]*$$invStds[$i]*$$invStds[$j]; $$invCov[$j][$i] = $$invCov[$i][$j];} ($i..$#$invCorr) ;} (0..$#$invCorr);
+  #foreach my $i (0..$#$invCorr) 
+  #  {
+  #  foreach my $j ($i..$#$invCorr) 
+  #    {
+  #    $$invCov[$i][$j] = $$invCorr[$i][$j]*$$invStds[$i]*$$invStds[$j];
+  #    $$invCov[$j][$i] = $$invCov[$i][$j];
+  #    }
+  #  }
 
-  my $chi = ($diff1xN * ($invStdM * $invCorrM * $invStdM) * $diffNx1)->element(1,1);
+  my $chi;
+  map {my $i = $_; map {my $j = $_; $chi += $$diff[$i] * $$invCov[$i][$j] * $$diff[$j];} (0..$#$invCov);} (0..$#$diff);
 
   return $chi;
   }

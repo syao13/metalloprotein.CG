@@ -1101,4 +1101,42 @@ output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_mg
 ./write_fasta.R ../output_mg/
 ./rf.smallAngle.R ../output_mg 52 68
 
+## Running interproscan on local machines is much faster than on the interproscan VM
+## Proceed with functional analysis
+for d in */; do cp non_redundant.ipr.tsv "$d"; done
+
+nice -10 ./functional_characterization.R ../output_fe/allLig && nice -10 ./measures.vs.k.R ../output_fe/allLig 6 && ./cluster_metric_graphs.R ../output_fe/allLig
+nice -10 ./functional_characterization.R ../output_fe/4ligand && nice -10 ./measures.vs.k.R ../output_fe/4ligand 6 && ./cluster_metric_graphs.R ../output_fe/4ligand
+nice -10 ./functional_characterization.R ../output_fe/5ligand && nice -10 ./measures.vs.k.R ../output_fe/5ligand 6 && ./cluster_metric_graphs.R ../output_fe/5ligand
+nice -10 ./functional_characterization.R ../output_fe/6ligand && nice -10 ./measures.vs.k.R ../output_fe/6ligand 6 && ./cluster_metric_graphs.R ../output_fe/6ligand
+nice -10 ./functional_characterization.R ../output_fe/noheme && nice -10 ./measures.vs.k.R ../output_fe/noheme 6 && ./cluster_metric_graphs.R ../output_fe/noheme
+
+## A typo in measures*
+nice -10 ./measures.vs.k.R ../output_na/allLig 6 && ./cluster_metric_graphs.R ../output_na/allLig
+nice -10 ./measures.vs.k.R ../output_na/4ligand 6 && ./cluster_metric_graphs.R ../output_na/4ligand
+nice -10 ./measures.vs.k.R ../output_na/5ligand 6 && ./cluster_metric_graphs.R ../output_na/5ligand
+nice -10 ./measures.vs.k.R ../output_na/6ligand 6 && ./cluster_metric_graphs.R ../output_na/6ligand
+nice -10 ./measures.vs.k.R ../output_na/7ligand 6 && ./cluster_metric_graphs.R ../output_na/7ligand
+nice -10 ./measures.vs.k.R ../output_na/8ligand 6 && ./cluster_metric_graphs.R ../output_na/8ligand
+
+
+nice -10 ./measures.vs.k.R ../output_na/noheme 6 && ./cluster_metric_graphs.R ../output_na/noheme
+
+## 4.22 start IA for all metals
+./metalCoordinations.pl test.ca.2.txt Ca 3.092 O -i -r test.txt
+
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.782 SON -i p 0.001 ../output_zn/stats.i -r ../output_zn/r.chi.txt -r ../output_zn/r.chi.leaveOut.txt leaveOut
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 SON -i p 0.001 ../output_mg/stats.i -r ../output_mg/r.chi.txt -r ../output_mg/r.chi.leaveOut.txt leaveOut
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -i p 0.001 ../output_ca/stats.i -r ../output_ca/r.chi.txt -r ../output_ca/r.chi.leaveOut.txt leaveOut
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.639 SON -i p 0.001 ../output_fe/stats.i -r ../output_fe/r.chi.txt -r ../output_fe/r.chi.leaveOut.txt leaveOut
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 ON -i p 0.001 ../output_na/stats.i -r ../output_na/r.chi.txt  -r ../output_na/r.chi.leaveOut.txt leaveOut
+
+## 4.25, run only bootstrap with no C and updated cutoff, and get bondlength output for bl-std vs. resolution analysis
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.782 SON -bs ../output_zn/stats.bs -bondLength ../output_zn/bondlength.noC.txt & 
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 ON -bs ../output_mg/stats.bs -bondLength ../output_mg/bondlength.noC.txt &
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -bs ../output_ca/stats.bs -bondLength ../output_ca/bondlength.noC.txt &
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.639 SON -bs ../output_fe/stats.bs -bondLength ../output_fe/bondlength.noC.txt &
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 ON -bs ../output_na/stats.bs -bondLength ../output_na/bondlength.noC.txt &
+
+
 

@@ -60,10 +60,10 @@ use threads;
 use Thread::Queue;
 use Clone 'clone';
 #use Data::Dumper::Concise; # human readable, code in iaCoordination
-use JSON; # For other programs to read back, code in iaCoordination 
-use JSON -convert_blessed_universally;
-use Time::HiRes qw(time);
-use POSIX qw(strftime);
+#use JSON; # For other programs to read back, code in iaCoordination 
+#use JSON -convert_blessed_universally;
+#use Time::HiRes qw(time);
+#use POSIX qw(strftime);
 
 our @defaultDataMembers = (
                           "pathsFile" => 0,  # a file that contains pdb-file paths
@@ -227,7 +227,7 @@ sub IAcoordination
   while ( $self->compareStats($oldStats) )
     {
     $oldStats = clone($currStats); ## a nested copy
-    $self->calcChiCoordination($control, $threshold);
+    $self->calcChiCoordination($control, $threshold, 0);
     if ($control eq "n") {$self->calNonModel($threshold);}
 
     $currStats = {};
@@ -473,7 +473,7 @@ sub printSequences
       my @headerLigs;
       if ($headerType eq "b")  ## original ligands
         { 
-print $model->{shellObj}->metalID(), "\n" if (ref $model->{bestCombo}->{ligands} ne "ARRAY");
+#print $model->{shellObj}->metalID(), "\n" if (ref $model->{bestCombo}->{ligands} ne "ARRAY");
 	@headerLigs = @{$model->{bestCombo}->{ligands}}; }
       elsif ($headerType eq "s") ## shell ligands
         { @headerLigs = @{$model->{shellObj}->{shell}}; }
@@ -619,6 +619,7 @@ sub calcChiCoordination
   my $self = shift @_;
   my $control = shift @_;
   my $threshold = shift @_;
+  my $leaveOut = shift @_;
   my $stats = (@_)? (shift @_) : ($self->{stats});
 
   ## All CGs in the cgRelations on top, regardless of the major ones passed in from bootstrap. 
@@ -638,19 +639,19 @@ sub calcChiCoordination
       next if ($$relation{"num"} < $self->{minLigNum} || $$relation{"num"} > @{$shell->{shell}});
 
       my $cgObj = $cg->new("shellObj" => $shell);
-      $cgObj->bestTestStatistic("chi", $control, $threshold, 0, $stats);
+      $cgObj->bestTestStatistic("chi", $control, $threshold, $leaveOut, $stats);
       my $probability = ($cgObj->{bestCombo}->{probability})? $cgObj->{bestCombo}->{probability} : 0;
       $Qresults->enqueue($ind.",".$cg.",".$probability);
       #$Qresults->enqueue($cgObj);
 
-my $now_string = localtime;
-print "$work, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
+#my $now_string = localtime;
+#print $shell->metalID(), ", $work, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
       }
     $Qresults->enqueue( undef ); ## Signal this thread is finished
     };
 
   ## Parallel processing 
-  my $THREADS = 8;
+  my $THREADS = 10;
   my $Qwork = new Thread::Queue;
   my $Qresults = new Thread::Queue;
 
@@ -680,9 +681,9 @@ print "$work, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
     my @models = grep { (split(",", $_))[0] == $i; } (@allModels);
     @models = sort { (split(",", $b))[2] <=> (split(",", $a))[2]} (grep { (split(",", $_))[2] != 0; } (@models));
 
-print "\n", $shell->metalID(), "; ";
-my $now_string = localtime;
-print "$now_string\n";
+#print "\n", $shell->metalID(), "; ";
+#my $now_string = localtime;
+#print "$now_string\n";
 
     my $maxNum;
     my $unusables;
@@ -703,7 +704,7 @@ print "$now_string\n";
 
       if (! defined $tev->{bestCombo} && ! defined $tpl->{bestCombo}) 
 	{ 
-print "0;0;0\n";
+#print "0;0;0\n";
 	$$decisions{"012"}++; 
 	}
       else 
@@ -714,20 +715,20 @@ print "0;0;0\n";
           my $modRef = ref $mods[0];
           push @{$$coordinations{$modRef}}, $mods[0];
           $$decisions{"3.". $modRef} += 1;
-print "3lig.$modRef\n";
+#print "3lig.$modRef\n";
           }
         else
           {$$decisions{"3.None"} += 1;}
-print $mods[0]->{bestCombo}->{probability}, "; ", $mods[1]->{bestCombo}->{probability}, "; 00\n";
+#print $mods[0]->{bestCombo}->{probability}, "; ", $mods[1]->{bestCombo}->{probability}, "; 00\n";
         next;
         }
       }
     else ## 4, 5, 6 ligands
       {
-print $models[0], "; 456\n";
+#print $models[0], "; 456\n";
       
       ## set the probability threshold, remove low prob ones from statistics calculation. 
-      if ($control eq "p" && $models[0]->{bestCombo}->{probability} < $threshold) 
+      if ($control eq "p" && (split(",",$models[0]))[2] < $threshold) 
 	{
 	push @$unusables, $models[0];
         $$decisions{$maxNum. ".Unusable"} += 1;
@@ -744,7 +745,7 @@ print $models[0], "; 456\n";
 	push @{$$coordinations{$modelRef}}, $cgObj;
 	$$decisions{$maxNum. ".".  $modelRef} += 1;
 
-print $models[1], "; bva to tet\n";
+#print $models[1], "; bva to tet\n";
 	}
       else
 	{
@@ -770,7 +771,7 @@ print $models[1], "; bva to tet\n";
               push @{$$coordinations{$modelRef}}, $cgObj;
 	      $dec = $dec. ".". $modelRef;
               $$decisions{$dec} += 1;
-print $models[0], "; only $modelRef\n";
+#print $models[0], "; only $modelRef\n";
 	      }
 	    else
 	      {
@@ -785,7 +786,7 @@ print $models[0], "; only $modelRef\n";
 
 	      map {$dec = $dec.".".ref $models[$_]} (0..$maxInd) ;
               $$decisions{$dec} += 1;
-print $models[$maxInd], "; major CG to $modelRef\n";
+#print $models[$maxInd], "; major CG to $modelRef\n";
 	      }
 	    last;
 	    }

@@ -63,8 +63,8 @@ use SquarePlanar;
 use SquarePyramidalV;
 use SquarePyramidal;
 
-use JSON;
-use Data::Dumper::Concise;
+#use JSON;
+#use Data::Dumper::Concise;
 
 ########## read in required arguments ##########
 my $pathsFile = shift @ARGV;
@@ -257,12 +257,16 @@ sub rPrint
 
   open (FID, ">", $rInputFile) or die $!;
   my $stats = &readTableFile($statsFile) if ($statsFile);
+  my $stats = $analyzer->{stats} if ($flow eq "-i");
 
   #print FID "Metal_ID\tAngle_1\tAngle_2\tAngle_3\tAngle_4\tAngle_5\tAngle_6\tLigand_1\tLigand_2\tLigand_3\tLigand_4\t";
   #print FID "Bond_Length_1\tBond_length_2\tBond_length_3\tBond_length_4\tBi_status_1\tBi_status_2\tBi_status_3\tBi_status_4\tBi_status_5\tBi_status_6\t";
   #print FID "Method\tDate\tResolution\tB_factor_1\tB_factor_2\tB_factor_3\tB_factor_4\tOverall_bi_status\tLig_chain_ID_combo\tLig_residue_combo\tLig_atom_combo\tAmineN\t";
   #print FID "Chi_prob_Tet\tChi_prob_Bva\tChi_prob_Bvp\tChi_prob_Spv\tChi_prob_Spl\t" if ($statsFile);
   #print FID "\n";
+
+  if ($leaveOut eq "l" || $leaveOut eq "leave" || $leaveOut eq "leaveOut")
+    { $analyzer->calcChiCoordination($iaControl, $threshold, $leaveOut); }
 
   my %ids;
   map { my $ligNum = $_; map { $ids{$_->{shellObj}->metalID()} += 1; } (@{$analyzer->{coordinations}{$ligNum}}); } (keys %{$analyzer->{coordinations}});
@@ -284,11 +288,13 @@ sub rPrint
       print FID $metalObj->bidentate(), "\t";
       map { print FID "$_\t";} ($metalObj->ligandCombos());
 
-      map { print FID $_, "\t";} (&coordProbs($metalObj->{shellObj}, $stats, $leaveOut)) if ($statsFile);
+      #map { print FID $_, "\t";} (&coordProbs($metalObj->{shellObj}, $stats, $leaveOut)) if ($statsFile || $flow eq "-i");
       #map { print FID $_->{chiAngle}, "\t";} (@{$metalObj->{bestCombo}->{ligands}});
    
       print FID $metalObj->{shellObj}->{center}->{occupancy}, "\t"; 
       print FID $metalObj->{shellObj}->{center}->{solvent}, "\t";
+      print FID "$ligNum\t", $metalObj->{bestCombo}->{probability}, "\t";
+      
       print FID "\n";
       }
     }

@@ -117,7 +117,15 @@ sub angleTestStatistic
     my @angles = ($self->calcAllAngles72($combo), $self->calcAllAngles90($combo), $self->calcAllAngles144($combo));
     my $diff = [map { $angles[$_] - $means[$_]; } (0..(@angles-1))];
 
-    my $std72 = 1/sqrt($varianceOrN72);
+    if ($leaveOut eq "l" || $leaveOut eq "leave" || $leaveOut eq "leaveOut")
+      {
+      my $n = 0;
+      for(my $x = 1; $x <= $#angles; $x++)
+        { if ($angles[$x] < $angles[$n]) {$n = $x;} }
+      $$diff[$n] = 0;
+      }
+
+     my $std72 = 1/sqrt($varianceOrN72);
     my $std90 = 1/sqrt($varianceOrN90);
     my $std144 = 1/sqrt($varianceOrN144);
     my $invStds = [$std72, $std72, $std72, $std90, $std90, $std90, $std90, $std90, $std90, $std90, $std90, $std144, $std144, $std144];
