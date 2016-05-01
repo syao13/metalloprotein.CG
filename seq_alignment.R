@@ -1,5 +1,6 @@
-#!/usr/bin/Rscript
+#!/mlab/data/software/R-3.2.1-F22/bin/Rscript
 
+##!/usr/bin/Rscript
 ## ------------------------------------------------------------------------
 library(atom2seq)
 library(Biobase)

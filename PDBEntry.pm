@@ -194,7 +194,6 @@ sub read
   #  else
   #    { $$residueMap{$resID}->add($atom); }
   #  }  
-
   #@{$self->{residues}} = sort { $a->cmp($b); } (values %$residueMap);
 
   my $seqs = [];      
@@ -208,7 +207,6 @@ sub read
  
   return $self if ($method ne "X-RAY_DIFFRACTION");
 
-#print join ("\n", map {$_->{record}} (grep {$_->{atomName} eq "OE1" & $_->{residueNumber} == 76} (@$atoms))), "\n";
   ## biological symmetry
   my @bioAtoms;
   foreach my $bio (@$biomolecules)
@@ -284,7 +282,6 @@ sub read
 #print "$i, $j, $k, $t\n";
 	      $numSym += 1;
 	      my @atomsNew = map { $_->transform($mat, $neighborX, $neighborY, $neighborZ, $i.$j.$k.$t); } (@$atoms);
-#print map {$_->coordinates(), ", ",$_->{atomName}, "\n";} (grep {$_->{residueNumber} == 159} (@atomsNew));
               push @symAtoms, @atomsNew;
 	      last;
 	      }
@@ -300,6 +297,7 @@ sub read
 	}
       }
     }
+
   push @$atoms, @symAtoms;
   $self->{symNum} = $numSym;
 

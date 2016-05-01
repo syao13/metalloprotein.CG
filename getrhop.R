@@ -1,13 +1,14 @@
 #!/usr/bin/Rscript
 
 ## args: metal, numLig, normal/compressed/combined, k, n_lig
-
+## i.e.: Zn, all, normal, 7, 3
 args = commandArgs(trailingOnly=TRUE)
 
-if (args[1] == "all") {args[1] <- "allMetal"}
+#if (args[1] == "all") {args[1] <- "allMetal"}
 
-if (args[2] == "all") { setwd(paste("../", args[1], "_results/output_", args[1], "_single6", sep=""))} 
-if (args[2] != "all") { setwd(paste("../", args[1], "_results/", args[2], "ligand_6/", sep=""))}
+if (args[2] == "all") { setwd(paste("../output_", args[1], "/allLig", sep=""))
+} else if (args[2] == "noheme") { setwd(paste("../output_", args[1], "/noheme", sep=""))
+} else { setwd(paste("../output_", args[1], "/", args[2], "ligand", sep=""))}
 
 load("four_measures_over_k.RData")
 

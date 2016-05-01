@@ -118,7 +118,7 @@ our $cgRelations = [
 
 
 ## The combined lm slope of bond length std vs. resolution
-our $slope = 0.0562;
+our $slope = 0.057;
 
 sub new
   {
@@ -145,7 +145,10 @@ sub readPDB
     chomp $file;
     my $pdb = PDBEntry->new("singlePdbFile" => $file, "metal" => $element);
     my $atoms = $pdb->{atoms};
+
+#print $$atoms[0]->{PDBid}, ", ";
     my $shellsOfOnePDB = ($self->{shellCutoff})? AtomShell->createShells($element, $atoms, 1.3, $self->{shellCutoff}, $self->{shellElement}) : AtomShell->createShells($element, $atoms);
+    #next if (! $shellsOfOnePDB );
 
     ## Calculating number of zinc clusters
     my $metal = scalar (grep {$_->{"element"} eq $element} (@$atoms)); 
@@ -185,9 +188,6 @@ sub readPDB
 
     push @$allShells, @$shellsOfOnePDB;
     }
-
-#my $now_string = localtime;
-#print "end, $now_string", "\n";
 
   close PATH;
   $self->{shells} = $allShells;
@@ -239,7 +239,7 @@ sub IAcoordination
 
     &writeTableFile("$statOutFileName.$i.txt", $currStats);
 
-    if ($i == 20)
+    if ($i == 15)
       { 
       print "Failed to stabilize\n";
       last; 
@@ -461,12 +461,16 @@ sub printSequences
   my $outFile = shift @_;
   my $seqType = shift @_;
   my $headerType = shift @_;
+  my %ids;
 
   open (my $fileH, ">>", $outFile) or die $!;
+  map { my $ligNum = $_; map { $ids{$_->{shellObj}->metalID()} += 1; } (@{$self->{coordinations}{$ligNum}}); } (keys %{$self->{coordinations}});
   foreach my $ligNum (keys %{$self->{coordinations}})
     {
     foreach my $model (@{$self->{coordinations}{$ligNum}}) 
       {
+      next if ($ids{$model->{shellObj}->metalID()}) > 1;
+
       my $seqsOfPDB = $model->{shellObj}->{seqsOfPDB};
       my $metalId = $model->{shellObj}->metalID();
 

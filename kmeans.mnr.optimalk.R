@@ -18,25 +18,22 @@ data <- read.table("r.allLig.txt", header=FALSE, comment.char = "")
 colnames(data) <- c("metalID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "amaineN", "occupancy", "solvent")
 
 znList <- data[data[,1] %in% finalZnList & data[,4] < 3, 1]
-symmetry <- grepl("#", data[,11])
 ligNum <- sapply(data$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
 heme <- sapply(data$ligandCombo, function(x) "HEM" %in% sort(matrix(unlist(strsplit(strsplit(x, ",")[[1]], "[.]")), byrow=TRUE, ncol=3)[,1]))
-sum(symmetry)
-sum(heme)
 table(ligNum)
 
 group <- NULL
 if (args[2] == "all") {
-  group <- ! symmetry
+  group <- rep(1, length(prediction.all))
 } else if (args[2] == "noheme") {
-  group <- (! heme) & (! symmetry)
+  group <- ! heme
 } else {
-  group <- (ligNum == args[2]) & (! symmetry)
+  group <- ligNum == args[2]
 }
 
 #### Define the data into normal and compressed from rf prediciton on 58-68 angles.
-ind.normal <- prediction.all=="normal" & group 
-ind.compress <- prediction.all=="compressed" & group 
+ind.normal <- (prediction.all=="normal" | prediction.all==2 ) & group 
+ind.compress <- (prediction.all=="compressed" | prediction.all==1 )& group 
 
 normal <- data[ind.normal,]
 compressed <- data[ind.compress,]

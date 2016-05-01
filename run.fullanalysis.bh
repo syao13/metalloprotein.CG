@@ -1,0 +1,208 @@
+##!/usr/bash
+
+## First time bootstrap with C and loose cutoff
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -bs ../output_zn/stats -bondLength ../output_zn/bondlength.withC.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -bs ../output_ca/stats -bondLength ../output_ca/bondlength.withC.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -bs ../output_fe/stats -bondLength ../output_fe/bondlength.withC.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -bs ../output_na/stats -bondLength ../output_na/bondlength.withC.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs ../output_mg/stats -bondLength ../output_mg/bondlength.withC.txt &
+
+## Calculate cutoff and elements for each metal
+## bondlength.histogram.manuscript.R
+
+## Second bootstrap with updated cutoff and without C and low abundant elements, and get bootstrap bondlength for blstd-resolution slope 
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.782 SON -bs ../output_zn/stats.bs -bondLength ../output_zn/bondlength.noC.txt &
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 ON -bs ../output_mg/stats.bs -bondLength ../output_mg/bondlength.noC.txt &
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -bs ../output_ca/stats.bs -bondLength ../output_ca/bondlength.noC.txt &
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.639 SON -bs ../output_fe/stats.bs -bondLength ../output_fe/bondlength.noC.txt &
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 ON -bs ../output_na/stats.bs -bondLength ../output_na/bondlength.noC.txt &
+
+## Calculate the overall slope
+## blVsRes.overlaidall.R
+
+## Update the blstd-resolution slope in the perl code, and get all options output 
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.782 SON -dd ../output_zn/stats.r -r ../output_zn/r.allLig.txt -rf ../output_zn/rf.smallest.txt -s a s ../output_zn/seqs.ATOM.shell.txt -s s s ../output_zn/seqs.SEQRES.shell.txt -s s b ../output_zn/seqs.SEQRES.bind.txt -bondLength ../output_zn/bondlength.r.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 ON -dd ../output_mg/stats.r -r ../output_mg/r.allLig.txt -rf ../output_mg/rf.smallest.txt -s a s ../output_mg/seqs.ATOM.shell.txt -s s s ../output_mg/seqs.SEQRES.shell.txt -s s b ../output_mg/seqs.SEQRES.bind.txt -bondLength ../output_mg/bondlength.r.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -dd ../output_ca/stats.r -r ../output_ca/r.allLig.txt -rf ../output_ca/rf.smallest.txt -s a s ../output_ca/seqs.ATOM.shell.txt -s s s ../output_ca/seqs.SEQRES.shell.txt -s s b ../output_ca/seqs.SEQRES.bind.txt -bondLength ../output_ca/bondlength.r.txt & 
+./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.639 SON -dd ../output_fe/stats.r -r ../output_fe/r.allLig.txt -rf ../output_fe/rf.smallest.txt -s a s ../output_fe/seqs.ATOM.shell.txt -s s s ../output_fe/seqs.SEQRES.shell.txt -s s b ../output_fe/seqs.SEQRES.bind.txt -bondLength ../output_fe/bondlength.r.txt & 
+./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 ON -dd ../output_na/stats.r -r ../output_na/r.allLig.txt -rf ../output_na/rf.smallest.txt -s a s ../output_na/seqs.ATOM.shell.txt -s s s ../output_na/seqs.SEQRES.shell.txt -s s b ../output_na/seqs.SEQRES.bind.txt -bondLength ../output_na/bondlength.r.txt &
+
+## sequence alignment
+./seq_alignment.R ../output_zn/
+./seq_alignment.R ../output_mg/ 
+./seq_alignment.R ../output_ca/
+./seq_alignment.R ../output_fe/ 
+./seq_alignment.R ../output_na/
+
+## non redundant test
+./nonRedundancy.R ../output_zn/
+./nonRedundancy.R ../output_mg/
+./nonRedundancy.R ../output_ca/
+./nonRedundancy.R ../output_fe/
+./nonRedundancy.R ../output_na/
+
+## write fasta file
+./write_fasta.R ../output_zn/ && ./write_fasta.R ../output_mg/ && ./write_fasta.R ../output_ca/ && ./write_fasta.R ../output_fe/ && ./write_fasta.R ../output_na/
+
+## interproscan
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_zn
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_mg
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_ca
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_fe
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_na
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+## random forest
+./rf.smallAngle.R ../output_zn 58 68
+./rf.smallAngle.R ../output_mg 52 68
+./rf.smallAngle.R ../output_ca 55 65
+./rf.smallAngle.R ../output_fe 63 73
+./rf.smallAngle.R ../output_na 45 60
+
+
+
+
+
+# Zn
+## make folder for each condition
+#mkdir output_zn/root_afterRF
+cp output_zn/* output_zn/root_afterRF/
+cp -r output_zn/root_afterRF output_zn/allLig
+cp -r output_zn/root_afterRF output_zn/4ligand
+cp -r output_zn/root_afterRF output_zn/5ligand
+cp -r output_zn/root_afterRF output_zn/6ligand
+
+## kmeans
+nice -10 ./kmeans.mnr.optimalk.R ../output_zn/allLig all 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_zn/4ligand 4 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_zn/5ligand 5 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_zn/6ligand 6 6
+
+nice -10 ./functional_characterization.R ../output_zn/allLig && nice -10 ./measures.vs.k.R ../output_zn/allLig 6 && ./cluster_metric_graphs.R ../output_zn/allLig
+nice -10 ./functional_characterization.R ../output_zn/4ligand && nice -10 ./measures.vs.k.R ../output_zn/4ligand 6 && ./cluster_metric_graphs.R ../output_zn/4ligand
+nice -10 ./functional_characterization.R ../output_zn/5ligand && nice -10 ./measures.vs.k.R ../output_zn/5ligand 6 && ./cluster_metric_graphs.R ../output_zn/5ligand
+nice -10 ./functional_characterization.R ../output_zn/6ligand && nice -10 ./measures.vs.k.R ../output_zn/6ligand 6 && ./cluster_metric_graphs.R ../output_zn/6ligand
+
+## Mg
+cp output_mg/* output_mg/root_afterRF/
+cp -r output_mg/root_afterRF output_mg/allLig
+cp -r output_mg/root_afterRF output_mg/4ligand
+cp -r output_mg/root_afterRF output_mg/5ligand
+cp -r output_mg/root_afterRF output_mg/6ligand
+
+nice -10 ./kmeans.mnr.optimalk.R ../output_mg/allLig all 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_mg/4ligand 4 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_mg/5ligand 5 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_mg/6ligand 6 6
+
+nice -10 ./functional_characterization.R ../output_mg/allLig && nice -10 ./measures.vs.k.R ../output_mg/allLig 6 && ./cluster_metric_graphs.R ../output_mg/allLig
+nice -10 ./functional_characterization.R ../output_mg/4ligand && nice -10 ./measures.vs.k.R ../output_mg/4ligand 6 && ./cluster_metric_graphs.R ../output_mg/4ligand
+nice -10 ./functional_characterization.R ../output_mg/5ligand && nice -10 ./measures.vs.k.R ../output_mg/5ligand 6 && ./cluster_metric_graphs.R ../output_mg/5ligand
+nice -10 ./functional_characterization.R ../output_mg/6ligand && nice -10 ./measures.vs.k.R ../output_mg/6ligand 6 && ./cluster_metric_graphs.R ../output_mg/6ligand
+
+## Ca
+cp output_ca/* output_ca/root_afterRF/
+cp -r output_ca/root_afterRF output_ca/allLig
+cp -r output_ca/root_afterRF output_ca/4ligand
+cp -r output_ca/root_afterRF output_ca/5ligand
+cp -r output_ca/root_afterRF output_ca/6ligand
+cp -r output_ca/root_afterRF output_ca/7ligand
+cp -r output_ca/root_afterRF output_ca/8ligand
+
+nice -10 ./kmeans.mnr.optimalk.R ../output_ca/allLig all 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_ca/4ligand 4 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_ca/5ligand 5 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_ca/6ligand 6 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_ca/7ligand 7 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_ca/8ligand 8 6
+
+nice -10 ./functional_characterization.R ../output_ca/allLig && nice -10 ./measures.vs.k.R ../output_ca/allLig 6 && ./cluster_metric_graphs.R ../output_ca/allLig
+nice -10 ./functional_characterization.R ../output_ca/4ligand && nice -10 ./measures.vs.k.R ../output_ca/4ligand 6 && ./cluster_metric_graphs.R ../output_ca/4ligand
+nice -10 ./functional_characterization.R ../output_ca/5ligand && nice -10 ./measures.vs.k.R ../output_ca/5ligand 6 && ./cluster_metric_graphs.R ../output_ca/5ligand
+nice -10 ./functional_characterization.R ../output_ca/6ligand && nice -10 ./measures.vs.k.R ../output_ca/6ligand 6 && ./cluster_metric_graphs.R ../output_ca/6ligand
+nice -10 ./functional_characterization.R ../output_ca/7ligand && nice -10 ./measures.vs.k.R ../output_ca/7ligand 6 && ./cluster_metric_graphs.R ../output_ca/7ligand
+nice -10 ./functional_characterization.R ../output_ca/8ligand && nice -10 ./measures.vs.k.R ../output_ca/8ligand 6 && ./cluster_metric_graphs.R ../output_ca/8ligand
+
+## Fe
+cp output_fe/* output_fe/root_afterRF/
+cp -r output_fe/root_afterRF output_fe/allLig
+cp -r output_fe/root_afterRF output_fe/4ligand
+cp -r output_fe/root_afterRF output_fe/5ligand
+cp -r output_fe/root_afterRF output_fe/6ligand
+cp -r output_fe/root_afterRF output_fe/7noheme
+
+nice -10 ./kmeans.mnr.optimalk.R ../output_fe/allLig all 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_fe/4ligand 4 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_fe/5ligand 5 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_fe/6ligand 6 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_fe/noheme noheme 6
+
+nice -10 ./functional_characterization.R ../output_fe/allLig && nice -10 ./measures.vs.k.R ../output_fe/allLig 6 && ./cluster_metric_graphs.R ../output_fe/allLig
+nice -10 ./functional_characterization.R ../output_fe/4ligand && nice -10 ./measures.vs.k.R ../output_fe/4ligand 6 && ./cluster_metric_graphs.R ../output_fe/4ligand
+nice -10 ./functional_characterization.R ../output_fe/5ligand && nice -10 ./measures.vs.k.R ../output_fe/5ligand 6 && ./cluster_metric_graphs.R ../output_fe/5ligand
+nice -10 ./functional_characterization.R ../output_fe/6ligand && nice -10 ./measures.vs.k.R ../output_fe/6ligand 6 && ./cluster_metric_graphs.R ../output_fe/6ligand
+nice -10 ./functional_characterization.R ../output_fe/noheme && nice -10 ./measures.vs.k.R ../output_fe/noheme 6 && ./cluster_metric_graphs.R ../output_fe/noheme
+
+## Na
+cp output_na/* output_na/root_afterRF/
+cp -r output_na/root_afterRF output_na/allLig
+cp -r output_na/root_afterRF output_na/4ligand
+cp -r output_na/root_afterRF output_na/5ligand
+cp -r output_na/root_afterRF output_na/6ligand
+cp -r output_na/root_afterRF output_na/7ligand
+
+nice -10 ./kmeans.mnr.optimalk.R ../output_na/allLig all 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_na/4ligand 4 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_na/5ligand 5 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_na/6ligand 6 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_na/7ligand 7 6
+
+nice -10 ./functional_characterization.R ../output_na/allLig && nice -10 ./measures.vs.k.R ../output_na/allLig 6 && ./cluster_metric_graphs.R ../output_na/allLig
+nice -10 ./functional_characterization.R ../output_na/4ligand && nice -10 ./measures.vs.k.R ../output_na/4ligand 6 && ./cluster_metric_graphs.R ../output_na/4ligand
+nice -10 ./functional_characterization.R ../output_na/5ligand && nice -10 ./measures.vs.k.R ../output_na/5ligand 6 && ./cluster_metric_graphs.R ../output_na/5ligand
+nice -10 ./functional_characterization.R ../output_na/6ligand && nice -10 ./measures.vs.k.R ../output_na/6ligand 6 && ./cluster_metric_graphs.R ../output_na/6ligand
+nice -10 ./functional_characterization.R ../output_na/7ligand && nice -10 ./measures.vs.k.R ../output_na/7ligand 6 && ./cluster_metric_graphs.R ../output_na/7ligand
+
+
+## Combined
+cat output_zn/r.allLig.txt output_mg/r.allLig.txt output_ca/r.allLig.txt output_fe/r.allLig.txt output_na/r.allLig.txt > output_all/r.allLig.txt
+cat output_zn/rf.smallest.txt output_mg/rf.smallest.txt output_ca/rf.smallest.txt output_fe/rf.smallest.txt output_na/rf.smallest.txt > output_all/rf.smallest.txt
+cat output_zn/seqs.SEQRES.shell.txt output_mg/seqs.SEQRES.shell.txt output_ca/seqs.SEQRES.shell.txt output_fe/seqs.SEQRES.shell.txt output_na/seqs.SEQRES.shell.txt > output_all/seqs.SEQRES.shell.txt
+cat output_zn/seqs.SEQRES.bind.txt output_mg/seqs.SEQRES.bind.txt output_ca/seqs.SEQRES.bind.txt output_fe/seqs.SEQRES.bind.txt output_na/seqs.SEQRES.bind.txt > output_all/seqs.SEQRES.bind.txt
+cat output_zn/seqs.ATOM.shell.txt output_mg/seqs.ATOM.shell.txt output_ca/seqs.ATOM.shell.txt output_fe/seqs.ATOM.shell.txt output_na/seqs.ATOM.shell.txt > output_all/seqs.ATOM.shell.txt
+
+./seq_alignment.R ../output_all/
+./nonRedundancy.R ../output_all/
+./write_fasta.R ../output_all/
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_all
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+## Combined RF prediction results
+./combine.predictions.R
+
+cp ../output_all/* ../output_all/root_afterRF/
+cp -r ../output_all/root_afterRF ../output_all/allLig
+cp -r ../output_all/root_afterRF ../output_all/4ligand
+cp -r ../output_all/root_afterRF ../output_all/5ligand
+cp -r ../output_all/root_afterRF ../output_all/6ligand
+
+nice -10 ./kmeans.mnr.optimalk.R ../output_all/4ligand 4 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_all/5ligand 5 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_all/6ligand 6 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_all/allLig all 6
+
+nice -10 ./functional_characterization.R ../output_all/4ligand
+nice -10 ./functional_characterization.R ../output_all/5ligand
+nice -10 ./functional_characterization.R ../output_all/6ligand
+nice -10 ./functional_characterization.R ../output_all/allLig
+
+nice -10 ./measures.vs.k.R ../output_all/4ligand 6 && ./cluster_metric_graphs.R ../output_all/4ligand
+nice -10 ./measures.vs.k.R ../output_all/5ligand 6 && ./cluster_metric_graphs.R ../output_all/5ligand
+nice -10 ./measures.vs.k.R ../output_all/6ligand 6 && ./cluster_metric_graphs.R ../output_all/6ligand
+nice -10 ./measures.vs.k.R ../output_all/allLig 6 && ./cluster_metric_graphs.R ../output_all/allLig
+
+

@@ -1,5 +1,6 @@
-#!/usr/bin/Rscript
+#!/mlab/data/software/R-3.2.1-F22/bin/Rscript
 
+##!/usr/bin/Rscript
 ##############  This program is to get non-redundant set of zinc ID list. ############## 
 ## Non-redundant set is defined by the shell domain as well as binding ligand combination. 
 ## If the shell ligands spans over multi-chains, consider them all together.
@@ -201,8 +202,7 @@ length(uMultiSeqLigs)
 ## if both x-ray and NMR, if minRes < 2, use the minRes one, otherwise, use latest one
 ######################################################################
 rawdata <- read.table("r.allLig.txt", comment.char = "")
-data <- rawdata[! grepl("#", rawdata[,11]), ]
-idMthYrRes <- data[,c(1:4, 15)] ## add occupancy
+idMthYrRes <- rawdata[,c(1:4, 15)] ## add occupancy
 idMthYrRes[,3] <-sapply(idMthYrRes[,3], function(x) if (x<10) {x <- as.numeric(paste("200", x, sep=""))}
                         else if (x<50) {x <- as.numeric(paste("20", x, sep=""))}
                         else {x <- as.numeric(paste("19", x, sep=""))})
@@ -226,6 +226,7 @@ for (i in 1:length(uMultiSeqLigs)) {
   mthYrRes <- t(sapply(zincId, function(x) idMthYrRes[which(idMthYrRes[,1] == x ), ])) 
   highOcc <- max(unlist(mthYrRes[mthYrRes[,5] <= 1,5])) ## choose the highest occupancy items and restrict to be no more than 1, but may cause the item to be NULL 
   ids <- mthYrRes[mthYrRes[,5] == highOcc, ]
+  if (length(ids)==0) {next}
   if (length(ids)==5) {
     finalZnList <- c(finalZnList, ids[[1]])
     next

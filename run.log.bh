@@ -1103,6 +1103,7 @@ output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_mg
 
 ## Running interproscan on local machines is much faster than on the interproscan VM
 ## Proceed with functional analysis
+## copy non_redundant.ipr.tsv into all sub-directories
 for d in */; do cp non_redundant.ipr.tsv "$d"; done
 
 nice -10 ./functional_characterization.R ../output_fe/allLig && nice -10 ./measures.vs.k.R ../output_fe/allLig 6 && ./cluster_metric_graphs.R ../output_fe/allLig
@@ -1137,6 +1138,222 @@ nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 ON -bs
 nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -bs ../output_ca/stats.bs -bondLength ../output_ca/bondlength.noC.txt &
 nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.639 SON -bs ../output_fe/stats.bs -bondLength ../output_fe/bondlength.noC.txt &
 nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 ON -bs ../output_na/stats.bs -bondLength ../output_na/bondlength.noC.txt &
+
+## 4.26
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.782 SON -dd ../output_zn/stats.r -r ../output_zn/r.allLig.txt -rf ../output_zn/rf.smallest.txt -s a s ../output_zn/seqs.ATOM.shell.txt -s s s ../output_zn/seqs.SEQRES.shell.txt -s s b ../output_zn/seqs.SEQRES.bind.txt &
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 ON -dd ../output_mg/stats.r -r ../output_mg/r.allLig.txt -rf ../output_mg/rf.smallest.txt -s a s ../output_mg/seqs.ATOM.shell.txt -s s s ../output_mg/seqs.SEQRES.shell.txt -s s b ../output_mg/seqs.SEQRES.bind.txt &
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -dd ../output_ca/stats.r -r ../output_ca/r.allLig.txt -rf ../output_ca/rf.smallest.txt -s a s ../output_ca/seqs.ATOM.shell.txt -s s s ../output_ca/seqs.SEQRES.shell.txt -s s b ../output_ca/seqs.SEQRES.bind.txt &
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.639 SON -dd ../output_fe/stats.r -r ../output_fe/r.allLig.txt -rf ../output_fe/rf.smallest.txt -s a s ../output_fe/seqs.ATOM.shell.txt -s s s ../output_fe/seqs.SEQRES.shell.txt -s s b ../output_fe/seqs.SEQRES.bind.txt &
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 ON -dd ../output_na/stats.r -r ../output_na/r.allLig.txt -rf ../output_na/rf.smallest.txt -s a s ../output_na/seqs.ATOM.shell.txt -s s s ../output_na/seqs.SEQRES.shell.txt -s s b ../output_na/seqs.SEQRES.bind.txt &
+
+## exclude sites with more than 64 metal ions
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 ON -dd ../output_mg/stats.r -r r.allLig.txt -rf rf.smallest.txt -s a s seqs.ATOM.shell.txt -s s s seqs.SEQRES.shell.txt -s s b seqs.SEQRES.bind.txt &
+
+## 4.27, use short mg for now
+./seq_alignment.R ../output_zn/
+./seq_alignment.R ../output_smg/ 
+./seq_alignment.R ../output_ca/ 
+./seq_alignment.R ../output_fe/ 
+
+./nonRedundancy.R ../output_zn/
+./nonRedundancy.R ../output_smg/
+./nonRedundancy.R ../output_ca/
+./nonRedundancy.R ../output_fe/
+
+./write_fasta.R ../output_zn/ && ./write_fasta.R ../output_smg/ && ./write_fasta.R ../output_ca/ && ./write_fasta.R ../output_fe/
+
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_zn
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_smg
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_ca
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_fe
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+./rf.smallAngle.R ../output_zn 58 68
+./rf.smallAngle.R ../output_smg 52 68
+./rf.smallAngle.R ../output_ca 55 65
+./rf.smallAngle.R ../output_fe 63 73
+
+cp atom2seq.RData finalMetalList.RData non_redundant.fa nonredundant.list.txt non_redundant.RData rf.results.RData rf.smallest.txt seqs.ATOM.shell.txt seqs.SEQRES.bind.txt  seqs.SEQRES.shell.txt r.allLig.txt stats.r.0.txt non_redundant.ipr.tsv bondlength.noC.txt stats.bs.0.txt root_afterRF/
+rm -r allLig 4ligand 5ligand 6ligand
+cp -r root_afterRF allLig
+cp -r root_afterRF 4ligand
+cp -r root_afterRF 5ligand
+cp -r root_afterRF 6ligand
+
+nice -10 ./kmeans.mnr.optimalk.R ../output_zn/allLig all 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_zn/4ligand 4 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_zn/5ligand 5 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_zn/6ligand 6 6
+
+nice -10 ./kmeans.mnr.optimalk.R ../output_smg/allLig all 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_smg/4ligand 4 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_smg/5ligand 5 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_smg/6ligand 6 6                                                                                                                                                    
+
+nice -10 ./kmeans.mnr.optimalk.R ../output_fe/allLig all 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_fe/4ligand 4 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_fe/5ligand 5 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_fe/6ligand 6 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_fe/noheme noheme 6
+
+## for some reason, non_redundant.ipr.tsv is borken in output_ca
+nice -10 ./kmeans.mnr.optimalk.R ../output_ca/allLig all 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_ca/4ligand 4 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_ca/5ligand 5 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_ca/6ligand 6 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_ca/7ligand 7 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_ca/8ligand 8 6
+
+## Need to run Na without N
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 O -bs ../output_na/stats.bs -bondLength ../output_na/bondlength.noC.txt &
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 O -dd ../output_na/stats.r -r ../output_na/r.allLig.txt -rf ../output_na/rf.smallest.txt -s a s ../output_na/seqs.ATOM.shell.txt -s s s ../output_na/seqs.SEQRES.shell.txt -s s b ../output_na/seqs.SEQRES.bind.txt -bondLength ../output_na/bondlength.r.txt &
+
+## 4.28 finish zn, smg, ca, and fe
+nice -10 ./functional_characterization.R ../output_zn/allLig && nice -10 ./measures.vs.k.R ../output_zn/allLig 6 && ./cluster_metric_graphs.R ../output_zn/allLig
+nice -10 ./functional_characterization.R ../output_zn/4ligand && nice -10 ./measures.vs.k.R ../output_zn/4ligand 6 && ./cluster_metric_graphs.R ../output_zn/4ligand
+nice -10 ./functional_characterization.R ../output_zn/5ligand && nice -10 ./measures.vs.k.R ../output_zn/5ligand 6 && ./cluster_metric_graphs.R ../output_zn/5ligand
+nice -10 ./functional_characterization.R ../output_zn/6ligand && nice -10 ./measures.vs.k.R ../output_zn/6ligand 6 && ./cluster_metric_graphs.R ../output_zn/6ligand
+
+nice -10 ./functional_characterization.R ../output_smg/allLig && nice -10 ./measures.vs.k.R ../output_smg/allLig 6 && ./cluster_metric_graphs.R ../output_smg/allLig
+nice -10 ./functional_characterization.R ../output_smg/4ligand && nice -10 ./measures.vs.k.R ../output_smg/4ligand 6 && ./cluster_metric_graphs.R ../output_smg/4ligand
+nice -10 ./functional_characterization.R ../output_smg/5ligand && nice -10 ./measures.vs.k.R ../output_smg/5ligand 6 && ./cluster_metric_graphs.R ../output_smg/5ligand
+nice -10 ./functional_characterization.R ../output_smg/6ligand && nice -10 ./measures.vs.k.R ../output_smg/6ligand 6 && ./cluster_metric_graphs.R ../output_smg/6ligand
+
+nice -10 ./functional_characterization.R ../output_ca/allLig && nice -10 ./measures.vs.k.R ../output_ca/allLig 6 && ./cluster_metric_graphs.R ../output_ca/allLig
+nice -10 ./functional_characterization.R ../output_ca/4ligand && nice -10 ./measures.vs.k.R ../output_ca/4ligand 6 && ./cluster_metric_graphs.R ../output_ca/4ligand
+nice -10 ./functional_characterization.R ../output_ca/5ligand && nice -10 ./measures.vs.k.R ../output_ca/5ligand 6 && ./cluster_metric_graphs.R ../output_ca/5ligand
+nice -10 ./functional_characterization.R ../output_ca/6ligand && nice -10 ./measures.vs.k.R ../output_ca/6ligand 6 && ./cluster_metric_graphs.R ../output_ca/6ligand
+nice -10 ./functional_characterization.R ../output_ca/7ligand && nice -10 ./measures.vs.k.R ../output_ca/7ligand 6 && ./cluster_metric_graphs.R ../output_ca/7ligand
+nice -10 ./functional_characterization.R ../output_ca/8ligand && nice -10 ./measures.vs.k.R ../output_ca/8ligand 6 && ./cluster_metric_graphs.R ../output_ca/8ligand
+
+nice -10 ./functional_characterization.R ../output_fe/allLig && nice -10 ./measures.vs.k.R ../output_fe/allLig 6 && ./cluster_metric_graphs.R ../output_fe/allLig
+nice -10 ./functional_characterization.R ../output_fe/4ligand && nice -10 ./measures.vs.k.R ../output_fe/4ligand 6 && ./cluster_metric_graphs.R ../output_fe/4ligand
+nice -10 ./functional_characterization.R ../output_fe/5ligand && nice -10 ./measures.vs.k.R ../output_fe/5ligand 6 && ./cluster_metric_graphs.R ../output_fe/5ligand
+nice -10 ./functional_characterization.R ../output_fe/6ligand && nice -10 ./measures.vs.k.R ../output_fe/6ligand 6 && ./cluster_metric_graphs.R ../output_fe/6ligand
+nice -10 ./functional_characterization.R ../output_fe/noheme && nice -10 ./measures.vs.k.R ../output_fe/noheme 6 && ./cluster_metric_graphs.R ../output_fe/noheme
+
+## catch up with Mg full
+./seq_alignment.R ../output_mg/
+./nonRedundancy.R ../output_mg/
+./write_fasta.R ../output_mg/
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_mg
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+./rf.smallAngle.R ../output_mg 52 68
+
+cp atom2seq.RData finalMetalList.RData non_redundant.fa nonredundant.list.txt non_redundant.RData rf.results.RData rf.smallest.txt seqs.ATOM.shell.txt seqs.SEQRES.bind.txt  seqs.SEQRES.shell.txt r.allLig.txt stats.r.0.txt non_redundant.ipr.tsv bondlength.noC.txt stats.bs.0.txt root_afterRF/
+rm -r allLig 4ligand 5ligand 6ligand
+cp -r root_afterRF allLig
+cp -r root_afterRF 4ligand
+cp -r root_afterRF 5ligand
+cp -r root_afterRF 6ligand
+
+nice -10 ./kmeans.mnr.optimalk.R ../output_mg/allLig all 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_mg/4ligand 4 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_mg/5ligand 5 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_mg/6ligand 6 6
+
+nice -10 ./functional_characterization.R ../output_mg/allLig && nice -10 ./measures.vs.k.R ../output_mg/allLig 6 && ./cluster_metric_graphs.R ../output_mg/allLig
+nice -10 ./functional_characterization.R ../output_mg/4ligand && nice -10 ./measures.vs.k.R ../output_mg/4ligand 6 && ./cluster_metric_graphs.R ../output_mg/4ligand
+nice -10 ./functional_characterization.R ../output_mg/5ligand && nice -10 ./measures.vs.k.R ../output_mg/5ligand 6 && ./cluster_metric_graphs.R ../output_mg/5ligand
+nice -10 ./functional_characterization.R ../output_mg/6ligand && nice -10 ./measures.vs.k.R ../output_mg/6ligand 6 && ./cluster_metric_graphs.R ../output_mg/6ligand
+
+## Run -dd again to get -bondLength output for plotting the bond length distribution, each on a diff machine
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.782 SON -dd ../output_zn/stats.rr -bondLength ../output_zn/bondlength.r.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 ON -dd ../output_mg/stats.rr -bondLength ../output_mg/bondlength.r.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -dd ../output_ca/stats.rr -bondLength ../output_ca/bondlength.r.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.639 SON -dd ../output_fe/stats.rr -bondLength ../output_fe/bondlength.r.txt &
+
+
+## Continue with Na
+## Cannot open file for sequence, run again on a diff machine
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 O -dd ../output_na/stats.rr -s a s ../output_na/seqs.ATOM.shell.txt -s s s ../output_na/seqs.SEQRES.shell.txt -s s b ../output_na/seqs.SEQRES.bind.txt & ## S0
+./seq_alignment.R ../output_na/
+./nonRedundancy.R ../output_na/
+./write_fasta.R ../output_na/
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_na
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+./rf.smallAngle.R ../output_na 45 60
+
+cp atom2seq.RData finalMetalList.RData non_redundant.fa nonredundant.list.txt non_redundant.RData rf.results.RData rf.smallest.txt seqs.ATOM.shell.txt seqs.SEQRES.bind.txt  seqs.SEQRES.shell.txt r.allLig.txt stats.r.0.txt non_redundant.ipr.tsv bondlength.noC.txt stats.bs.0.txt root_afterRF/
+rm -r allLig 4ligand 5ligand 6ligand
+cp -r root_afterRF allLig
+cp -r root_afterRF 4ligand
+cp -r root_afterRF 5ligand
+cp -r root_afterRF 6ligand
+cp -r root_afterRF 7ligand
+
+nice -10 ./kmeans.mnr.optimalk.R ../output_na/allLig all 6 #S7
+nice -10 ./kmeans.mnr.optimalk.R ../output_na/4ligand 4 6 #S8
+nice -10 ./kmeans.mnr.optimalk.R ../output_na/5ligand 5 6 #S8
+nice -10 ./kmeans.mnr.optimalk.R ../output_na/6ligand 6 6 #S9
+nice -10 ./kmeans.mnr.optimalk.R ../output_na/7ligand 7 6 #S9
+
+nice -10 ./functional_characterization.R ../output_na/allLig && nice -10 ./measures.vs.k.R ../output_na/allLig 6 && ./cluster_metric_graphs.R ../output_na/allLig
+nice -10 ./functional_characterization.R ../output_na/4ligand && nice -10 ./measures.vs.k.R ../output_na/4ligand 6 && ./cluster_metric_graphs.R ../output_na/4ligand
+nice -10 ./functional_characterization.R ../output_na/5ligand && nice -10 ./measures.vs.k.R ../output_na/5ligand 6 && ./cluster_metric_graphs.R ../output_na/5ligand
+nice -10 ./functional_characterization.R ../output_na/6ligand && nice -10 ./measures.vs.k.R ../output_na/6ligand 6 && ./cluster_metric_graphs.R ../output_na/6ligand
+nice -10 ./functional_characterization.R ../output_na/7ligand && nice -10 ./measures.vs.k.R ../output_na/7ligand 6 && ./cluster_metric_graphs.R ../output_na/7ligand
+
+## Get bondlength.r.txt for Mg-short
+./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 ON -dd ../output_smg/stats.rr -bondLength ../output_smg/bondlength.r.txt & ## S8
+
+## Start combined, but has to wait 
+cat output_zn/r.allLig.txt output_mg/r.allLig.txt output_ca/r.allLig.txt output_fe/r.allLig.txt output_na/r.allLig.txt > output_all/r.allLig.txt
+cat output_zn/rf.smallest.txt output_mg/rf.smallest.txt output_ca/rf.smallest.txt output_fe/rf.smallest.txt output_na/rf.smallest.txt > output_all/rf.smallest.txt
+
+## 4.29
+cat output_zn/seqs.SEQRES.shell.txt output_mg/seqs.SEQRES.shell.txt output_ca/seqs.SEQRES.shell.txt output_fe/seqs.SEQRES.shell.txt output_na/seqs.SEQRES.shell.txt > output_all/seqs.SEQRES.shell.txt
+cat output_zn/seqs.SEQRES.bind.txt output_mg/seqs.SEQRES.bind.txt output_ca/seqs.SEQRES.bind.txt output_fe/seqs.SEQRES.bind.txt output_na/seqs.SEQRES.bind.txt > output_all/seqs.SEQRES.bind.txt
+cat output_zn/seqs.ATOM.shell.txt output_mg/seqs.ATOM.shell.txt output_ca/seqs.ATOM.shell.txt output_fe/seqs.ATOM.shell.txt output_na/seqs.ATOM.shell.txt > output_all/seqs.ATOM.shell.txt
+
+./seq_alignment.R ../output_all/
+./nonRedundancy.R ../output_all/
+./write_fasta.R ../output_all/
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_all
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+cp ../output_all/* ../output_all/root_afterRF/
+cp -r ../output_all/root_afterRF ../output_all/allLig
+cp -r ../output_all/root_afterRF ../output_all/4ligand
+cp -r ../output_all/root_afterRF ../output_all/5ligand
+cp -r ../output_all/root_afterRF ../output_all/6ligand
+cp -r ../output_all/root_afterRF ../output_all/7ligand
+
+./combine.predictions.R
+
+nice -10 ./kmeans.mnr.optimalk.R ../output_all/4ligand 4 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_all/5ligand 5 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_all/6ligand 6 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_all/7ligand 7 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_all/allLig all 6
+
+nice -10 ./functional_characterization.R ../output_all/4ligand
+nice -10 ./functional_characterization.R ../output_all/5ligand
+nice -10 ./functional_characterization.R ../output_all/6ligand
+nice -10 ./functional_characterization.R ../output_all/7ligand
+nice -10 ./functional_characterization.R ../output_all/allLig
+
+nice -10 ./measures.vs.k.R ../output_all/4ligand 6 && ./cluster_metric_graphs.R ../output_all/4ligand
+nice -10 ./measures.vs.k.R ../output_all/5ligand 6 && ./cluster_metric_graphs.R ../output_all/5ligand
+nice -10 ./measures.vs.k.R ../output_all/6ligand 6 && ./cluster_metric_graphs.R ../output_all/6ligand
+nice -10 ./measures.vs.k.R ../output_all/7ligand 6 && ./cluster_metric_graphs.R ../output_all/7ligand
+nice -10 ./measures.vs.k.R ../output_all/allLig 6 && ./cluster_metric_graphs.R ../output_all/allLig
+
+
+## Try -i again with no comp angles. cp the old results into a folder
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.782 SON -i c 68 ../output_zn/stats.i -r ../output_zn/r.chi.c68.txt -r ../output_zn/r.chi.c68.leaveOut.txt leaveOut
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 SON -i c 65 ../output_smg/stats.i -r ../output_smg/r.chi.c65.txt -r ../output_smg/r.chi.c65.leaveOut.txt leaveOut
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -i c 60 ../output_ca/stats.i -r ../output_ca/r.chi.c60.txt -r ../output_ca/r.chi.c60.leaveOut.txt leaveOut
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.639 SON -i c 68 ../output_fe/stats.i -r ../output_fe/r.chi.c68.txt -r ../output_fe/r.chi.c68.leaveOut.txt leaveOut
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 O -i c 60 ../output_na/stats.i -r ../output_na/r.chi.c60.txt  -r ../output_na/r.chi.c60.leaveOut.txt leaveOut
+
+
+
+
+
 
 
 
