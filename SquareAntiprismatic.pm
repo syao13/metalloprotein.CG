@@ -7,7 +7,8 @@ use AtomShell;
 use base "Coordination";
 
 our @defaultDataMembers = (
-                          "numAtoms" => 8
+                          "numAtoms" => 8,
+			  "degreeFreedom" => 36
 			  );
 
 our $expectedAngle70 = 70.5;
@@ -47,6 +48,7 @@ our $invCorrM = [
 	[ 0.003,  0.011,  0.053, -0.080,  0.005, -0.081,  0.051,  0.013, -0.016, -0.013,  0.071,  0.068, -0.020, -0.009, -0.023, -0.013,  0.023, -0.038, -0.037,  0.025, -0.068, -0.002, -0.002, -0.069, -0.003, -0.008, -0.003,  0.168]
 ];
 
+
 sub new
   {
   my $class = shift @_;
@@ -56,7 +58,6 @@ sub new
 
   return $self;
   }
-
 
 
 sub orderedCombinations 
@@ -166,12 +167,17 @@ sub angleTestStatistic
     my $std143 = 1/sqrt($varianceOrN143);
     my $invStds = [$std70, $std70, $std70, $std70, $std70, $std70, $std70, $std70, $std82, $std82, $std82, $std82, $std82, $std82, $std82, $std82, $std109, $std109, $std109, $std109, $std143, $std143, $std143, $std143, $std143, $std143, $std143, $std143];
 
-    my $chiStat = $self->covMatChi($diff, $invStds, $invCorrM);
+    #my $chiStat = $self->covMatChi($diff, $invStds, $invCorrM);
+    my $chiStat = 0;
+    map {$chiStat += ($$diff[$_] * $$invStds[$_])**2;} (0..(@$diff-1));
 
     #print "mean 82, $expect82\nangles: ";
     ##print map {"$_, "; } (@angles);
     ##print "\nstd82, $std82\n";
     ##print "covariance: ", $chiStat;#, "; previous: $angleTestStat\n";
+
+#print join(", ", @$diff), "\n";
+#print "chi: $chiStat, $varianceOrN70, $varianceOrN82, $varianceOrN109, $varianceOrN143; ";
     
     return $chiStat;
     }

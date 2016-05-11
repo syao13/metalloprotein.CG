@@ -60,8 +60,8 @@ use threads;
 use Thread::Queue;
 use Clone 'clone';
 #use Data::Dumper::Concise; # human readable, code in iaCoordination
-#use JSON; # For other programs to read back, code in iaCoordination 
-#use JSON -convert_blessed_universally;
+use JSON; # For other programs to read back, code in iaCoordination 
+use JSON -convert_blessed_universally;
 #use Time::HiRes qw(time);
 #use POSIX qw(strftime);
 
@@ -191,6 +191,14 @@ sub readPDB
 
   close PATH;
   $self->{shells} = $allShells;
+
+  if ($self->{jsonFile}) 
+    {
+    open (JOUT, '>', $self->{jsonFile}) or die $!;
+    my $jsonObj = JSON->new->allow_blessed->convert_blessed->encode( $self );
+    print JOUT $jsonObj;
+    close JOUT;
+    }
   }
 
 
@@ -393,12 +401,20 @@ sub shellViaAdjustDistStd
         {
         my $resolution = ($ligand->{resolution} == -1)? 2.5 : $ligand->{resolution};
         my $adjStd = ($resolution - $$blStats{$ligand->{element}}{resolutionAvg}) * $slope + $$blStats{$ligand->{element}}{standardDeviation};
+
         if ( abs($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mean}) <= $adjStd * 2.5 )
 	  { 
           push @$finalShell, $ligand;  
 	  }
         }
       }
+
+    ## eliminate sites with too-close atoms
+    my $smallestBL = (sort {$a <=> $b} (map {$shell->{center}->distance($_);} (@$finalShell)))[0];
+    if (grep {$shell->{center}->distance($_) < $smallestBL;} (@{$shell->{shell}})) 
+      {
+print $shell->metalID(), ", $smallestBL\n";
+      next;}
 
 #print join(", ", "before", $shell->metalID(), map {$_->resID();} (@$finalShell)), "\n";
     my $excludeInd = 0; ## eliminate ligands with unreasonable atom-atom distances
@@ -625,6 +641,7 @@ sub calcChiCoordination
   my $threshold = shift @_;
   my $leaveOut = shift @_;
   my $stats = (@_)? (shift @_) : ($self->{stats});
+  my $outFile = (@_)? (shift @_) : 0;
 
   ## All CGs in the cgRelations on top, regardless of the major ones passed in from bootstrap. 
   ## It is a array now compared to a hash as above.
@@ -646,10 +663,6 @@ sub calcChiCoordination
       $cgObj->bestTestStatistic("chi", $control, $threshold, $leaveOut, $stats);
       my $probability = ($cgObj->{bestCombo}->{probability})? $cgObj->{bestCombo}->{probability} : 0;
       $Qresults->enqueue($ind.",".$cg.",".$probability);
-      #$Qresults->enqueue($cgObj);
-
-#my $now_string = localtime;
-#print $shell->metalID(), ", $work, ", $cgObj->{bestCombo}->{probability}, ",  $now_string\n";
       }
     $Qresults->enqueue( undef ); ## Signal this thread is finished
     };
@@ -679,15 +692,23 @@ sub calcChiCoordination
   foreach my $th (@thread_pool)
     { $th->join(); }
 
+  open (FID, ">", $outFile) or die $! if $outFile;
+  print FID  join ("\t", @allCGs), "\n" if $outFile;
   foreach my $i (0..(@{$self->{shells}}-1))
     {
     my $shell = $$self{"shells"}[$i];
     my @models = grep { (split(",", $_))[0] == $i; } (@allModels);
-    @models = sort { (split(",", $b))[2] <=> (split(",", $a))[2]} (grep { (split(",", $_))[2] != 0; } (@models));
 
-#print "\n", $shell->metalID(), "; ";
-#my $now_string = localtime;
-#print "$now_string\n";
+    if ($outFile) ## print out all cgs' prob
+      {
+      my %probs;
+      map {$probs{(split(",", $_))[1]} = (split(",", $_))[2] } (@models);
+      print FID $shell->metalID(), "\t", join ("\t", map {($probs{$_})? $probs{$_} : 0;} (@allCGs)), "\n"; 
+
+      next;
+      }
+    
+    @models = sort { (split(",", $b))[2] <=> (split(",", $a))[2]} (grep { (split(",", $_))[2] != 0; } (@models));
 
     my $maxNum;
     my $unusables;
@@ -708,7 +729,6 @@ sub calcChiCoordination
 
       if (! defined $tev->{bestCombo} && ! defined $tpl->{bestCombo}) 
 	{ 
-#print "0;0;0\n";
 	$$decisions{"012"}++; 
 	}
       else 
@@ -719,18 +739,14 @@ sub calcChiCoordination
           my $modRef = ref $mods[0];
           push @{$$coordinations{$modRef}}, $mods[0];
           $$decisions{"3.". $modRef} += 1;
-#print "3lig.$modRef\n";
           }
         else
           {$$decisions{"3.None"} += 1;}
-#print $mods[0]->{bestCombo}->{probability}, "; ", $mods[1]->{bestCombo}->{probability}, "; 00\n";
         next;
         }
       }
     else ## 4, 5, 6 ligands
       {
-#print $models[0], "; 456\n";
-      
       ## set the probability threshold, remove low prob ones from statistics calculation. 
       if ($control eq "p" && (split(",",$models[0]))[2] < $threshold) 
 	{
@@ -748,8 +764,6 @@ sub calcChiCoordination
 
 	push @{$$coordinations{$modelRef}}, $cgObj;
 	$$decisions{$maxNum. ".".  $modelRef} += 1;
-
-#print $models[1], "; bva to tet\n";
 	}
       else
 	{
@@ -775,7 +789,6 @@ sub calcChiCoordination
               push @{$$coordinations{$modelRef}}, $cgObj;
 	      $dec = $dec. ".". $modelRef;
               $$decisions{$dec} += 1;
-#print $models[0], "; only $modelRef\n";
 	      }
 	    else
 	      {
@@ -790,7 +803,6 @@ sub calcChiCoordination
 
 	      map {$dec = $dec.".".ref $models[$_]} (0..$maxInd) ;
               $$decisions{$dec} += 1;
-#print $models[$maxInd], "; major CG to $modelRef\n";
 	      }
 	    last;
 	    }
@@ -798,6 +810,8 @@ sub calcChiCoordination
 	}
       }
     }
+
+  close FID if $outFile;
 
   $self->{decisions} = $decisions ;
   $self->{coordinations} = $coordinations ;

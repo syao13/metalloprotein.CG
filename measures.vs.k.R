@@ -140,8 +140,8 @@ compareDist <- function(dist.a, dist.b, method="spearman") {
   vec.a <- as.vector(dist.a)
   vec.b <- as.vector(dist.b)
   
-  ind <- vec.b!=0
-  if ( sum(ind) == 0  || is.na(sum(ind)) || sum(duplicated(vec.a)) || sum(duplicated(vec.b)) )  {c(NA,NA)}
+  ind <- vec.a!=0 & vec.b!=0 & (! duplicated(vec.a)) & (! duplicated(vec.b))
+  if ( sum(ind) <= 1  || is.na(sum(ind)) )  {c(NA,NA)}
   else { 
     tmp <- cor.test(vec.a[ind], vec.b[ind], alternative="two.sided", method = method)
     c(tmp$estimate, tmp$p.value)

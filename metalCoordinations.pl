@@ -70,12 +70,13 @@ use SquarePyramidal;
 my $pathsFile = shift @ARGV;
 my $metal = shift @ARGV;
 
-my ($iaControl, $threshold, $shellCutoff, $shellElement); 
+my ($iaControl, $threshold, $shellCutoff, $shellElement, $shellsJsonFile); 
 ## bond length cutoff for the first shell in bootstrap
 if ($ARGV[0] =~ /^\d+(\.\d+)?$/)
   {
   $shellCutoff = shift @ARGV;
   $shellElement = shift @ARGV;
+  $shellsJsonFile = shift @ARGV if ($ARGV[0] !~ /\-/);
   }
 
 unless ($ARGV[0] eq "-i" || $ARGV[0] eq "-d"|| $ARGV[0] eq "-bs" || $ARGV[0] eq "-dd")
@@ -123,14 +124,15 @@ my $analyzer = MPCGanalysis->new("pathsFile" => $pathsFile,
 				 "majorCGs" => ["Tetrahedral", "TrigonalBipyramidal", "Octahedral", "PentagonalBipyramidal"], 
 				 "minLigNum" => 4,
 				 "shellCutoff" => $shellCutoff,
-				 "shellElement" => $shellElement);
+				 "shellElement" => $shellElement,
+				 "jsonFile" => $shellsJsonFile);
 #print "$metal: ", $analyzer->{numCenter}, "\n";
 #print "Cluster: ", $analyzer->{numCluster}, "\n";
 #print "Usable: ", $analyzer->{usable}, "\n";
 #print "Unusable: ", $analyzer->{unusable}, "\n\n";
 #exit;
 
-$analyzer->bootstrapCoordination($statOutFileName);
+$analyzer->bootstrapCoordination($statOutFileName, $shellsJsonFile);
 
 ## required argument defines the workflow
 if ($flow eq "-i") 
@@ -141,7 +143,7 @@ elsif ($flow eq "-dd")
   { $analyzer->shellViaAdjustDistStd($statOutFileName); }
 
 ########## Optional arguments ##########
-my ($seqOpt, $seq, $header, $seqFile, $rInputOpt, $rInputFile, $rfOpt, $rfFile, $statsFile, $leaveOut, $jsonOpt, $jsonFile, $dumperOpt, $dumperFile, $decisionOpt, $angleListOpt, $angleListMid);
+my ($seqOpt, $seq, $header, $seqFile, $rInputOpt, $rInputFile, $rfOpt, $rfFile, $statsFile, $leaveOut, $jsonOpt, $jsonFile, $dumperOpt, $dumperFile, $decisionOpt, $angleListOpt, $angleListMid, $probInputFile);
 my ($ECopt, $pathToFlat, $pathToPDB, $ecFile, $ligandOpt, $angleBreakDownOpt, $angleBreakDownFile, $bondLengthOpt, $bondLengthFile);
 while (@ARGV) 
   {
@@ -173,6 +175,13 @@ while (@ARGV)
     $rfFile = shift @ARGV;
     $statsFile = shift @ARGV if ($ARGV[0] !~ /\-/);
     &rfPrint($analyzer, $rfFile, $statsFile) ;
+    }
+  elsif ($option eq "-probs")
+    {
+    $probInputFile = shift @ARGV; 
+    $leaveOut = shift @ARGV;
+    $statsFile = shift @ARGV if ($ARGV[0] !~ /\-/);
+    &probPrint($analyzer, $probInputFile, $leaveOut, $statsFile) ;
     }
   elsif ($option eq "-bondLength")
     {
@@ -300,6 +309,19 @@ sub rPrint
     }
   close FID;
   }
+
+sub probPrint
+  {   
+  my $analyzer = shift @_;
+  my $probInputFile = shift @_;
+  my $leaveOut = shift @_;
+  my $statsFile = shift @_;
+  
+  my $stats = &readTableFile($statsFile);
+  $analyzer->calcChiCoordination(0, 0, $leaveOut, $stats, $probInputFile);
+  }
+
+
 
 ## Some other supplemental options
 sub blPrint

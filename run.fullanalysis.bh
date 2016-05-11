@@ -64,12 +64,9 @@ output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_na
 ./rf.smallAngle.R ../output_na 45 60
 
 
-
-
-
 # Zn
 ## make folder for each condition
-#mkdir output_zn/root_afterRF
+mkdir output_zn/root_afterRF
 cp output_zn/* output_zn/root_afterRF/
 cp -r output_zn/root_afterRF output_zn/allLig
 cp -r output_zn/root_afterRF output_zn/4ligand
@@ -105,6 +102,7 @@ nice -10 ./functional_characterization.R ../output_mg/5ligand && nice -10 ./meas
 nice -10 ./functional_characterization.R ../output_mg/6ligand && nice -10 ./measures.vs.k.R ../output_mg/6ligand 6 && ./cluster_metric_graphs.R ../output_mg/6ligand
 
 ## Ca
+mkdir output_ca/root_afterRF
 cp output_ca/* output_ca/root_afterRF/
 cp -r output_ca/root_afterRF output_ca/allLig
 cp -r output_ca/root_afterRF output_ca/4ligand
@@ -128,12 +126,13 @@ nice -10 ./functional_characterization.R ../output_ca/7ligand && nice -10 ./meas
 nice -10 ./functional_characterization.R ../output_ca/8ligand && nice -10 ./measures.vs.k.R ../output_ca/8ligand 6 && ./cluster_metric_graphs.R ../output_ca/8ligand
 
 ## Fe
+mkdir output_fe/root_afterRF
 cp output_fe/* output_fe/root_afterRF/
 cp -r output_fe/root_afterRF output_fe/allLig
 cp -r output_fe/root_afterRF output_fe/4ligand
 cp -r output_fe/root_afterRF output_fe/5ligand
 cp -r output_fe/root_afterRF output_fe/6ligand
-cp -r output_fe/root_afterRF output_fe/7noheme
+cp -r output_fe/root_afterRF output_fe/noheme
 
 nice -10 ./kmeans.mnr.optimalk.R ../output_fe/allLig all 6
 nice -10 ./kmeans.mnr.optimalk.R ../output_fe/4ligand 4 6
@@ -148,6 +147,7 @@ nice -10 ./functional_characterization.R ../output_fe/6ligand && nice -10 ./meas
 nice -10 ./functional_characterization.R ../output_fe/noheme && nice -10 ./measures.vs.k.R ../output_fe/noheme 6 && ./cluster_metric_graphs.R ../output_fe/noheme
 
 ## Na
+mkdir output_na/root_afterRF
 cp output_na/* output_na/root_afterRF/
 cp -r output_na/root_afterRF output_na/allLig
 cp -r output_na/root_afterRF output_na/4ligand

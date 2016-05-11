@@ -36,34 +36,22 @@ Hbp <- c(180, 60, 60, 60, 60, 60, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90
 Cub <- c(180, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 109.5, 180, 180, 180, 70.5)
 Sqa <- c(143.6, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 70.5, 82, 82, 82, 82, 82, 82, 82, 82, 109.5, 109.5, 109.5, 109.5, 143.6, 143.6, 143.6, 143.6, 143.6, 143.6, 143.6, 70.5)
 
-rawdata1 <- read.table("r.allLig.txt", header = FALSE)
+rawdata1 <- read.table("r.allLig.txt", header = FALSE, comment.char = "")
 colnames(rawdata1) <- c("znID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
 
 ## Set the number k normal, compressed, and combined
-normal.k <- args[3]
-normal.cluster <- get(paste("normal.", normal.k, ".clusters", sep=""))
-normal.cluster[,2] <- as.numeric(normal.cluster[,2])
-
-compressed.k <- args[4]
-compressed.cluster <- get(paste("compressed.", compressed.k, ".clusters", sep=""))
-compressed.cluster[,2] <- as.numeric(compressed.cluster[,2])
-
-combined.k <- args[5]
-combined.cluster <- get(paste("combined.", combined.k, ".clusters", sep=""))
-combined.cluster[,2] <- as.numeric(combined.cluster[,2])
-
 
 ## Remove duplicate zinc ids
-dupId <- rawdata1$znID[duplicated(rawdata1$znID)]
-rawdata1 <- rawdata1[! rawdata1$znID %in% dupId,]
-dim(rawdata1)
+#dupId <- rawdata1$znID[duplicated(rawdata1$znID)]
+#rawdata1 <- rawdata1[! rawdata1$znID %in% dupId,]
+#dim(rawdata1)
 
-normal.cluster <- normal.cluster[! normal.cluster[,1] %in% dupId,]
-dim(normal.cluster)
-compressed.cluster <- compressed.cluster[! compressed.cluster[,1] %in% dupId,]
-dim(compressed.cluster)
-combined.cluster <- combined.cluster[! combined.cluster[,1] %in% dupId,]
-dim(combined.cluster)
+#normal.cluster <- normal.cluster[! normal.cluster[,1] %in% dupId,]
+#dim(normal.cluster)
+#compressed.cluster <- compressed.cluster[! compressed.cluster[,1] %in% dupId,]
+#dim(compressed.cluster)
+#combined.cluster <- combined.cluster[! combined.cluster[,1] %in% dupId,]
+#dim(combined.cluster)
 
 row.names(rawdata1) <- rawdata1$znID
 
@@ -95,6 +83,10 @@ rmsdCG <- function(cc) {
 
 
 #### normal
+normal.k <- args[3]
+normal.cluster <- get(paste("normal.", normal.k, ".clusters", sep=""))
+normal.cluster[,2] <- as.numeric(normal.cluster[,2])
+
 angles.norm <- rawdata1[normal.cluster[,1],]$angleCombo
 length(angles.norm)
 sortedAngles.normal <- t(sapply(angles.norm, function(x) angleSapce(x, args[2])))
@@ -110,6 +102,10 @@ round(apply(sortedAngles.normal, 2, function(x) tapply(x, normal.cluster[,2], sd
 round(apply(sortedAngles.normal, 2, function(x) tapply(x, normal.cluster[,2], length))[,1], digit=1)
 
 #### compressed
+compressed.k <- args[4]
+compressed.cluster <- get(paste("compressed.", compressed.k, ".clusters", sep=""))
+compressed.cluster[,2] <- as.numeric(compressed.cluster[,2])
+
 angles.comp <- rawdata1[compressed.cluster[,1],]$angleCombo
 length(angles.comp)
 sortedAngles.compressed <- t(sapply(angles.comp, function(x) angleSapce(x, args[2])))
@@ -125,6 +121,10 @@ round(apply(sortedAngles.compressed, 2, function(x) tapply(x, compressed.cluster
 round(apply(sortedAngles.compressed, 2, function(x) tapply(x, compressed.cluster[,2], length))[,1], digit=1)
 
 #### combined
+combined.k <- args[5]
+combined.cluster <- get(paste("combined.", combined.k, ".clusters", sep=""))
+combined.cluster[,2] <- as.numeric(combined.cluster[,2])
+
 angles.all <- rawdata1[combined.cluster[,1],]$angleCombo
 length(angles.all)
 sortedAngles.combined <- t(sapply(angles.all, function(x) angleSapce(x, args[2])))
@@ -140,6 +140,18 @@ round(apply(sortedAngles.combined, 2, function(x) tapply(x, combined.cluster[,2]
 round(apply(sortedAngles.combined, 2, function(x) tapply(x, combined.cluster[,2], length))[,1], digit=1)
 
 ############## Chi-squared probabilities ###################
+rawdata2 <- read.table("../ia.c68/r.chi.c68.txt", header = FALSE, comment.char = "")
+rownames(rawdata2) <- rawdata2[,1]
+bestCG <- rawdata2[normal.cluster[,1],17]
+sapply(names(table(normal.cluster[,2])), function(x) table(bestCG[which(normal.cluster[,2] == x)]) )
+
+probs <- read.table("../chiprobs.txt", header = TRUE)
+probs <- probs[! duplicated(probs[,1]), ]
+rownames(probs) <- probs[,1]
+probs.normal <- probs[normal.cluster[,1],]
+round(apply(probs.normal[2:19], 2, function(x) tapply(x, normal.cluster[,2], mean)), digit=3)
+
+
 #### normal
 #probs.normal <- data.normal[,34:38]
 #dim(probs.normal)

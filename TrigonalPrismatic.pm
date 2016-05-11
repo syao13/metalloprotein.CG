@@ -7,7 +7,8 @@ use AtomShell;
 use base "Coordination";
 
 our @defaultDataMembers = (
-			  "numAtoms" => 6
+			  "numAtoms" => 6,
+			  "degreeFreedom" => 21
 			  );
 
 our $expectedAngle90 = 90;
@@ -128,7 +129,9 @@ sub angleTestStatistic
     my $std131 = 1/sqrt($varianceOrN131);
     my $invStds = [$std90, $std90, $std90, $std90, $std90, $std90, $std70, $std70, $std70, $std131, $std131, $std131, $std131, $std131, $std131];
 
-    my $chiStat = $self->covMatChi($diff, $invStds, $invCorrM);
+    #my $chiStat = $self->covMatChi($diff, $invStds, $invCorrM);
+    my $chiStat = 0;
+    map {$chiStat += $$diff[$_] ** 2 / $$invStds[$_];} (0..(@$diff-1));
 
     #print "mean 90, $expect90, mean 70, $expect70\nangles: ";
     #print map {"$_, "; } (@angles);

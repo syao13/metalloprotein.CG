@@ -13,7 +13,7 @@ setwd(args[1])
 
 load("rf.results.RData")
 load("finalMetalList.RData")
-rawdata <- read.table("r.allLig.txt", header=FALSE)
+rawdata <- read.table("r.allLig.txt", header=FALSE, comment.char = "")
 colnames(rawdata) <- c("metalID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
 
 znList <- rawdata[rawdata[,1] %in% finalZnList & rawdata[,4] < 3, 1]

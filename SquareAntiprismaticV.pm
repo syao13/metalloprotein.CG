@@ -9,7 +9,8 @@ use POSIX qw(strftime);
 use base "Coordination";
 
 our @defaultDataMembers = (
-                          "numAtoms" => 7
+                          "numAtoms" => 7,
+                          "degreeFreedom" => 28
 			  );
 
 our $expectedAngle70 = 70.5;
@@ -150,13 +151,15 @@ sub angleTestStatistic
     my $std109 = 1/sqrt($varianceOrN109);
     my $std143 = 1/sqrt($varianceOrN143);
     my $invStds = [$std70, $std70, $std70, $std70, $std70, $std70, $std82, $std82, $std82, $std82, $std82, $std82, $std109, $std109, $std109, $std143, $std143, $std143, $std143, $std143, $std143];
-    my $chiStat = $self->covMatChi($diff, $invStds, $invCorrM);
+    #my $chiStat = $self->covMatChi($diff, $invStds, $invCorrM);
+
+    my $chiStat = 0;
+    map {$chiStat += $$diff[$_] ** 2 / $$invStds[$_];} (0..(@$diff-1));
 
     #print "mean 82, $expect82\nangles: ";
     ##print map {"$_, "; } (@angles);
     ##print "\nstd82, $std82\n";
     ##print "covariance: ", $chiStat;#, "; previous: $angleTestStat\n";
-    
     return $chiStat;
     }
   }

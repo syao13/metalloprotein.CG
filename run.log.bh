@@ -1350,7 +1350,132 @@ nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -i c
 nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.639 SON -i c 68 ../output_fe/stats.i -r ../output_fe/r.chi.c68.txt -r ../output_fe/r.chi.c68.leaveOut.txt leaveOut
 nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 O -i c 60 ../output_na/stats.i -r ../output_na/r.chi.c60.txt  -r ../output_na/r.chi.c60.leaveOut.txt leaveOut
 
+## 5.3, print probabilities for all CGs, not just the highest one.
+./metalCoordinations.pl test.zn.1.txt Zn 2.782 SON -bs stats -probs test.prob.txt 0 ../output_zn/ia.c68/stats.i.12.txt
+./metalCoordinations.pl test.zn.1.txt Zn 2.782 SON test.json.txt -bs stats -probs test.prob.txt 0 ../output_zn/ia.c68/stats.i.12.txt
 
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.782 SON ../output_zn/shells.json.txt -bs ../output_zn/stats.p -probs ../output_zn/chiprobs.txt 0 ../output_zn/ia.c68/stats.i.12.txt
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 SON ../output_mg/shells.json.txt -bs ../output_mg/stats.p 
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 SON ../output_smg/shells.json.txt -bs ../output_smg/stats.p -probs ../output_smg/chiprobs.txt 0 ../output_smg/ia.c65/stats.i.15.txt
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O ../output_ca/shells.json.txt -bs ../output_ca/stats.p -probs ../output_ca/chiprobs.txt 0 ../output_ca/ia.c60/stats.i.15.txt
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.639 SON ../output_fe/sells.json.txt -bs ../output_fe/stats.p -probs ../output_fe/chiprobs.txt 0 ../output_fe/ia.c68/stats.i.15.txt
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 O ../output_na/shells.json.txt -bs ../output_na/stats.p -probs ../output_na/chiprobs.txt 0 ../output_na/ia.c60/stats.i.15.txt
+
+## 5.5, 
+./metalCoordinations.pl test.ca.2.txt Ca 3.092 O test.json.txt -bs stats -probs test.prob.txt 0 ../output_ca/ia.c60/stats.i.20.txt
+
+./metalCoordinations.pl test.ca.2.txt Ca 3.092 O -i stats 
+./metalCoordinations.pl test.ca.2.txt Ca 3.092 O -bs stats -probs test.prob.txt 0 stats.4.txt
+
+## 5.8, rho-size simulation
+mkdir simulation ## under output_zn/simulation
+mkdir 20_1
+mkdir 20_2
+mkdir 20_3
+mkdir 20_4
+mkdir 20_5
+mkdir 20_6
+mkdir 20_7
+mkdir 20_8
+mkdir 20_9
+mkdir 20_10
+mkdir 20_11
+mkdir 20_12
+mkdir 20_13
+mkdir 20_14
+mkdir 20_15
+mkdir 20_16
+mkdir 20_17
+mkdir 20_18
+mkdir 20_19
+mkdir 20_20
+
+./run.simulation.bh 2
+./run.simulation.bh 3
+./run.simulation.bh 4
+./run.simulation.bh 5
+ 
+## remove too-close sites
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn -bs ../new_zn/stats -bondLength ../new_zn/bondlength.withC.txt > ../new_zn/out.tooclose.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca -bs ../new_ca/stats -bondLength ../new_ca/bondlength.withC.txt > ../new_ca/out.tooclose.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe -bs ../new_fe/stats -bondLength ../new_fe/bondlength.withC.txt > ../new_fe/out.tooclose.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na -bs ../new_na/stats -bondLength ../new_na/bondlength.withC.txt > ../new_na/out.tooclose.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg -bs ../new_mg/stats -bondLength ../new_mg/bondlength.withC.txt > ../new_mg/out.tooclose.txt &
+
+## The above actually doesn't get affected by too-close filter
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.782 SON ../new_zn/json.txt -dd ../new_zn/stats.r -r ../new_zn/r.allLig.txt -rf ../new_zn/rf.smallest.txt -s a s ../new_zn/seqs.ATOM.shell.txt -s s s ../new_zn/seqs.SEQRES.shell.txt -s s b ../new_zn/seqs.SEQRES.bind.txt -bondLength ../new_zn/bondlength.r.txt > ../new_zn/out.tooclose.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O ../new_ca/json.txt -dd ../new_ca/stats.r -r ../new_ca/r.allLig.txt -rf ../new_ca/rf.smallest.txt -s a s ../new_ca/seqs.ATOM.shell.txt -s s s ../new_ca/seqs.SEQRES.shell.txt -s s b ../new_ca/seqs.SEQRES.bind.txt -bondLength ../new_ca/bondlength.r.txt > ../new_ca/out.tooclose.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.639 SON ../new_fe/json.txt -dd ../new_fe/stats.r -r ../new_fe/r.allLig.txt -rf ../new_fe/rf.smallest.txt -s a s ../new_fe/seqs.ATOM.shell.txt -s s s ../new_fe/seqs.SEQRES.shell.txt -s s b ../new_fe/seqs.SEQRES.bind.txt -bondLength ../new_fe/bondlength.r.txt > ../new_fe/out.tooclose.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 ON ../new_na/json.txt -dd ../new_na/stats.r -r ../new_na/r.allLig.txt -rf ../new_na/rf.smallest.txt -s a s ../new_na/seqs.ATOM.shell.txt -s s s ../new_na/seqs.SEQRES.shell.txt -s s b ../new_na/seqs.SEQRES.bind.txt -bondLength ../new_na/bondlength.r.txt > ../new_na/out.tooclose.txt &
+
+./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 ON ../new_mg/json.txt -dd ../new_mg/stats.r -r ../new_mg/r.allLig.txt -rf ../new_mg/rf.smallest.txt -s a s ../new_mg/seqs.ATOM.shell.txt -s s s ../new_mg/seqs.SEQRES.shell.txt -s s b ../new_mg/seqs.SEQRES.bind.txt -bondLength ../new_mg/bondlength.r.txt > ../new_mg/out.tooclose.txt 
+
+## 5.9
+./seq_alignment.R ../new_zn/
+#./seq_alignment.R ../new_mg/
+./seq_alignment.R ../new_ca/
+./seq_alignment.R ../new_fe/
+./seq_alignment.R ../new_na/
+
+## non redundant test
+./nonRedundancy.R ../new_zn/
+#./nonRedundancy.R ../new_mg/
+./nonRedundancy.R ../new_ca/
+./nonRedundancy.R ../new_fe/
+./nonRedundancy.R ../new_na/
+
+./write_fasta.R ../new_zn/ && ./write_fasta.R ../new_ca/ && ./write_fasta.R ../new_fe/ && ./write_fasta.R ../new_na/
+#./write_fasta.R ../new_mg/ 
+
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/new_zn
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+#output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/new_mg
+#/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/new_ca
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/new_fe
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/new_na
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+
+./rf.smallAngle.R ../new_zn 58 68
+#./rf.smallAngle.R ../new_mg 52 68
+./rf.smallAngle.R ../new_ca 55 65
+./rf.smallAngle.R ../new_fe 63 73
+./rf.smallAngle.R ../new_na 45 60
+
+
+## after using the normal chi for Sqa and  Tpr
+#nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.782 SON -i c 68 ../output_zn/stats.i -r ../output_zn/r.chi.c68.txt -r ../output_zn/r.chi.c68.leaveOut.txt leaveOut
+#nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 SON -i c 65 ../output_smg/stats.i -r ../output_smg/r.chi.c65.txt -r ../output_smg/r.chi.c65.leaveOut.txt leaveOut
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -i c 60 ../output_ca/ia.modefiedChi/stats.i -r ../output_ca/ia.modefiedChi/r.chi.c60.txt -r ../output_ca/ia.modefiedChi/r.chi.c60.leaveOut.txt leaveOut > ../output_ca/ia.modefiedChi/out.txt 
+#nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.639 SON -i c 68 ../output_fe/stats.i -r ../output_fe/r.chi.c68.txt -r ../output_fe/r.chi.c68.leaveOut.txt leaveOut
+#nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 O -i c 60 ../output_na/stats.i -r ../output_na/r.chi.c60.txt  -r ../output_na/r.chi.c60.leaveOut.txt leaveOut
+
+## 5.10, run most with run.fullanalysis.bh, but changed the stru-func correlation to handle ties
+nice -10 ./measures.vs.k.R ../output_zn/allLig 6 && ./cluster_metric_graphs.R ../output_zn/allLig
+nice -10 ./measures.vs.k.R ../output_zn/4ligand 6 && ./cluster_metric_graphs.R ../output_zn/4ligand
+nice -10 ./measures.vs.k.R ../output_zn/5ligand 6 && ./cluster_metric_graphs.R ../output_zn/5ligand
+nice -10 ./measures.vs.k.R ../output_zn/6ligand 6 && ./cluster_metric_graphs.R ../output_zn/6ligand
+
+nice -10 ./measures.vs.k.R ../output_ca/allLig 6 && ./cluster_metric_graphs.R ../output_ca/allLig
+nice -10 ./measures.vs.k.R ../output_ca/4ligand 6 && ./cluster_metric_graphs.R ../output_ca/4ligand
+nice -10 ./measures.vs.k.R ../output_ca/5ligand 6 && ./cluster_metric_graphs.R ../output_ca/5ligand
+nice -10 ./measures.vs.k.R ../output_ca/6ligand 6 && ./cluster_metric_graphs.R ../output_ca/6ligand
+nice -10 ./measures.vs.k.R ../output_ca/7ligand 6 && ./cluster_metric_graphs.R ../output_ca/7ligand
+nice -10 ./measures.vs.k.R ../output_ca/8ligand 6 && ./cluster_metric_graphs.R ../output_ca/8ligand
+
+nice -10 ./measures.vs.k.R ../output_fe/allLig 6 && ./cluster_metric_graphs.R ../output_fe/allLig
+nice -10 ./measures.vs.k.R ../output_fe/4ligand 6 && ./cluster_metric_graphs.R ../output_fe/4ligand
+nice -10 ./measures.vs.k.R ../output_fe/5ligand 6 && ./cluster_metric_graphs.R ../output_fe/5ligand
+nice -10 ./measures.vs.k.R ../output_fe/6ligand 6 && ./cluster_metric_graphs.R ../output_fe/6ligand
+nice -10 ./measures.vs.k.R ../output_fe/noheme 6 && ./cluster_metric_graphs.R ../output_fe/noheme
+
+nice -10 ./measures.vs.k.R ../output_na/allLig 6 && ./cluster_metric_graphs.R ../output_na/allLig
+nice -10 ./measures.vs.k.R ../output_na/4ligand 6 && ./cluster_metric_graphs.R ../output_na/4ligand
+nice -10 ./measures.vs.k.R ../output_na/5ligand 6 && ./cluster_metric_graphs.R ../output_na/5ligand
+nice -10 ./measures.vs.k.R ../output_na/6ligand 6 && ./cluster_metric_graphs.R ../output_na/6ligand
+nice -10 ./measures.vs.k.R ../output_na/7ligand 6 && ./cluster_metric_graphs.R ../output_na/7ligand
 
 
 

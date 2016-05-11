@@ -179,6 +179,7 @@ sub bestTestStatistic
 	my $testStatistics = $angleChi + $distChi;
 	my $probability = &Statistics::Distributions::chisqrprob($df, $testStatistics);
 
+#print "prob, $angleChi, $testStatistics, $df, $probability\n\n" if (ref $self eq "SquareAntiprismatic");
 	if ((! $bestScore) || $probability > $bestScore)
 	  { 
 	  $bestOrder = $orderedCombo;
@@ -211,7 +212,9 @@ sub degreeFreedom
   { 
   my $self = shift @_;
 
-  return ( $self->{numAtoms} * 3 - 3 );
+  if ($self->{degreeFreedom}) 
+    { return $self->{degreeFreedom}; }
+  else { return ( $self->{numAtoms} * 3 - 3 );}
   }
 
 

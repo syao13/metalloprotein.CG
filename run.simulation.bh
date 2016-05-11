@@ -1,10 +1,10 @@
 ##!/usr/bash
 
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 1 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 1 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 1
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 2 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 2 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 2
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 3 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 3 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 3
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 4 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 4 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 4
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 5 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 5 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 5
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 1 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 1 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 1
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 2 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 2 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 2
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 3 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 3 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 3
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 4 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 4 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 4
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 5 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 5 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 5
 
 echo
 echo "###########################"
@@ -12,11 +12,11 @@ echo "Rep 1-5 done."
 echo "###########################"
 echo
 
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 6 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 6 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 6
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 7 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 7 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 7
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 8 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 8 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 8
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 9 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 9 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 9
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 10 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 10 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 10
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 6 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 6 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 6
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 7 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 7 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 7
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 8 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 8 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 8
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 9 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 9 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 9
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 10 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 10 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 10
 
 echo
 echo "###########################"
@@ -24,11 +24,11 @@ echo "Rep 6-10 done."
 echo "###########################"
 echo
 
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 11 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 11 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 11
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 12 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 12 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 12
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 13 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 13 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 13
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 14 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 14 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 14
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 15 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 15 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 15
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 11 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 11 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 11
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 12 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 12 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 12
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 13 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 13 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 13
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 14 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 14 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 14
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 15 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 15 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 15
 
 echo
 echo "###########################"
@@ -36,11 +36,11 @@ echo "Rep 11-15 done."
 echo "###########################"
 echo
 
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 16 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 16 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 16
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 17 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 17 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 17
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 18 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 18 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 18
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 19 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 19 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 19
-nice -10 ./kmeans.mnr.optimalk.5.R ../Zn_results/4ligand_6 4 6 $1 20 && nice -10 ./functional_characterization.1.R ../Zn_results/4ligand_6 $1 20 && nice -10 ./measures.vs.k.2.R ../Zn_results/4ligand_6 6 $1 20
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 16 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 16 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 16
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 17 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 17 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 17
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 18 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 18 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 18
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 19 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 19 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 19
+nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 20 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 20 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 20
 
 echo
 echo "###########################"
