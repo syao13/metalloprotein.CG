@@ -1,4 +1,26 @@
 ##!/usr/bash
+#mkdir ../output_zn/4ligand/simulation 
+mkdir ../output_zn/4ligand/simulation/$1_1
+mkdir ../output_zn/4ligand/simulation/$1_2
+mkdir ../output_zn/4ligand/simulation/$1_3
+mkdir ../output_zn/4ligand/simulation/$1_4
+mkdir ../output_zn/4ligand/simulation/$1_5
+mkdir ../output_zn/4ligand/simulation/$1_6
+mkdir ../output_zn/4ligand/simulation/$1_7
+mkdir ../output_zn/4ligand/simulation/$1_8
+mkdir ../output_zn/4ligand/simulation/$1_9
+mkdir ../output_zn/4ligand/simulation/$1_10
+mkdir ../output_zn/4ligand/simulation/$1_11
+mkdir ../output_zn/4ligand/simulation/$1_12
+mkdir ../output_zn/4ligand/simulation/$1_13
+mkdir ../output_zn/4ligand/simulation/$1_14
+mkdir ../output_zn/4ligand/simulation/$1_15
+mkdir ../output_zn/4ligand/simulation/$1_16
+mkdir ../output_zn/4ligand/simulation/$1_17
+mkdir ../output_zn/4ligand/simulation/$1_18
+mkdir ../output_zn/4ligand/simulation/$1_19
+mkdir ../output_zn/4ligand/simulation/$1_20
+
 
 nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 1 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 1 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 1
 nice -10 ./kmeans.mnr.optimalk.5.R ../output_zn/4ligand 4 6 $1 2 && nice -10 ./functional_characterization.1.R ../output_zn/4ligand $1 2 && nice -10 ./measures.vs.k.2.R ../output_zn/4ligand 6 $1 2

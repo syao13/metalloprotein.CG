@@ -82,6 +82,7 @@ sub angleTestStatistic
   my $type = shift @_;
   my $combo = shift @_;
   my $angleStats = shift @_;
+  my $distChi = shift @_;
   my $leaveOut = (@_)? shift @_: 0;
 
   my ($mean72, $mean144, $mean90, $mean180, $varianceOrN72, $varianceOrN90, $varianceOrN144, $varianceOrN180);
@@ -136,7 +137,64 @@ sub angleTestStatistic
     my $std144 = 1/sqrt($varianceOrN144);
     my $invStds = [$std72, $std72, $std72, $std72, $std72, $std90, $std90, $std90, $std90, $std90, $std90, $std90, $std90, $std90, $std90, $std144, $std144, $std144, $std144, $std144];
 
+    my $chiStat = 0;
+    map {$chiStat += ($$diff[$_] * $$invStds[$_])**2;} (0..(@$diff-1));
+    $chiStat += $distChi;
+    my $prob0 = &Statistics::Distributions::chisqrprob(28, $chiStat);
+
+    my $chiStat = 0;
+    map {$chiStat += ($$diff[$_] * $$invStds[$_] / 1.1)**2;} (0..(@$diff-1));
+    $chiStat += $distChi;
+    my $prob1 = &Statistics::Distributions::chisqrprob(28, $chiStat);
+
+    my $chiStat = 0;
+    map {$chiStat += ($$diff[$_] * $$invStds[$_] / 1.2)**2;} (0..(@$diff-1));
+    $chiStat += $distChi;
+    my $prob2 = &Statistics::Distributions::chisqrprob(28, $chiStat);
+
+    my $chiStat = 0;
+    map {$chiStat += ($$diff[$_] * $$invStds[$_] / 1.3)**2;} (0..(@$diff-1));
+    $chiStat += $distChi;
+    my $prob3 = &Statistics::Distributions::chisqrprob(28, $chiStat);
+
+    my $chiStat = 0;
+    map {$chiStat += ($$diff[$_] * $$invStds[$_] / 1.4)**2;} (0..(@$diff-1));
+    $chiStat += $distChi;
+    my $prob4 = &Statistics::Distributions::chisqrprob(28, $chiStat);
+
+    my $chiStat = 0;
+    map {$chiStat += ($$diff[$_] * $$invStds[$_] / 1.5)**2;} (0..(@$diff-1));
+    $chiStat += $distChi;
+    my $prob5 = &Statistics::Distributions::chisqrprob(28, $chiStat);
+
+    my $chiStat = 0;
+    map {$chiStat += ($$diff[$_] * $$invStds[$_] / 1.6)**2;} (0..(@$diff-1));
+    $chiStat += $distChi;
+    my $prob6 = &Statistics::Distributions::chisqrprob(28, $chiStat);
+
+    my $chiStat = 0;
+    map {$chiStat += ($$diff[$_] * $$invStds[$_] / 1.7)**2;} (0..(@$diff-1));
+    $chiStat += $distChi;
+    my $prob7 = &Statistics::Distributions::chisqrprob(28, $chiStat);
+
+    my $chiStat = 0;
+    map {$chiStat += ($$diff[$_] * $$invStds[$_] / 1.8)**2;} (0..(@$diff-1));
+    $chiStat += $distChi;
+    my $prob8 = &Statistics::Distributions::chisqrprob(28, $chiStat);
+
+    my $chiStat = 0;
+    map {$chiStat += ($$diff[$_] * $$invStds[$_] / 1.9)**2;} (0..(@$diff-1));
+    $chiStat += $distChi;
+    my $prob9 = &Statistics::Distributions::chisqrprob(28, $chiStat);
+
+    my $chiStat = 0;
+    map {$chiStat += ($$diff[$_] * $$invStds[$_] / 2)**2;} (0..(@$diff-1));
+    $chiStat += $distChi;
+    my $prob10 = &Statistics::Distributions::chisqrprob(28, $chiStat);
+
     my $chiStat = $self->covMatChi($diff, $invStds, $invCorrM);
+    my $prob = &Statistics::Distributions::chisqrprob(18, $chiStat+ $distChi);
+print $self->{shellObj}->metalID(), ", ", ref $self, ", $prob0, $prob1, $prob2, $prob3, $prob4, $prob5, $prob6, $prob7, $prob8, $prob9, $prob10, $prob\n" if $prob > 0.5;
 
     #print "mean 90, $expect90\nangles: ";
     ##print map {"$_, "; } (@angles);

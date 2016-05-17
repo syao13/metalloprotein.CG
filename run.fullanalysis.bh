@@ -184,6 +184,7 @@ output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_all
 ## Combined RF prediction results
 ./combine.predictions.R
 
+mkdir ../output_all/root_afterRF/
 cp ../output_all/* ../output_all/root_afterRF/
 cp -r ../output_all/root_afterRF ../output_all/allLig
 cp -r ../output_all/root_afterRF ../output_all/4ligand

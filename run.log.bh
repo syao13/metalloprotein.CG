@@ -1412,25 +1412,20 @@ mkdir 20_20
 
 ## 5.9
 ./seq_alignment.R ../new_zn/
-#./seq_alignment.R ../new_mg/
 ./seq_alignment.R ../new_ca/
 ./seq_alignment.R ../new_fe/
 ./seq_alignment.R ../new_na/
 
 ## non redundant test
 ./nonRedundancy.R ../new_zn/
-#./nonRedundancy.R ../new_mg/
 ./nonRedundancy.R ../new_ca/
 ./nonRedundancy.R ../new_fe/
 ./nonRedundancy.R ../new_na/
 
 ./write_fasta.R ../new_zn/ && ./write_fasta.R ../new_ca/ && ./write_fasta.R ../new_fe/ && ./write_fasta.R ../new_na/
-#./write_fasta.R ../new_mg/ 
 
 output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/new_zn
 /mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
-#output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/new_mg
-#/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
 output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/new_ca
 /mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
 output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/new_fe
@@ -1439,7 +1434,6 @@ output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/new_na
 /mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
 
 ./rf.smallAngle.R ../new_zn 58 68
-#./rf.smallAngle.R ../new_mg 52 68
 ./rf.smallAngle.R ../new_ca 55 65
 ./rf.smallAngle.R ../new_fe 63 73
 ./rf.smallAngle.R ../new_na 45 60
@@ -1477,6 +1471,35 @@ nice -10 ./measures.vs.k.R ../output_na/5ligand 6 && ./cluster_metric_graphs.R .
 nice -10 ./measures.vs.k.R ../output_na/6ligand 6 && ./cluster_metric_graphs.R ../output_na/6ligand
 nice -10 ./measures.vs.k.R ../output_na/7ligand 6 && ./cluster_metric_graphs.R ../output_na/7ligand
 
+
+## 5.11, hypnos got rebooted, had to rerun 
+nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 ON ../output_mg/json.txt -dd ../output_mg/stats.r -r ../output_mg/r.allLig.txt -rf ../output_mg/rf.smallest.txt -s a s ../output_mg/seqs.ATOM.shell.txt -s s s ../output_mg/seqs.SEQRES.shell.txt -s s b ../output_mg/seqs.SEQRES.bind.txt -bondLength ../output_mg/bondlength.r.txt > ../output_mg/out.tooclose.txt
+
+
+## 5.12, finish with Mg
+./seq_alignment.R ../output_mg/
+./nonRedundancy.R ../output_mg/
+./write_fasta.R ../output_mg/ 
+output_dir=/mlab/data/sen/projects/metal/go_ec_analysis/output_mg
+/mlab/data/software/interproscan-5.18-57.0/interproscan.sh -i $output_dir/non_redundant.fa -f tsv -iprlookup -pa -goterms -o $output_dir/non_redundant.ipr.tsv
+./rf.smallAngle.R ../output_mg 52 68
+
+mkdir ../output_mg/root_afterRF/
+cp ../output_mg/* ../output_mg/root_afterRF/.
+cp -r ../output_mg/root_afterRF ../output_mg/allLig
+cp -r ../output_mg/root_afterRF ../output_mg/4ligand
+cp -r ../output_mg/root_afterRF ../output_mg/5ligand
+cp -r ../output_mg/root_afterRF ../output_mg/6ligand
+
+nice -10 ./kmeans.mnr.optimalk.R ../output_mg/allLig all 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_mg/4ligand 4 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_mg/5ligand 5 6
+nice -10 ./kmeans.mnr.optimalk.R ../output_mg/6ligand 6 6
+
+nice -10 ./functional_characterization.R ../output_mg/allLig && nice -10 ./measures.vs.k.R ../output_mg/allLig 6 && ./cluster_metric_graphs.R ../output_mg/allLig
+nice -10 ./functional_characterization.R ../output_mg/4ligand && nice -10 ./measures.vs.k.R ../output_mg/4ligand 6 && ./cluster_metric_graphs.R ../output_mg/4ligand
+nice -10 ./functional_characterization.R ../output_mg/5ligand && nice -10 ./measures.vs.k.R ../output_mg/5ligand 6 && ./cluster_metric_graphs.R ../output_mg/5ligand
+nice -10 ./functional_characterization.R ../output_mg/6ligand && nice -10 ./measures.vs.k.R ../output_mg/6ligand 6 && ./cluster_metric_graphs.R ../output_mg/6ligand
 
 
 
