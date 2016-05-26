@@ -1501,7 +1501,56 @@ nice -10 ./functional_characterization.R ../output_mg/4ligand && nice -10 ./meas
 nice -10 ./functional_characterization.R ../output_mg/5ligand && nice -10 ./measures.vs.k.R ../output_mg/5ligand 6 && ./cluster_metric_graphs.R ../output_mg/5ligand
 nice -10 ./functional_characterization.R ../output_mg/6ligand && nice -10 ./measures.vs.k.R ../output_mg/6ligand 6 && ./cluster_metric_graphs.R ../output_mg/6ligand
 
+## Use 1.5 variance on no correlation chi prob calculation
+mkdir ../output_ca/ia.c60/
+./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -i c 60 ../output_ca/ia.c60/stats.i -r ../output_ca/ia.c60/r.chi.txt -r ../output_ca/ia.c60/r.chi.leaveOut.txt leaveOut -probs ../output_ca/ia.c60/probs.txt 0 -probs ../output_ca/ia.c60/probs.leaveOut.txt leaveOut > ../output_ca/ia.c60/out.txt 
+
+## 5.18
+#mkdir ../output_zn/ia.c68/
+#./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.782 SON -i c 68 ../output_zn/ia.c68/stats.i -r ../output_zn/ia.c68/r.chi.txt -r ../output_zn/ia.c68/r.chi.leaveOut.txt leaveOut -probs ../output_zn/ia.c68/probs.txt 0 -probs ../output_zn/ia.c68/probs.leaveOut.txt leaveOut > ../output_zn/ia.c68/out.txt
+## did not work
+
+## 5.19
+mkdir ../output_fe/ia.c68/
+./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.639 SON -i c 68 ../output_fe/ia.c68/stats.i -r ../output_fe/ia.c68/r.chi.txt -r ../output_fe/ia.c68/r.chi.leaveOut.txt leaveOut -probs ../output_fe/ia.c68/probs.txt 0 -probs ../output_fe/ia.c68/probs.leaveOut.txt leaveOut > ../output_fe/ia.c68/out.txt
+
+# 5.21
+mkdir ../output_na/ia.c60/
+./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 O -i c 60 ../output_na/ia.c60/stats.i -r ../output_na/ia.c60/r.chi.txt -r ../output_na/ia.c60/r.chi.leaveOut.txt leaveOut -probs ../output_na/ia.c60/probs.txt 0 -probs ../output_na/ia.c60/probs.leaveOut.txt leaveOut > ../output_na/ia.c60/out.txt
+
+mkdir ../output_mg/ia.c65/
+./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 SON -i c 65 ../output_mg/ia.c65/stats.i -r ../output_mg/ia.c65/r.chi.txt -r ../output_mg/ia.c65/r.chi.leaveOut.txt leaveOut -probs ../output_mg/ia.c65/probs.txt 0 -probs ../output_mg/ia.c65/probs.leaveOut.txt leaveOut > ../output_mg/ia.c65/out.txt
+
+./metalCoordinations.pl ../metalPDB/protein_list_Zn.txt Zn 2.782 SON -i c 68 ../output_zn/ia.c68/stats.i -r ../output_zn/ia.c68/r.chi.txt -r ../output_zn/ia.c68/r.chi.leaveOut.txt leaveOut -probs ../output_zn/ia.c68/probs.txt 0 -probs ../output_zn/ia.c68/probs.leaveOut.txt leaveOut > ../output_zn/ia.c68/out.txt
 
 
+## 5.25, the simulation was incorrect b/c kmeans.5 ordered the rawdata by id,
 
+## The simulation average probability code was in the simulation folder
+./simulation.rhop.R 1 normal 9
+./simulation.rhop.R 2 normal 9
+./simulation.rhop.R 3 normal 9
+./simulation.rhop.R 4 normal 9
+./simulation.rhop.R 5 normal 9
+./simulation.rhop.R 6 normal 9
+./simulation.rhop.R 7 normal 9
+./simulation.rhop.R 8 normal 9
+./simulation.rhop.R 9 normal 9
+./simulation.rhop.R 10 normal 9
+./simulation.rhop.R 11 normal 9
+./simulation.rhop.R 12 normal 9
+./simulation.rhop.R 13 normal 9
+./simulation.rhop.R 14 normal 9
+./simulation.rhop.R 15 normal 9
+./simulation.rhop.R 16 normal 9
+./simulation.rhop.R 17 normal 9
+./simulation.rhop.R 18 normal 9
+./simulation.rhop.R 19 normal 9
+./simulation.rhop.R 20 normal 9
+./simulation.rhop.R 1.25 normal 9
+./simulation.rhop.R 1.5 normal 9
+./simulation.rhop.R 1.75 normal 9
+
+./simulation.rhop.R 1 normal 11
+./simulation.rhop.R 1 normal 13
 

@@ -317,7 +317,8 @@ sub probPrint
   my $leaveOut = shift @_;
   my $statsFile = shift @_;
   
-  my $stats = &readTableFile($statsFile);
+  my $stats = ($statsFile)? &readTableFile($statsFile) : $analyzer->{stats};
+
   $analyzer->calcChiCoordination(0, 0, $leaveOut, $stats, $probInputFile);
   }
 

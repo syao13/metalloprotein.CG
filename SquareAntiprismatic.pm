@@ -169,7 +169,7 @@ sub angleTestStatistic
 
     #my $chiStat = $self->covMatChi($diff, $invStds, $invCorrM);
     my $chiStat = 0;
-    map {$chiStat += ($$diff[$_] * $$invStds[$_])**2;} (0..(@$diff-1));
+    map {$chiStat += ($$diff[$_] * $$invStds[$_] / 1.5)**2;} (0..(@$diff-1));
 
     #print "mean 82, $expect82\nangles: ";
     ##print map {"$_, "; } (@angles);

@@ -13,22 +13,11 @@ setwd(args[1])
 
 load("rf.results.RData")
 load("finalMetalList.RData")
-rawdata <- read.table("r.allLig.txt", header=FALSE, comment.char = "")
-colnames(rawdata) <- c("metalID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
+data <- read.table("r.allLig.txt", header=FALSE, comment.char = "")
+colnames(data) <- c("metalID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
 
-znList <- rawdata[rawdata[,1] %in% finalZnList & rawdata[,4] < 3, 1]
-id <- rawdata[,1]
-orderid <- order(id)
-data <- rawdata[orderid,]
-
+znList <- data[data[,1] %in% finalZnList & data[,4] < 3, 1]
 ligNum <- sapply(data$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
-
-angles <- data$angleCombo
-bidentates <- data$biStatusCombo
-ligands <- data$ligandCombo
-
-resolution <- data$resolution
-anglesU <- angles
 
 #### Define the data into normal and compressed from rf prediciton on 58-68 angles.
 ind.normal <- prediction.all=="normal" & ligNum == args[2]
@@ -147,7 +136,7 @@ library(parallel)
 sumdiff.norm <- sumdiff.comp <- sumdiff.all <- 0
 jaccard.norm <- jaccard.comp <- jaccard.all <- 0
 nangle <- dim(angle.sorted.all)[2]
-nrep <- 500
+nrep <- 5
 
 date()
 resultList <- mclapply(1:30, function(x) kmeansStab(angle.sorted.norm, x, nrep), mc.cores=10)
@@ -162,36 +151,37 @@ for (i in 1:length(resultList)){
 }
 
 date()
-resultList <- mclapply(1:30, function(x) kmeansStab(angle.sorted.comp, x, nrep), mc.cores=10)
-for (i in 1:length(resultList)){
-  k <- length(resultList[[i]]$mean)/nangle
+#resultList <- mclapply(1:30, function(x) kmeansStab(angle.sorted.comp, x, nrep), mc.cores=10)
+#for (i in 1:length(resultList)){
+#  k <- length(resultList[[i]]$mean)/nangle
 
-  sumdiff.comp[k] <- mean(resultList[[i]]$distance[resultList[[i]]$distance!=-1])/k
-  jaccard.comp[k] <- mean(resultList[[i]]$jaccard[resultList[[i]]$jaccard!=-1])/k
-  cluster <- resultList[[i]]$cluster
-  clusterAssg <- cbind(compressed.nr[,1], cluster)
-  assign(paste("compressed.", k, ".clusters",  sep=""), clusterAssg)
-}
+#  sumdiff.comp[k] <- mean(resultList[[i]]$distance[resultList[[i]]$distance!=-1])/k
+#  jaccard.comp[k] <- mean(resultList[[i]]$jaccard[resultList[[i]]$jaccard!=-1])/k
+#  cluster <- resultList[[i]]$cluster
+#  clusterAssg <- cbind(compressed.nr[,1], cluster)
+#  assign(paste("compressed.", k, ".clusters",  sep=""), clusterAssg)
+#}
 
-date()
-resultList <- mclapply(1:30, function(x) kmeansStab(angle.sorted.all, x, nrep), mc.cores=10)
-for (i in 1:length(resultList)){
-  k <- length(resultList[[i]]$mean)/nangle
+#date()
+#resultList <- mclapply(1:30, function(x) kmeansStab(angle.sorted.all, x, nrep), mc.cores=10)
+#for (i in 1:length(resultList)){
+#  k <- length(resultList[[i]]$mean)/nangle
 
-  sumdiff.all[k] <- mean(resultList[[i]]$distance[resultList[[i]]$distance!=-1])/k
-  jaccard.all[k] <- mean(resultList[[i]]$jaccard[resultList[[i]]$jaccard!=-1])/k
-  cluster <- resultList[[i]]$cluster
-  clusterAssg <- cbind(all.nr[,1], cluster)
-  assign(paste("combined.", k, ".clusters",  sep=""), clusterAssg)
-}
-date()
+#  sumdiff.all[k] <- mean(resultList[[i]]$distance[resultList[[i]]$distance!=-1])/k
+#  jaccard.all[k] <- mean(resultList[[i]]$jaccard[resultList[[i]]$jaccard!=-1])/k
+#  cluster <- resultList[[i]]$cluster
+#  clusterAssg <- cbind(all.nr[,1], cluster)
+#  assign(paste("combined.", k, ".clusters",  sep=""), clusterAssg)
+#}
+#date()
 
 setwd(paste("./simulation/", args[4], "_", args[5], sep=""))
 save(list=sapply(1:30, function(x) paste0("normal.", x, ".clusters",  sep="")), file="normal_cluster_assg.RData")
-save(list=sapply(1:30, function(x) paste0("compressed.", x, ".clusters",  sep="")), file="compressed_cluster_assg.RData")
-save(list=sapply(1:30, function(x) paste0("combined.", x, ".clusters",  sep="")), file="combined_cluster_assg.RData")
+#save(list=sapply(1:30, function(x) paste0("compressed.", x, ".clusters",  sep="")), file="compressed_cluster_assg.RData")
+#save(list=sapply(1:30, function(x) paste0("combined.", x, ".clusters",  sep="")), file="combined_cluster_assg.RData")
 
-save(list=c("sumdiff.norm", "jaccard.norm", "sumdiff.comp", "jaccard.comp", "sumdiff.all", "jaccard.all"), file="two_measures_over_k.RData")
+save(list=c("sumdiff.norm", "jaccard.norm"), file="two_measures_over_k.RData")
+#save(list=c("sumdiff.norm", "jaccard.norm", "sumdiff.comp", "jaccard.comp", "sumdiff.all", "jaccard.all"), file="two_measures_over_k.RData")
 # load("~/Desktop/zinc.CG.2015/two_measures_over_k.RData")
 
 #sumdiff.norm

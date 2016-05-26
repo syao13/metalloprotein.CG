@@ -140,12 +140,12 @@ round(apply(sortedAngles.combined, 2, function(x) tapply(x, combined.cluster[,2]
 round(apply(sortedAngles.combined, 2, function(x) tapply(x, combined.cluster[,2], length))[,1], digit=1)
 
 ############## Chi-squared probabilities ###################
-rawdata2 <- read.table("../ia.c68/r.chi.c68.txt", header = FALSE, comment.char = "")
+rawdata2 <- read.table("../ia.c68/r.chi.txt", header = FALSE, comment.char = "")
 rownames(rawdata2) <- rawdata2[,1]
 bestCG <- rawdata2[normal.cluster[,1],17]
 sapply(names(table(normal.cluster[,2])), function(x) table(bestCG[which(normal.cluster[,2] == x)]) )
 
-probs <- read.table("../chiprobs.txt", header = TRUE)
+probs <- read.table("../ia.c68/probs.txt", header = TRUE)
 probs <- probs[! duplicated(probs[,1]), ]
 rownames(probs) <- probs[,1]
 probs.normal <- probs[normal.cluster[,1],]

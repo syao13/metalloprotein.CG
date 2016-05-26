@@ -175,7 +175,7 @@ sub bestTestStatistic
 	}
       else
 	{
-	my $angleChi = $self->angleTestStatistic($type, $orderedCombo, $$angleDistStats{"angle"}, $distChi, $leaveOut);
+	my $angleChi = $self->angleTestStatistic($type, $orderedCombo, $$angleDistStats{"angle"}, $leaveOut);
 	my $testStatistics = $angleChi + $distChi;
 	my $probability = &Statistics::Distributions::chisqrprob($df, $testStatistics);
 

@@ -42,20 +42,20 @@ rownames(angles.normal) <- NULL
 dim(angles.normal)
 
 ## compressed
-load("compressed_cluster_assg.RData")
-data.compressed <- rawdata[sapply(compressed.1.clusters[,1], function(x) which(rawdata[,1] == x)[1]),]
-angles.comp <- data.compressed$angleCombo
-angles.compressed <- t(sapply(angles.comp, function(x) angleSapce(x, args[2])))
-rownames(angles.compressed) <- NULL
-dim(angles.compressed)
+#load("compressed_cluster_assg.RData")
+#data.compressed <- rawdata[sapply(compressed.1.clusters[,1], function(x) which(rawdata[,1] == x)[1]),]
+#angles.comp <- data.compressed$angleCombo
+#angles.compressed <- t(sapply(angles.comp, function(x) angleSapce(x, args[2])))
+#rownames(angles.compressed) <- NULL
+#dim(angles.compressed)
 
 ## combined
-load("combined_cluster_assg.RData")
-data.combined <- rawdata[sapply(combined.1.clusters[,1], function(x) which(rawdata[,1] == x)[1]),]
-angles.comb <- data.combined$angleCombo
-angles.combined <- t(sapply(angles.comb, function(x) angleSapce(x, args[2])))
-rownames(angles.combined) <- NULL
-dim(angles.combined)
+#load("combined_cluster_assg.RData")
+#data.combined <- rawdata[sapply(combined.1.clusters[,1], function(x) which(rawdata[,1] == x)[1]),]
+#angles.comb <- data.combined$angleCombo
+#angles.combined <- t(sapply(angles.comb, function(x) angleSapce(x, args[2])))
+#rownames(angles.combined) <- NULL
+#dim(angles.combined)
 
 ###### Compute all distance matrices for all k
 getDistM <- function(selectAngles, clusters) {
@@ -95,21 +95,21 @@ distMats <- mclapply(1:30, function(x) {
 }, mc.cores=10)
 for (i in 1:30) { assign(paste("dist.struct.norm.", dim(distMats[[i]])[1],  sep=""), distMats[[i]])}
 
-distMats <- mclapply(1:30, function(x) {
-        clusters <- get(paste("compressed.",x,".clusters", sep=""))
-        getDistM(angles.compressed, as.numeric(clusters[,2]))
-}, mc.cores=10)
-for (i in 1:30) { assign(paste("dist.struct.comp.", dim(distMats[[i]])[1],  sep=""), distMats[[i]])}
+#distMats <- mclapply(1:30, function(x) {
+#        clusters <- get(paste("compressed.",x,".clusters", sep=""))
+#        getDistM(angles.compressed, as.numeric(clusters[,2]))
+#}, mc.cores=10)
+#for (i in 1:30) { assign(paste("dist.struct.comp.", dim(distMats[[i]])[1],  sep=""), distMats[[i]])}
 
-distMats <- mclapply(1:30, function(x) {
-        clusters <- get(paste("combined.",x,".clusters", sep=""))
-        getDistM(angles.combined, as.numeric(clusters[,2]))
-}, mc.cores=10)
-for (i in 1:30) { assign(paste("dist.struct.comb.", dim(distMats[[i]])[1],  sep=""), distMats[[i]])}
+#distMats <- mclapply(1:30, function(x) {
+#        clusters <- get(paste("combined.",x,".clusters", sep=""))
+#        getDistM(angles.combined, as.numeric(clusters[,2]))
+#}, mc.cores=10)
+#for (i in 1:30) { assign(paste("dist.struct.comb.", dim(distMats[[i]])[1],  sep=""), distMats[[i]])}
 
 save(list=sapply(1:30, function(x) paste("dist.struct.norm.", x,  sep="")), file="dists_struct_normal.RData")
-save(list=sapply(1:30, function(x) paste("dist.struct.comp.", x,  sep="")), file="dists_struct_compressed.RData")
-save(list=sapply(1:30, function(x) paste("dist.struct.comb.", x,  sep="")), file="dists_struct_combined.RData")
+#save(list=sapply(1:30, function(x) paste("dist.struct.comp.", x,  sep="")), file="dists_struct_compressed.RData")
+#save(list=sapply(1:30, function(x) paste("dist.struct.comb.", x,  sep="")), file="dists_struct_combined.RData")
 
 # for (x in 1:30) {assign(paste("dist.struct.norm.", x, sep=""), get(paste("dist.norm.", x, sep="")))}
 # for (x in 1:30) {assign(paste("dist.struct.comp.", x, sep=""), get(paste("dist.comp.", x, sep="")))}
@@ -122,8 +122,8 @@ save(list=sapply(1:30, function(x) paste("dist.struct.comb.", x,  sep="")), file
 # load("dists_struct_combined.RData")
 
 load("normal_funct_dist.RData")
-load("compressed_funct_dist.RData")
-load("combined_funct_dist.RData")
+#load("compressed_funct_dist.RData")
+#load("combined_funct_dist.RData")
 
 just_dist <- function(dist_list){lapply(dist_list, function(x){x$dist})}
 compare_list_distances <- function(dist_a, dist_b, method = "spearman"){
@@ -142,8 +142,8 @@ compare_list_distances <- function(dist_a, dist_b, method = "spearman"){
 }
 
 dist.func.norm <- just_dist(normal_funct_dist)
-dist.func.comp <- just_dist(compressed_funct_dist)
-dist.func.comb <- just_dist(combined_funct_dist)
+#dist.func.comp <- just_dist(compressed_funct_dist)
+#dist.func.comb <- just_dist(combined_funct_dist)
 
 compareDist <- function(dist.a, dist.b, method="spearman") {
   vec.a <- as.vector(dist.a)
@@ -187,21 +187,21 @@ rhop.2.norm <- rhopVsk(2, "norm", kVec)
 rhop.3.norm <- rhopVsk(3, "norm", kVec)
 rhop.4.norm <- rhopVsk(4, "norm", kVec)
 
-rhop.1.comp <- rhopVsk(1, "comp", kVec)
-rhop.2.comp <- rhopVsk(2, "comp", kVec)
-rhop.3.comp <- rhopVsk(3, "comp", kVec)
-rhop.4.comp <- rhopVsk(4, "comp", kVec)
+#rhop.1.comp <- rhopVsk(1, "comp", kVec)
+#rhop.2.comp <- rhopVsk(2, "comp", kVec)
+#rhop.3.comp <- rhopVsk(3, "comp", kVec)
+#rhop.4.comp <- rhopVsk(4, "comp", kVec)
 
-rhop.1.all <- rhopVsk(1, "comb", kVec)
-rhop.2.all <- rhopVsk(2, "comb", kVec)
-rhop.3.all <- rhopVsk(3, "comb", kVec)
-rhop.4.all <- rhopVsk(4, "comb", kVec)
+#rhop.1.all <- rhopVsk(1, "comb", kVec)
+#rhop.2.all <- rhopVsk(2, "comb", kVec)
+#rhop.3.all <- rhopVsk(3, "comb", kVec)
+#rhop.4.all <- rhopVsk(4, "comb", kVec)
 
 
 load("two_measures_over_k.RData")
-save(list=c("sumdiff.norm", "jaccard.norm", "rhop.1.norm", "rhop.2.norm", "rhop.3.norm", "rhop.4.norm",
-            "sumdiff.comp", "jaccard.comp", "rhop.1.comp", "rhop.2.comp", "rhop.3.comp", "rhop.4.comp",
-            "sumdiff.all", "jaccard.all", "rhop.1.all", "rhop.2.all", "rhop.3.all", "rhop.4.all"), 
+save(list=c("sumdiff.norm", "jaccard.norm", "rhop.1.norm", "rhop.2.norm", "rhop.3.norm", "rhop.4.norm"),
+#            "sumdiff.comp", "jaccard.comp", "rhop.1.comp", "rhop.2.comp", "rhop.3.comp", "rhop.4.comp",
+#            "sumdiff.all", "jaccard.all", "rhop.1.all", "rhop.2.all", "rhop.3.all", "rhop.4.all"), 
      file="four_measures_over_k.RData")
 
 

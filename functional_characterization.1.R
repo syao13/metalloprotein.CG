@@ -71,21 +71,21 @@ normal_clusters <- lapply(normal_cluster_names, function(in_cluster){
 })
 names(normal_clusters) <- normal_cluster_names
 
-load("compressed_cluster_assg.RData")
-compressed_cluster_names <- paste("compressed", seq(2, 30), "clusters", sep = ".")
-compressed_clusters <- lapply(compressed_cluster_names, function(in_cluster){
-  tmp <- eval(parse(text = in_cluster))
-  split(tmp[,1], tmp[,2])
-})
-names(compressed_clusters) <- compressed_cluster_names
+#load("compressed_cluster_assg.RData")
+#compressed_cluster_names <- paste("compressed", seq(2, 30), "clusters", sep = ".")
+#compressed_clusters <- lapply(compressed_cluster_names, function(in_cluster){
+#  tmp <- eval(parse(text = in_cluster))
+#  split(tmp[,1], tmp[,2])
+#})
+#names(compressed_clusters) <- compressed_cluster_names
 
-load("combined_cluster_assg.RData")
-combined_cluster_names <- paste("combined", seq(2, 30), "clusters", sep = ".")
-combined_clusters <- lapply(combined_cluster_names, function(in_cluster){
-  tmp <- eval(parse(text = in_cluster))
-  split(tmp[,1], tmp[,2])
-})
-names(combined_clusters) <- combined_cluster_names
+#load("combined_cluster_assg.RData")
+#combined_cluster_names <- paste("combined", seq(2, 30), "clusters", sep = ".")
+#combined_clusters <- lapply(combined_cluster_names, function(in_cluster){
+#  tmp <- eval(parse(text = in_cluster))
+#  split(tmp[,1], tmp[,2])
+#})
+#names(combined_clusters) <- combined_cluster_names
 
 
 
@@ -107,41 +107,41 @@ normal_funct_dist <- lapply(seq(1, nrow(normal_combs)), function(in_comb){
 
 names(normal_funct_dist) <- normal_combs_names
 
-compressed_combs <- expand.grid(names(annotation_subset_ligands_full), names(compressed_clusters), stringsAsFactors = FALSE)
-compressed_combs_names <- paste(compressed_combs[,1], compressed_combs[,2], sep = ",")
-compressed_funct_dist <- lapply(seq(1, nrow(compressed_combs)), function(in_comb){
-  annotation_index <- compressed_combs[in_comb, 1]
-  cluster_index <- compressed_combs[in_comb, 2]
-  calculate_functional_distance2(annotation_subset_ligands_full[[annotation_index]],
-                                compressed_clusters[[cluster_index]])
-})
-names(compressed_funct_dist) <- compressed_combs_names
+#compressed_combs <- expand.grid(names(annotation_subset_ligands_full), names(compressed_clusters), stringsAsFactors = FALSE)
+#compressed_combs_names <- paste(compressed_combs[,1], compressed_combs[,2], sep = ",")
+#compressed_funct_dist <- lapply(seq(1, nrow(compressed_combs)), function(in_comb){
+#  annotation_index <- compressed_combs[in_comb, 1]
+#  cluster_index <- compressed_combs[in_comb, 2]
+#  calculate_functional_distance2(annotation_subset_ligands_full[[annotation_index]],
+#                                compressed_clusters[[cluster_index]])
+#})
+#names(compressed_funct_dist) <- compressed_combs_names
 
-compressed_combs$n_clust <- get_n_clust(compressed_combs[,2])
+#compressed_combs$n_clust <- get_n_clust(compressed_combs[,2])
 
-combined_combs <- expand.grid(names(annotation_subset_ligands_full), names(combined_clusters), stringsAsFactors = FALSE)
-combined_combs_names <- paste(combined_combs[,1], combined_combs[,2], sep = ",")
-combined_combs$n_clust <- get_n_clust(combined_combs[,2])
-combined_funct_dist <- lapply(seq(1, nrow(combined_combs)), function(in_comb){
-  annotation_index <- combined_combs[in_comb, 1]
-  cluster_index <- combined_combs[in_comb, 2]
-  calculate_functional_distance2(annotation_subset_ligands_full[[annotation_index]],
-                                combined_clusters[[cluster_index]])
-})
+#combined_combs <- expand.grid(names(annotation_subset_ligands_full), names(combined_clusters), stringsAsFactors = FALSE)
+#combined_combs_names <- paste(combined_combs[,1], combined_combs[,2], sep = ",")
+#combined_combs$n_clust <- get_n_clust(combined_combs[,2])
+#combined_funct_dist <- lapply(seq(1, nrow(combined_combs)), function(in_comb){
+#  annotation_index <- combined_combs[in_comb, 1]
+#  cluster_index <- combined_combs[in_comb, 2]
+#  calculate_functional_distance2(annotation_subset_ligands_full[[annotation_index]],
+#                                combined_clusters[[cluster_index]])
+#})
 
 normal_funct_dist <- Map(cleanup_dist, normal_funct_dist, normal_combs$n_clust)
 names(normal_funct_dist) <- normal_combs_names
 
-compressed_funct_dist <- Map(cleanup_dist, compressed_funct_dist, compressed_combs$n_clust)
-names(compressed_funct_dist) <- compressed_combs_names
+#compressed_funct_dist <- Map(cleanup_dist, compressed_funct_dist, compressed_combs$n_clust)
+#names(compressed_funct_dist) <- compressed_combs_names
 
-combined_funct_dist <- Map(cleanup_dist, combined_funct_dist, combined_combs$n_clust)
-names(combined_funct_dist) <- combined_combs_names
+#combined_funct_dist <- Map(cleanup_dist, combined_funct_dist, combined_combs$n_clust)
+#names(combined_funct_dist) <- combined_combs_names
 
 save(normal_funct_dist, normal_combs, file = "normal_funct_dist.RData")
-save(compressed_funct_dist, compressed_combs, file = "compressed_funct_dist.RData")
-save(combined_funct_dist, combined_combs, file = "combined_funct_dist.RData")
+#save(compressed_funct_dist, compressed_combs, file = "compressed_funct_dist.RData")
+#save(combined_funct_dist, combined_combs, file = "combined_funct_dist.RData")
 
 # save(normal_clusters, compressed_clusters, file = "named_clusters.RData")
-save(normal_clusters, compressed_clusters, combined_clusters, file = "named_clusters.RData")
-save(annotation_subset_ligands_full, file = "annotation_subset_ligands_full.RData")
+#save(normal_clusters, compressed_clusters, combined_clusters, file = "named_clusters.RData")
+#save(annotation_subset_ligands_full, file = "annotation_subset_ligands_full.RData")
