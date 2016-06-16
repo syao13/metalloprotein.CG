@@ -136,7 +136,7 @@ library(parallel)
 sumdiff.norm <- sumdiff.comp <- sumdiff.all <- 0
 jaccard.norm <- jaccard.comp <- jaccard.all <- 0
 nangle <- dim(angle.sorted.all)[2]
-nrep <- 5
+nrep <- 500
 
 date()
 resultList <- mclapply(1:30, function(x) kmeansStab(angle.sorted.norm, x, nrep), mc.cores=10)

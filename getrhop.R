@@ -10,7 +10,7 @@ if (args[2] == "all" || args[2] == "combined") { setwd(paste("../output_", tolow
 } else if (args[2] == "noheme") { setwd(paste("../output_", tolower(args[1]), "/noheme", sep=""))
 } else { setwd(paste("../output_", tolower(args[1]), "/", args[2], "ligand", sep=""))}
 
-load("four_measures_over_k.RData")
+load("four_measures_over_k.1.RData")
 
 group <- NULL
 if (args[3] == "normal") { 

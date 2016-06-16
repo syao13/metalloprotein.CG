@@ -9,7 +9,8 @@
 
 library(ggplot2)
 options(stringsAsFactors=FALSE)
-setwd("../output")
+args = commandArgs(trailingOnly=TRUE)
+setwd(args[1])
 
 load("dists_struct_normal.RData")
 load("dists_struct_compressed.RData")
@@ -20,73 +21,105 @@ load("compressed_funct_dist.RData")
 ##########################
 ## normal group, k=10
 ##########################
-normal.k <- 9
+normal.k <- args[2] 
 struc.dist.norm <- get(paste("dist.struct.norm.", normal.k, sep=""))
-nm <- paste("4,normal.",normal.k,".clusters", sep="")
+nm <- paste(args[3], ",normal.",normal.k,".clusters", sep="")
 funct.dist.norm <- normal_funct_dist[nm][[1]]
 
 dist.str <- as.dist(struc.dist.norm)
 dist.fun <- funct.dist.norm$dist
-distances <- data.frame(func = as.vector(dist.fun), struc = as.vector(dist.str))
+vec.a <- as.vector(dist.str)
+vec.b <- as.vector(dist.fun)
+ind <- vec.a!=0 & vec.b!=0 
 
-png(file="Figure9_1.png", units="in", width=10, height=5, res=300)
+distances <- data.frame(func = vec.b[ind], struc = vec.a[ind])
+#distances <- data.frame(func = as.vector(dist.fun), struc = as.vector(dist.str))
+
+png(file="hierarchical.clustering.normal.png", units="in", width=10, height=5, res=200)
 par(mfrow=c(1,2)) 
 hc.str <- hclust(dist.str)
-plot(hc.str, main = "Normal, k=9", ylab = "Structural Cluster Distances", xlab = "Cluster", 
+plot(hc.str, main = paste("Normal, k=", normal.k, sep=""), ylab = "Structural Cluster Distances", xlab = "Cluster", 
      sub = "", cex.lab = 1.5, cex.main=1.5, cex=1.3)
 
 hc.fun <- hclust(dist.fun)
-plot(hc.fun, main = "Normal, k=9", ylab = "Functional Cluster Distances", xlab = "Cluster", 
+plot(hc.fun, main = paste("Normal, k=", normal.k, sep=""), ylab = "Functional Cluster Distances", xlab = "Cluster", 
      sub = "", cex.lab = 1.5, cex.main=1.5, cex=1.3)
 dev.off()
 
-png(file="Figure9_2.png", units="in", width=10, height=10, res=300)
-corVal <- cor(distances$struc, distances$func, method = "spearman")
+png(file="funct_struct_distance.normal.png", units="in", width=10, height=10, res=200)
+tmp <- cor.test(distances$struc, distances$func, alternative="two.sided", method = "spearman")
+corVal <- tmp$estimate
+pVal <- tmp$p.value
 corVal
-pVal <- cor.test(distances$struc, distances$func, method = "spearman")$p.value
 pVal
 ggplot(distances, aes(x = struc, y = func)) + 
-  geom_point(size = 4) + xlab("Structural") + ylab("Functional") + ggtitle("Cluster Distances, normal 9") + 
-  geom_text(data = NULL, aes(family="serif"), x = 2.5, y = 0.50, 
+  geom_point(size = 4) + xlab("Structural") + ylab("Functional") + ggtitle(paste("Cluster Distances, normal ", normal.k, sep="")) +   
+  geom_text(data = NULL, aes(family="serif"), , size = 8, x=Inf, y = -Inf, vjust=-1, hjust=1,
             label = paste("rho = ", substr(as.character(corVal), 1, 4), " \n ", 
-                          "p-value = ", signif(pVal,3), sep = ""), size = 10) + 
+                          "p-value = ", signif(pVal,3), sep = "")) + 
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 18), plot.title = element_text(size = 20))
+#corVal <- cor(distances$struc, distances$func, method = "spearman")
+#corVal
+#pVal <- cor.test(distances$struc, distances$func, method = "spearman")$p.value
+#pVal
+#ggplot(distances, aes(x = struc, y = func)) + 
+#  geom_point(size = 4) + xlab("Structural") + ylab("Functional") + ggtitle(paste("Cluster Distances, normal ", normal.k, sep="")) + 
+#  geom_text(data = NULL, aes(family="serif"), x = Inf, y = Inf, 
+#            label = paste("rho = ", substr(as.character(corVal), 1, 4), " \n ", 
+#                          "p-value = ", signif(pVal,3), sep = ""), size = 10) + 
+#  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 18), plot.title = element_text(size = 20))
 dev.off()
 
 
 ##########################
-## compressed group, k=8
+## compressed group
 ##########################
 ## this is what we have seen before.
-compressed.k <- 10
+compressed.k <- args[4]
 struc.dist.comp <- get(paste("dist.struct.comp.", compressed.k, sep=""))
-nm <- paste("4,compressed.",compressed.k,".clusters", sep="")
+nm <- paste(args[5], ",compressed.",compressed.k,".clusters", sep="")
 funct.dist.comp <- compressed_funct_dist[nm][[1]]
 
 dist.str <- as.dist(struc.dist.comp)
 dist.fun <- funct.dist.comp$dist
-distances <- data.frame(func = as.vector(dist.fun), struc = as.vector(dist.str))
+vec.a <- as.vector(dist.str)
+vec.b <- as.vector(dist.fun)
+ind <- vec.a!=0 & vec.b!=0 
 
-png(file="Figure10_1.png", units="in", width=10, height=5, res=300)
+distances <- data.frame(func = vec.b[ind], struc = vec.a[ind])
+#distances <- data.frame(func = as.vector(dist.fun), struc = as.vector(dist.str))
+
+png(file="hierarchical.clustering.compressed.png", units="in", width=10, height=5, res=200)
 par(mfrow=c(1,2))
 hc.str <- hclust(dist.str)
-plot(hc.str, main = "Compressed, k=10", ylab = "Structural Cluster Distances", xlab = "Cluster", 
+plot(hc.str, main = paste("Compressed, k=", compressed.k, sep=""), ylab = "Structural Cluster Distances", xlab = "Cluster", 
      sub = "", cex.lab = 1.5, cex.main=1.5, cex=1.3)
 
 hc.fun <- hclust(dist.fun)
-plot(hc.fun, main = "Compressed, k=10", ylab = "Functional Cluster Distances", xlab = "Cluster", 
+plot(hc.fun, main = paste("Compressed, k=", compressed.k, sep=""), ylab = "Functional Cluster Distances", xlab = "Cluster", 
      sub = "", cex.lab = 1.5, cex.main=1.5, cex=1.3)
 dev.off()
 
-png(file="Figure10_2.png", units="in", width=10, height=10, res=300)
-corVal <- cor(distances$struc, distances$func, method = "spearman")
+png(file="funct_struct_distance.compressed.png", units="in", width=10, height=10, res=200)
+tmp <- cor.test(distances$struc, distances$func, alternative="two.sided", method = "spearman")
+corVal <- tmp$estimate
+pVal <- tmp$p.value
 corVal
-pVal <- cor.test(distances$struc, distances$func, method = "spearman")$p.value
 pVal
 ggplot(distances, aes(x = struc, y = func)) + 
-  geom_point(size = 4) + xlab("Structural") + ylab("Functional") + ggtitle("Cluster Distances, compressed 10") + 
-  geom_text(data = NULL, aes(family="serif"), x = 1.00, y = 0.40, 
+  geom_point(size = 4) + xlab("Structural") + ylab("Functional") + ggtitle(paste("Cluster Distances, compressed ", compressed.k, sep="")) +   
+  geom_text(data = NULL, aes(family="serif"), , size = 8, x=Inf, y = -Inf, vjust=-1, hjust=1,
             label = paste("rho = ", substr(as.character(corVal), 1, 4), " \n ", 
-                          "p-value = ", signif(pVal,3), sep = ""), size = 10) + 
+                          "p-value = ", signif(pVal,3), sep = "")) + 
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 18), plot.title = element_text(size = 20))
+#corVal <- cor(distances$struc, distances$func, method = "spearman")
+#corVal
+#pVal <- cor.test(distances$struc, distances$func, method = "spearman")$p.value
+#pVal
+#ggplot(distances, aes(x = struc, y = func)) + 
+#  geom_point(size = 4) + xlab("Structural") + ylab("Functional") + ggtitle(paste("Cluster Distances, compressed ", compressed.k, sep="")) + 
+#  geom_text(data = NULL, aes(family="serif"), x = Inf, y = Inf, 
+#            label = paste("rho = ", substr(as.character(corVal), 1, 4), " \n ", 
+#                          "p-value = ", signif(pVal,3), sep = ""), size = 10) + 
+#  theme(axis.text = element_text(size = 14), axis.title = element_text(size = 18), plot.title = element_text(size = 20))
 dev.off()

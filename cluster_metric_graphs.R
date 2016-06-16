@@ -10,7 +10,7 @@ library(Cairo)
 #setwd("../output")
 args = commandArgs(trailingOnly=TRUE)
 setwd(args[1])
-load("four_measures_over_k.RData")
+load("four_measures_over_k.1.RData")
 
 level_order <- c("jaccard", "max - sumdiff", "rho", "-1 * log10(p)")
 
@@ -47,7 +47,7 @@ normal_p$value <- -1 * log10(normal_p$value)
 normal_metrics <- do.call(rbind, list(normal_jaccard, normal_sumdiff, normal_rho, normal_p))
 normal_metrics$type <- ordered(normal_metrics$type, levels = level_order)
 
-Cairo(file = "Figure7.png", type = "png")
+Cairo(file = "four_measures_normal.png", type = "png")
 ggplot(normal_metrics, aes(x = cluster, y = value, color = n_lig)) + geom_point() + geom_line() + 
   facet_grid(type ~ ., scales = "free_y") + ggtitle("normal")
 dev.off()
@@ -83,7 +83,7 @@ compressed_p$value <- -1 * log10(compressed_p$value)
 compressed_metrics <- do.call(rbind, list(compressed_jaccard, compressed_sumdiff, compressed_rho_0, compressed_p))
 compressed_metrics$type <- ordered(compressed_metrics$type, levels = level_order)
 
-Cairo(file = "Figure8.png", type = "png")
+Cairo(file = "four_measures_compressed.png", type = "png")
 ggplot(compressed_metrics, aes(x = cluster, y = value, color = n_lig)) + geom_point() + geom_line() + 
   facet_grid(type ~ ., scales = "free_y") + ggtitle("Compressed")
 dev.off()
@@ -121,7 +121,7 @@ all_p$value <- -1 * log10(all_p$value)
 all_metrics <- do.call(rbind, list(all_jaccard, all_sumdiff, all_rho_0, all_p))
 all_metrics$type <- ordered(all_metrics$type, levels = level_order)
 
-Cairo(file = "FigureS3.png", type = "png")
+Cairo(file = "four_measures_combined.png", type = "png")
 ggplot(all_metrics, aes(x = cluster, y = value, color = n_lig)) + geom_point() + geom_line() + 
   facet_grid(type ~ ., scales = "free_y") + ggtitle("comined")
 dev.off()

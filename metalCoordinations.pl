@@ -126,11 +126,11 @@ my $analyzer = MPCGanalysis->new("pathsFile" => $pathsFile,
 				 "shellCutoff" => $shellCutoff,
 				 "shellElement" => $shellElement,
 				 "jsonFile" => $shellsJsonFile);
-#print "$metal: ", $analyzer->{numCenter}, "\n";
-#print "Cluster: ", $analyzer->{numCluster}, "\n";
-#print "Usable: ", $analyzer->{usable}, "\n";
-#print "Unusable: ", $analyzer->{unusable}, "\n\n";
-#exit;
+print "$metal: ", $analyzer->{numCenter}, "\n";
+print "Cluster: ", $analyzer->{numCluster}, "\n";
+print "Usable: ", $analyzer->{usable}, "\n";
+print "Unusable: ", $analyzer->{unusable}, "\n\n";
+exit;
 
 $analyzer->bootstrapCoordination($statOutFileName, $shellsJsonFile);
 

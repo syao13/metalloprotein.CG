@@ -25,7 +25,7 @@ nice -10 ./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 ON -bs
 ./metalCoordinations.pl ../metalPDB/protein_list_Mg.txt Mg 2.892 ON -dd ../output_mg/stats.r -r ../output_mg/r.allLig.txt -rf ../output_mg/rf.smallest.txt -s a s ../output_mg/seqs.ATOM.shell.txt -s s s ../output_mg/seqs.SEQRES.shell.txt -s s b ../output_mg/seqs.SEQRES.bind.txt -bondLength ../output_mg/bondlength.r.txt &
 ./metalCoordinations.pl ../metalPDB/protein_list_Ca.txt Ca 3.092 O -dd ../output_ca/stats.r -r ../output_ca/r.allLig.txt -rf ../output_ca/rf.smallest.txt -s a s ../output_ca/seqs.ATOM.shell.txt -s s s ../output_ca/seqs.SEQRES.shell.txt -s s b ../output_ca/seqs.SEQRES.bind.txt -bondLength ../output_ca/bondlength.r.txt & 
 ./metalCoordinations.pl ../metalPDB/protein_list_Fe.txt Fe 2.639 SON -dd ../output_fe/stats.r -r ../output_fe/r.allLig.txt -rf ../output_fe/rf.smallest.txt -s a s ../output_fe/seqs.ATOM.shell.txt -s s s ../output_fe/seqs.SEQRES.shell.txt -s s b ../output_fe/seqs.SEQRES.bind.txt -bondLength ../output_fe/bondlength.r.txt & 
-./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 ON -dd ../output_na/stats.r -r ../output_na/r.allLig.txt -rf ../output_na/rf.smallest.txt -s a s ../output_na/seqs.ATOM.shell.txt -s s s ../output_na/seqs.SEQRES.shell.txt -s s b ../output_na/seqs.SEQRES.bind.txt -bondLength ../output_na/bondlength.r.txt &
+./metalCoordinations.pl ../metalPDB/protein_list_Na.txt Na 3.317 O -dd ../output_na/stats.r -r ../output_na/r.allLig.txt -rf ../output_na/rf.smallest.txt -s a s ../output_na/seqs.ATOM.shell.txt -s s s ../output_na/seqs.SEQRES.shell.txt -s s b ../output_na/seqs.SEQRES.bind.txt -bondLength ../output_na/bondlength.r.txt &
 
 ## sequence alignment
 ./seq_alignment.R ../output_zn/

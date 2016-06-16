@@ -151,10 +151,10 @@ sub readPDB
     #next if (! $shellsOfOnePDB );
 
     ## Calculating number of zinc clusters
-    my $metal = scalar (grep {$_->{"element"} eq $element} (@$atoms)); 
-    my $cluster = $metal - scalar @$shellsOfOnePDB;
-    $self->{numCenter} += $metal;
-    $self->{numCluster} += $cluster;
+    #my $metal = scalar (grep {$_->{"element"} eq $element && substr($_->{chainID}, 0,1) ne "#";} (@$atoms)); 
+    #my $cluster = $metal - scalar @$shellsOfOnePDB;
+    #$self->{numCenter} += $metal;
+    #$self->{numCluster} += $cluster;
     # print $$atoms[0]->{PDBid}, ": $metal zincs\n" if $metal > 15;
 
     my $residues = $pdb->{residues};
