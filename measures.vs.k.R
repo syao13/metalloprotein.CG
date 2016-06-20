@@ -140,7 +140,7 @@ compareDist <- function(dist.a, dist.b, method="spearman") {
   vec.a <- as.vector(dist.a)
   vec.b <- as.vector(dist.b)
   
-  ind <- vec.a!=0 & vec.b!=0 #& (! duplicated(vec.a)) & (! duplicated(vec.b))
+  ind <- ! is.na(vec.a) & ! is.na(vec.b) #vec.a!=0 & vec.b!=0 & ! is.na(vec.a) & ! is.na(vec.b) #& (! duplicated(vec.a)) & (! duplicated(vec.b))
   if ( sum(ind) <= 1  || is.na(sum(ind)) )  {c(NA,NA)}
   else { 
     tmp <- cor.test(vec.a[ind], vec.b[ind], alternative="two.sided", method = method)
@@ -193,7 +193,7 @@ load("two_measures_over_k.RData")
 save(list=c("sumdiff.norm", "jaccard.norm", "rhop.1.norm", "rhop.2.norm", "rhop.3.norm", "rhop.4.norm",
             "sumdiff.comp", "jaccard.comp", "rhop.1.comp", "rhop.2.comp", "rhop.3.comp", "rhop.4.comp",
             "sumdiff.all", "jaccard.all", "rhop.1.all", "rhop.2.all", "rhop.3.all", "rhop.4.all"), 
-     file="four_measures_over_k.1.RData")
+     file="four_measures_over_k.RData")
 
 
 

@@ -17,7 +17,7 @@ load("finalMetalList.RData")
 data <- read.table("r.allLig.txt", header=FALSE, comment.char = "")
 colnames(data) <- c("metalID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "amaineN", "occupancy", "solvent")
 
-znList <- data[data[,1] %in% finalZnList & data[,4] < 3, 1]
+znList <- data[data[,1] %in% finalZnList & data[,4] < 3 & data$occupancy > 0.9, 1]
 ligNum <- sapply(data$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
 heme <- sapply(data$ligandCombo, function(x) "HEM" %in% sort(matrix(unlist(strsplit(strsplit(x, ",")[[1]], "[.]")), byrow=TRUE, ncol=3)[,1]))
 table(ligNum)

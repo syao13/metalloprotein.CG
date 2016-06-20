@@ -247,7 +247,7 @@ sub IAcoordination
 
     &writeTableFile("$statOutFileName.$i.txt", $currStats);
 
-    if ($i == 15)
+    if ($i == 10)
       { 
       print "Failed to stabilize\n";
       last; 

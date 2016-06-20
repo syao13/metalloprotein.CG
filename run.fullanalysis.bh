@@ -207,3 +207,158 @@ nice -10 ./measures.vs.k.R ../output_all/6ligand 6 && ./cluster_metric_graphs.R 
 nice -10 ./measures.vs.k.R ../output_all/allLig 6 && ./cluster_metric_graphs.R ../output_all/allLig
 
 
+#####################
+## Tables and Figures
+#####################
+
+./getrhop.R Zn 4 normal  9 4
+./getrhop.R Zn 4 compressed  12 3
+./getrhop.R Zn 4 combined  7 2
+./getrhop.R Zn 5 normal  10 3
+./getrhop.R Zn 5 compressed  7 1
+./getrhop.R Zn 5 combined  7 3
+./getrhop.R Zn 6 normal  6 1
+./getrhop.R Zn 6 compressed  17 4
+./getrhop.R Zn 6 combined  8 3
+./getrhop.R Zn combined normal  7 4
+./getrhop.R Zn combined compressed  12 3
+./getrhop.R Zn combined combined  8 12
+./getrhop.R Mg 4 normal  8 2
+./getrhop.R Mg 4 compressed  8 1
+./getrhop.R Mg 4 combined  7 3
+./getrhop.R Mg 5 normal  7 2
+./getrhop.R Mg 5 compressed  8 3
+./getrhop.R Mg 5 combined  7 3
+./getrhop.R Mg 6 normal  7 1
+./getrhop.R Mg 6 compressed  13 1
+./getrhop.R Mg 6 combined  8 1
+./getrhop.R Mg combined normal  7 3
+./getrhop.R Mg combined compressed  6 1
+./getrhop.R Mg combined combined  8 3
+./getrhop.R Ca 4 normal  13 4
+./getrhop.R Ca 4 compressed
+./getrhop.R Ca 4 combined  18 4
+./getrhop.R Ca 5 normal  8 1
+./getrhop.R Ca 5 compressed  16 3
+./getrhop.R Ca 5 combined  6 3
+./getrhop.R Ca 6 normal  9 2
+./getrhop.R Ca 6 compressed  16 1
+./getrhop.R Ca 6 combined  6 2
+./getrhop.R Ca 7 normal  7 4
+./getrhop.R Ca 7 compressed  7 4
+./getrhop.R Ca 7 combined  16 3
+./getrhop.R Ca 8 normal  9 2
+./getrhop.R Ca 8 compressed  8 2
+./getrhop.R Ca 8 combined  9 1
+./getrhop.R Ca combined normal  11 3
+./getrhop.R Ca combined compressed  12 4
+./getrhop.R Ca combined combined  9 4
+./getrhop.R Fe 4 normal  5 4
+./getrhop.R Fe 4 compressed  7 3
+./getrhop.R Fe 4 combined  9 3
+./getrhop.R Fe 5 normal  8 1
+./getrhop.R Fe 5 compressed  7 4
+./getrhop.R Fe 5 combined  7 1
+./getrhop.R Fe 6 normal  7 1
+./getrhop.R Fe 6 compressed  9 2
+./getrhop.R Fe 6 combined  7 1
+./getrhop.R Fe combined normal  10 1
+./getrhop.R Fe combined compressed  8 3
+./getrhop.R Fe combined combined  8 3
+./getrhop.R Fe noheme normal  8 4
+./getrhop.R Fe noheme compressed  7 3
+./getrhop.R Fe noheme combined  8 3
+./getrhop.R Na 4 normal  6 1
+./getrhop.R Na 4 compressed
+./getrhop.R Na 4 combined  6 4
+./getrhop.R Na 5 normal  11 3
+./getrhop.R Na 5 compressed
+./getrhop.R Na 5 combined  5 1
+./getrhop.R Na 6 normal  9 4
+./getrhop.R Na 6 compressed  28 1
+./getrhop.R Na 6 combined  9 3
+./getrhop.R Na 7 normal  6 1
+./getrhop.R Na 7 compressed
+./getrhop.R Na 7 combined  7 2
+./getrhop.R Na combined normal  14 4
+./getrhop.R Na combined compressed  5 1
+./getrhop.R Na combined combined  10 4
+./getrhop.R all 4 normal  11 3
+./getrhop.R all 4 compressed  13 4
+./getrhop.R all 4 combined  8 4
+./getrhop.R all 5 normal  7 1
+./getrhop.R all 5 compressed  7 1
+./getrhop.R all 5 combined  6 3
+./getrhop.R all 6 normal  10 1
+./getrhop.R all 6 compressed  7 1
+./getrhop.R all 6 combined  10 1
+
+
+#########
+./center.prob.metallist.R ../output_zn/4ligand/ 9 12 7 7
+./center.prob.metallist.R ../output_zn/5ligand/ 10 7 7 7
+./center.prob.metallist.R ../output_zn/6ligand/ 6 17 8 7
+./center.prob.metallist.R ../output_zn/allLig/ 7 12 8 6
+
+./center.prob.metallist.R ../output_mg/4ligand/ 8 8 7 7
+./center.prob.metallist.R ../output_mg/5ligand/ 7 8 7 7
+./center.prob.metallist.R ../output_mg/6ligand/ 7 13 8 7
+./center.prob.metallist.R ../output_mg/allLig/ 7 6 8 6
+
+./center.prob.metallist.R ../output_ca/4ligand/ 13 3 18 7
+./center.prob.metallist.R ../output_ca/5ligand/ 8 16 6 7
+./center.prob.metallist.R ../output_ca/6ligand/ 9 16 6 7
+./center.prob.metallist.R ../output_ca/7ligand/ 7 7 16 7
+./center.prob.metallist.R ../output_ca/8ligand/ 9 8 9 7
+./center.prob.metallist.R ../output_ca/allLig/ 11 12 9 6
+
+./center.prob.metallist.R ../output_fe/4ligand/ 5 7 9 7
+./center.prob.metallist.R ../output_fe/5ligand/ 8 7 7 7
+./center.prob.metallist.R ../output_fe/6ligand/ 7 9 7 7
+./center.prob.metallist.R ../output_fe/allLig/ 10 8 8 6
+./center.prob.metallist.R ../output_fe/noheme/ 8 7 8 6
+
+./center.prob.metallist.R ../output_na/4ligand/ 6 3 6 7
+./center.prob.metallist.R ../output_na/5ligand/ 11 3 5 7
+./center.prob.metallist.R ../output_na/6ligand/ 9 28 9 7
+./center.prob.metallist.R ../output_na/7ligand/ 6 3 7 7
+./center.prob.metallist.R ../output_na/allLig/ 14 5 10 6
+
+#./center.prob.metallist.R ../output_all/4ligand/ 11 13 8 7
+#./center.prob.metallist.R ../output_all/5ligand/ 7 7 6 7
+#./center.prob.metallist.R ../output_all/6ligand/ 10 7 10 7
+
+#########
+./hierarchical.clustering.R ../output_zn/4ligand 9 4 12 3
+./hierarchical.clustering.R ../output_zn/5ligand 10 3 7 1
+./hierarchical.clustering.R ../output_zn/6ligand 6 1 17 4
+./hierarchical.clustering.R ../output_zn/allLig 7 4 12 3
+
+./hierarchical.clustering.R ../output_mg/4ligand 8 2 8 1
+./hierarchical.clustering.R ../output_mg/5ligand 7 2 8 3
+./hierarchical.clustering.R ../output_mg/6ligand 7 1 13 1
+./hierarchical.clustering.R ../output_mg/allLig 7 3 6 1
+
+./hierarchical.clustering.R ../output_ca/4ligand 13 4 0 0
+./hierarchical.clustering.R ../output_ca/5ligand 8 1 16 3
+./hierarchical.clustering.R ../output_ca/6ligand 9 2 16 1
+./hierarchical.clustering.R ../output_ca/7ligand 7 4 7 4
+./hierarchical.clustering.R ../output_ca/8ligand 9 2 8 2
+./hierarchical.clustering.R ../output_ca/allLig 11 3 12 4
+
+./hierarchical.clustering.R ../output_fe/4ligand 5 4 7 3
+./hierarchical.clustering.R ../output_fe/5ligand 8 1 7 4
+./hierarchical.clustering.R ../output_fe/6ligand 7 1 9 2
+./hierarchical.clustering.R ../output_fe/allLig 10 1 8 3
+./hierarchical.clustering.R ../output_fe/noheme 8 4 7 3
+
+./hierarchical.clustering.R ../output_na/4ligand 6 1 0 0
+./hierarchical.clustering.R ../output_na/5ligand 11 3 0 0
+./hierarchical.clustering.R ../output_na/6ligand 9 4 28 1
+./hierarchical.clustering.R ../output_na/7ligand 6 1 0 0
+./hierarchical.clustering.R ../output_na/allLig 14 4 5 1
+
+./hierarchical.clustering.R ../output_all/4ligand 11 3 13 4
+./hierarchical.clustering.R ../output_all/5ligand 7 1 7 1
+./hierarchical.clustering.R ../output_all/6ligand 10 1 7 1
+

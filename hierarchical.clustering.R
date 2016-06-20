@@ -4,7 +4,8 @@
 #
 ##   Written by Sen Yao, 07/09/2015
 ##   Copyright Sen Yao, Robert Flight, and Hunter Moseley, 07/09/2015. All rights reserved.
-#
+##
+##   Usage: ./hierarchical.clustering.R directory normal_k normal_n_lig compressed_k compressed_n_lig
 ###########################################################################################
 
 library(ggplot2)
@@ -30,7 +31,7 @@ dist.str <- as.dist(struc.dist.norm)
 dist.fun <- funct.dist.norm$dist
 vec.a <- as.vector(dist.str)
 vec.b <- as.vector(dist.fun)
-ind <- vec.a!=0 & vec.b!=0 
+ind <- ! is.na(vec.a) & ! is.na(vec.b) # vec.a!=0 & vec.b!=0 
 
 distances <- data.frame(func = vec.b[ind], struc = vec.a[ind])
 #distances <- data.frame(func = as.vector(dist.fun), struc = as.vector(dist.str))
@@ -40,6 +41,11 @@ par(mfrow=c(1,2))
 hc.str <- hclust(dist.str)
 plot(hc.str, main = paste("Normal, k=", normal.k, sep=""), ylab = "Structural Cluster Distances", xlab = "Cluster", 
      sub = "", cex.lab = 1.5, cex.main=1.5, cex=1.3)
+
+if (sum(is.na(dist.fun))) {
+  aa <- as.matrix(dist.fun)
+  dist.fun <- as.dist(aa[! is.na(aa[1,]), ! is.na(aa[1,])])
+  }
 
 hc.fun <- hclust(dist.fun)
 plot(hc.fun, main = paste("Normal, k=", normal.k, sep=""), ylab = "Functional Cluster Distances", xlab = "Cluster", 
@@ -84,7 +90,7 @@ dist.str <- as.dist(struc.dist.comp)
 dist.fun <- funct.dist.comp$dist
 vec.a <- as.vector(dist.str)
 vec.b <- as.vector(dist.fun)
-ind <- vec.a!=0 & vec.b!=0 
+ind <- ! is.na(vec.a) & ! is.na(vec.b) # vec.a!=0 & vec.b!=0 
 
 distances <- data.frame(func = vec.b[ind], struc = vec.a[ind])
 #distances <- data.frame(func = as.vector(dist.fun), struc = as.vector(dist.str))
@@ -94,6 +100,11 @@ par(mfrow=c(1,2))
 hc.str <- hclust(dist.str)
 plot(hc.str, main = paste("Compressed, k=", compressed.k, sep=""), ylab = "Structural Cluster Distances", xlab = "Cluster", 
      sub = "", cex.lab = 1.5, cex.main=1.5, cex=1.3)
+
+if (sum(is.na(dist.fun))) {
+  aa <- as.matrix(dist.fun)
+  dist.fun <- as.dist(aa[! is.na(aa[1,]), ! is.na(aa[1,])])
+  }
 
 hc.fun <- hclust(dist.fun)
 plot(hc.fun, main = paste("Compressed, k=", compressed.k, sep=""), ylab = "Functional Cluster Distances", xlab = "Cluster", 

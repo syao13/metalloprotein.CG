@@ -10,7 +10,7 @@ library(Cairo)
 #setwd("../output")
 args = commandArgs(trailingOnly=TRUE)
 setwd(args[1])
-load("four_measures_over_k.1.RData")
+load("four_measures_over_k.RData")
 
 level_order <- c("jaccard", "max - sumdiff", "rho", "-1 * log10(p)")
 
@@ -44,7 +44,7 @@ min_p <- min(normal_p$value[normal_p$value != 0])
 normal_p$value[normal_p$value <= 1e-10] <- 1e-10
 normal_p$value <- -1 * log10(normal_p$value)
 
-normal_metrics <- do.call(rbind, list(normal_jaccard, normal_sumdiff, normal_rho, normal_p))
+normal_metrics <- do.call(rbind, list(normal_jaccard, normal_sumdiff, normal_rho_0, normal_p))
 normal_metrics$type <- ordered(normal_metrics$type, levels = level_order)
 
 Cairo(file = "four_measures_normal.png", type = "png")
@@ -57,14 +57,14 @@ dev.off()
 compressed_jaccard <- data.frame(cluster = seq(1, 30), value = jaccard.comp, type = "jaccard", n_lig = "all")
 compressed_sumdiff <- data.frame(cluster = seq(1, 30), value = max(sumdiff.comp) - sumdiff.comp, type = "max - sumdiff", n_lig = "all")
 
-compressed_rho_0 <- data.frame(cluster = rep(seq(5, 30), 4),
+compressed_rho <- data.frame(cluster = rep(seq(5, 30), 4),
                              value = c(rhop.1.comp$rho[3:28],
                                        rhop.2.comp$rho[3:28],
                                        rhop.3.comp$rho[3:28],
                                        rhop.4.comp$rho[3:28]),
                              type = "rho",
                              n_lig = rep(c("1", "2", "3", "4"), each = 26))
-compressed_rho <- data.frame(cluster = rep(seq(3, 30), 4),
+compressed_rho_0 <- data.frame(cluster = rep(seq(3, 30), 4),
                              value = c(rhop.1.comp$rho,
                                        rhop.2.comp$rho,
                                        rhop.3.comp$rho,
@@ -92,14 +92,14 @@ dev.off()
 all_jaccard <- data.frame(cluster = seq(1, 30), value = jaccard.all, type = "jaccard", n_lig = "all")
 all_sumdiff <- data.frame(cluster = seq(1, 30), value = max(sumdiff.all) - sumdiff.all, type = "max - sumdiff", n_lig = "all")
 
-all_rho_0 <- data.frame(cluster = rep(seq(5, 30), 4),
+all_rho <- data.frame(cluster = rep(seq(5, 30), 4),
                          value = c(rhop.1.all$rho[3:28],
                                    rhop.2.all$rho[3:28],
                                    rhop.3.all$rho[3:28],
                                    rhop.4.all$rho[3:28]),
                          type = "rho",
                          n_lig = rep(c("1", "2", "3", "4"), each = 26))
-all_rho <- data.frame(cluster = rep(seq(3, 30), 4), 
+all_rho_0 <- data.frame(cluster = rep(seq(3, 30), 4), 
                          value = c(rhop.1.all$rho,
                                    rhop.2.all$rho,
                                    rhop.3.all$rho,
