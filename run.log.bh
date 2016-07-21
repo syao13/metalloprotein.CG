@@ -2117,3 +2117,35 @@ nice -10 ./measures.vs.k.R ../output_all/6ligand 6 && ./cluster_metric_graphs.R 
 nice -10 ./measures.vs.k.R ../output_all/allLig 6 && ./cluster_metric_graphs.R ../output_all/allLig
 
 
+cat output_zn/ia.cutoff/probs.txt output_mg/obs/ia.cutoff/probs.txt output_ca/ia.cutoff/probs.txt output_fe/ia.cutoff/probs.txt output_na/ia.cutoff/probs.txt > output_all/ia.cutoff/probs.txt
+cat output_zn/ia.cutoff/probs.leaveOut.txt output_mg/obs/ia.cutoff/probs.leaveOut.txt output_ca/ia.cutoff/probs.leaveOut.txt output_fe/ia.cutoff/probs.leaveOut.txt output_na/ia.cutoff/probs.leaveOut.txt > output_all/ia.cutoff/probs.leaveOut.txt
+
+./getrhop.R all combined normal  10 1
+./getrhop.R all combined compressed 9 3
+./getrhop.R all combined combined  11 3
+
+./center.prob.metallist.R ../output_all/4ligand/ 11 13 8 7
+./center.prob.metallist.R ../output_all/5ligand/ 7 7 6 7
+./center.prob.metallist.R ../output_all/6ligand/ 10 7 10 7
+./center.prob.metallist.R ../output_all/allLig/ 10 9 11 6
+
+./hierarchical.clustering.R ../output_all/allLig 10 1 9 3
+
+
+## update some k numbers, and mg with new prob
+./center.prob.metallist.R ../output_ca/6ligand/ 9 12 6 7
+./center.prob.metallist.R ../output_ca/7ligand/ 7 7 13 7
+./center.prob.metallist.R ../output_fe/5ligand/ 8 7 8 7
+./center.prob.metallist.R ../output_all/5ligand/ 7 7 7 7
+./center.prob.metallist.R ../output_all/4ligand/ 11 15 8 7
+
+./center.prob.metallist.R ../output_mg/4ligand/ 8 8 7 7
+./center.prob.metallist.R ../output_mg/5ligand/ 7 8 7 7
+./center.prob.metallist.R ../output_mg/6ligand/ 7 12 8 7
+./center.prob.metallist.R ../output_mg/allLig/ 7 6 8 6
+
+./hierarchical.clustering.R ../output_ca/6ligand 9 2 12 1
+./hierarchical.clustering.R ../output_mg/6ligand 7 1 12 1
+./hierarchical.clustering.R ../output_all/4ligand 11 3 15 3 
+
+

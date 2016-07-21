@@ -175,6 +175,10 @@ cat output_zn/seqs.SEQRES.shell.txt output_mg/seqs.SEQRES.shell.txt output_ca/se
 cat output_zn/seqs.SEQRES.bind.txt output_mg/seqs.SEQRES.bind.txt output_ca/seqs.SEQRES.bind.txt output_fe/seqs.SEQRES.bind.txt output_na/seqs.SEQRES.bind.txt > output_all/seqs.SEQRES.bind.txt
 cat output_zn/seqs.ATOM.shell.txt output_mg/seqs.ATOM.shell.txt output_ca/seqs.ATOM.shell.txt output_fe/seqs.ATOM.shell.txt output_na/seqs.ATOM.shell.txt > output_all/seqs.ATOM.shell.txt
 
+cat output_zn/ia.cutoff/probs.txt output_mg/obs/ia.cutoff/probs.txt output_ca/ia.cutoff/probs.txt output_fe/ia.cutoff/probs.txt output_na/ia.cutoff/probs.txt > output_all/ia.cutoff/probs.txt
+cat output_zn/ia.cutoff/probs.leaveOut.txt output_mg/obs/ia.cutoff/probs.leaveOut.txt output_ca/ia.cutoff/probs.leaveOut.txt output_fe/ia.cutoff/probs.leaveOut.txt output_na/ia.cutoff/probs.leaveOut.txt > output_all/ia.cutoff/probs.leaveOut.txt
+
+
 ./seq_alignment.R ../output_all/
 ./nonRedundancy.R ../output_all/
 ./write_fasta.R ../output_all/
@@ -292,7 +296,9 @@ nice -10 ./measures.vs.k.R ../output_all/allLig 6 && ./cluster_metric_graphs.R .
 ./getrhop.R all 6 normal  10 1
 ./getrhop.R all 6 compressed  7 1
 ./getrhop.R all 6 combined  10 1
-
+./getrhop.R all combined normal  10 1
+./getrhop.R all combined compressed 9 3
+./getrhop.R all combined combined  11 3
 
 #########
 ./center.prob.metallist.R ../output_zn/4ligand/ 9 12 7 7
@@ -302,18 +308,18 @@ nice -10 ./measures.vs.k.R ../output_all/allLig 6 && ./cluster_metric_graphs.R .
 
 ./center.prob.metallist.R ../output_mg/4ligand/ 8 8 7 7
 ./center.prob.metallist.R ../output_mg/5ligand/ 7 8 7 7
-./center.prob.metallist.R ../output_mg/6ligand/ 7 13 8 7
+./center.prob.metallist.R ../output_mg/6ligand/ 7 12 8 7
 ./center.prob.metallist.R ../output_mg/allLig/ 7 6 8 6
 
 ./center.prob.metallist.R ../output_ca/4ligand/ 13 3 18 7
 ./center.prob.metallist.R ../output_ca/5ligand/ 8 16 6 7
-./center.prob.metallist.R ../output_ca/6ligand/ 9 16 6 7
-./center.prob.metallist.R ../output_ca/7ligand/ 7 7 16 7
+./center.prob.metallist.R ../output_ca/6ligand/ 9 12 6 7
+./center.prob.metallist.R ../output_ca/7ligand/ 7 7 13 7
 ./center.prob.metallist.R ../output_ca/8ligand/ 9 8 9 7
 ./center.prob.metallist.R ../output_ca/allLig/ 11 12 9 6
 
 ./center.prob.metallist.R ../output_fe/4ligand/ 5 7 9 7
-./center.prob.metallist.R ../output_fe/5ligand/ 8 7 7 7
+./center.prob.metallist.R ../output_fe/5ligand/ 8 7 8 7
 ./center.prob.metallist.R ../output_fe/6ligand/ 7 9 7 7
 ./center.prob.metallist.R ../output_fe/allLig/ 10 8 8 6
 ./center.prob.metallist.R ../output_fe/noheme/ 8 7 8 6
@@ -324,9 +330,10 @@ nice -10 ./measures.vs.k.R ../output_all/allLig 6 && ./cluster_metric_graphs.R .
 ./center.prob.metallist.R ../output_na/7ligand/ 6 3 7 7
 ./center.prob.metallist.R ../output_na/allLig/ 14 5 10 6
 
-#./center.prob.metallist.R ../output_all/4ligand/ 11 13 8 7
-#./center.prob.metallist.R ../output_all/5ligand/ 7 7 6 7
-#./center.prob.metallist.R ../output_all/6ligand/ 10 7 10 7
+./center.prob.metallist.R ../output_all/4ligand/ 11 15 8 7
+./center.prob.metallist.R ../output_all/5ligand/ 7 7 7 7
+./center.prob.metallist.R ../output_all/6ligand/ 10 7 10 7
+./center.prob.metallist.R ../output_all/allLig/ 10 9 11 6
 
 #########
 ./hierarchical.clustering.R ../output_zn/4ligand 9 4 12 3
@@ -336,12 +343,12 @@ nice -10 ./measures.vs.k.R ../output_all/allLig 6 && ./cluster_metric_graphs.R .
 
 ./hierarchical.clustering.R ../output_mg/4ligand 8 2 8 1
 ./hierarchical.clustering.R ../output_mg/5ligand 7 2 8 3
-./hierarchical.clustering.R ../output_mg/6ligand 7 1 13 1
+./hierarchical.clustering.R ../output_mg/6ligand 7 1 12 1
 ./hierarchical.clustering.R ../output_mg/allLig 7 3 6 1
 
 ./hierarchical.clustering.R ../output_ca/4ligand 13 4 0 0
 ./hierarchical.clustering.R ../output_ca/5ligand 8 1 16 3
-./hierarchical.clustering.R ../output_ca/6ligand 9 2 16 1
+./hierarchical.clustering.R ../output_ca/6ligand 9 2 12 1
 ./hierarchical.clustering.R ../output_ca/7ligand 7 4 7 4
 ./hierarchical.clustering.R ../output_ca/8ligand 9 2 8 2
 ./hierarchical.clustering.R ../output_ca/allLig 11 3 12 4
@@ -358,7 +365,8 @@ nice -10 ./measures.vs.k.R ../output_all/allLig 6 && ./cluster_metric_graphs.R .
 ./hierarchical.clustering.R ../output_na/7ligand 6 1 0 0
 ./hierarchical.clustering.R ../output_na/allLig 14 4 5 1
 
-./hierarchical.clustering.R ../output_all/4ligand 11 3 13 4
+./hierarchical.clustering.R ../output_all/4ligand 11 3 15 3
 ./hierarchical.clustering.R ../output_all/5ligand 7 1 7 1
 ./hierarchical.clustering.R ../output_all/6ligand 10 1 7 1
+./hierarchical.clustering.R ../output_all/allLig 10 1 9 3
 

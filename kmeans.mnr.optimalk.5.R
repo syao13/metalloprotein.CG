@@ -14,9 +14,9 @@ setwd(args[1])
 load("rf.results.RData")
 load("finalMetalList.RData")
 data <- read.table("r.allLig.txt", header=FALSE, comment.char = "")
-colnames(data) <- c("metalID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "extra")
+colnames(data) <- c("metalID", "method", "year", "resolution", "angleCombo", "ligandCombo", "bondlengthCombo", "biStatusCombo", "bfactorCombo", "biLigs", "chainIDCombo", "residueCombo", "atomCombo", "amaineN", "occupancy", "solvent")
 
-znList <- data[data[,1] %in% finalZnList & data[,4] < 3, 1]
+znList <- data[data[,1] %in% finalZnList & data[,4] < 3 & data$occupancy > 0.9, 1]
 ligNum <- sapply(data$ligandCombo, function(x) length(strsplit(x, ",")[[1]]))
 
 #### Define the data into normal and compressed from rf prediciton on 58-68 angles.

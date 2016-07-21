@@ -149,7 +149,7 @@ compareDist <- function(dist.a, dist.b, method="spearman") {
   vec.a <- as.vector(dist.a)
   vec.b <- as.vector(dist.b)
   
-  ind <- vec.b!=0
+  ind <- ! is.na(vec.a) & ! is.na(vec.b) # vec.b!=0
   if ( sum(ind) == 0  || sum(ind) == 1 || is.na(sum(ind)) )  {c(NA,NA)}
   else { 
     tmp <- cor.test(vec.a[ind], vec.b[ind], alternative="two.sided", method = method)
