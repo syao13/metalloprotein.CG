@@ -4,13 +4,15 @@ This set of scripts runs the full set of analyses used in:
 
 Yao S, Flight RM, Rouchka EC, Moseley HN. (2017) “Aberrant coordination geometries discovered in the most abundant metalloproteins.” Proteins: Structure, Function, and Bioinformatics, 85(5): 885-907 
 
+If you use these scripts, please cite the above paper.
+
 ## Citation and Licensing
 
-Please see the individual packages for their license information, and the mainScripts/README.md and mainScripts/LICENSE for citing and license information of the metalloprotein analysis scripts.
+Please see the individual packages for their license information, and the mainScripts/README.md and LICENSE for citing and license information of the metalloprotein analysis scripts.
 
 ## Installation
 
-For a full script to full regenerate the data for the paper, including dependant packages, download the tarballed files at:
+This repository contains the main scripts for the analysis pipeline. For the whole package that can fully regenerate the data for the paper, including dependant packages, download the tarballed files at:
 
 https://figshare.com/articles/Five_metal_manuscript/4229297
 
@@ -84,15 +86,19 @@ You also need a local copy of the PDB.
 
 ### Counting metal sites
 
-Use `./run.countMetal.bh` under the mainScripts directory to reproduce the full analysis.
+Use below under the mainScripts directory to reproduce the full analysis.
+
+`./run.countMetal.bh`
 
 ### Main analysis
 
 Finally, for actually running the scripts, you need to modify the alias for *interpro* and environment variables *output_dir* at the top of mainScripts/run.fullanalysis.bh.
-Use `./run.fullanalysis.bh` under the mainScripts directory to reproduce the full analysis.
+Use below under the mainScripts directory to reproduce the full analysis.
+
+`./run.fullanalysis.bh`
 
 ### 4-ligand Zn simulation
-Use *./run.simulation.bh* under the mainScripts directory to reproduce the full analysis.
+Use `./run.simulation.bh` under the mainScripts directory to reproduce the full analysis.
 
 ### Functional enrichmentment
 
