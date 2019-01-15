@@ -1,5 +1,11 @@
 #!/mlab/data/software/R-3.2.1-F22/bin/Rscript
 ## !/usr/bin/Rscript
+############################################################################################
+##
+##   Written by Sen Yao, 07/20/2016
+##   Copyright Sen Yao, Robert Flight, and Hunter Moseley, 07/20/2016. All rights reserved.
+##
+###########################################################################################
 
 ################
 ## simulation

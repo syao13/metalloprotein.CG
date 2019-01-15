@@ -1,5 +1,12 @@
 ## AtomShell.pm 
 #
+############################################################################################
+##
+##   Written by Sen Yao, 07/20/2016
+##   Copyright Sen Yao, Robert Flight, and Hunter Moseley, 07/20/2016. All rights reserved.
+##
+###########################################################################################
+
 package AtomShell;
 use strict;
 use Atom;

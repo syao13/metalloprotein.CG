@@ -1,0 +1,130 @@
+---
+title: "Normal vs Compressed Enrichments: p-adjusted <= 0.05"
+author: "Robert M Flight"
+date: "`r Sys.time()`"
+header-includes:
+  - \usepackage{geometry}
+  - \geometry{letterpaper, landscape, margin=0.5in}
+  - \usepackage{longtable}
+  - \usepackage{caption}
+  - \captionsetup{labelformat = empty}
+output: 
+  pdf_document:
+    toc: true
+    toc_depth: 3
+    keep_tex: true
+classoption: landscape
+---
+
+\fontsize{8}{10}
+\selectfont
+
+# Purpose
+
+Generate PDF output of the gene ontology enrichment results.
+
+# Tables
+
+```{r output_tables, echo = FALSE, results = 'asis', message=FALSE, warning=FALSE}
+library(tables)
+source("replacement_latex_tabular.R")
+out_file <- "p_adjusted_results.csv"
+cat("\n", file = out_file)
+table_number <- 149
+#pander::panderOptions('table.split.table', Inf)
+for (iname in names(results_tables)) {
+  cat("## ", iname, "\n\n", sep = "")
+  for (ligname in names(results_tables[[iname]])) {
+    tmp_table <- results_tables[[iname]][[ligname]]$sig_only
+    n_lig <- strsplit(ligname, "_", fixed = TRUE)[[1]][2]
+    if (class(tmp_table) == "data.frame") {
+      tmp_table <- dplyr::filter(tmp_table, (normal.padjust <= 0.05) | (compress.padjust <= 0.05))
+      if (nrow(tmp_table) > 0) {
+        
+        tmp_table$normal.sig <- tmp_table$normal
+        tmp_table$normal <- NULL
+        
+        tmp_table$compress.sig <- tmp_table$compress
+        tmp_table$compress <- NULL
+        
+        norm_cols <- grep("normal", names(tmp_table))
+        compress_cols <- grep("compress", names(tmp_table))
+        common_cols <- which(names(tmp_table) %in% c("id", "description", "type", "IPR.group", "consistent"))
+        
+        
+        normal_table <- tmp_table[, c(common_cols, norm_cols)]
+        compress_table <- tmp_table[, c(common_cols, compress_cols)]
+        
+        
+        normal_table$which <- "normal"
+        compress_table$which <- "compress"
+        
+        names(normal_table) <- gsub("normal.", "", names(normal_table), fixed = TRUE)
+        names(compress_table) <- gsub("compress.", "", names(compress_table), fixed = TRUE)
+        
+        full_table <- rbind(normal_table, compress_table)
+        full_table$description <- gsub("_", " ", full_table$description, fixed = TRUE)
+
+        
+        if (iname == "all") {
+          use_columns <- c("id", "description", "type", "IPR.group", "consistent", "p", "padjust", "metal", "perc", "sig", "which")
+          begin_longtable <- "\\begin{longtable}{lp{1.25in}ccccccccccccc}"
+          multicolumn <- " &  &  &  &  & \\multicolumn{5}{l}{normal} & \\multicolumn{5}{l}{compress} \\\\ "
+          
+        } else {
+          use_columns <- c("id", "description", "type", "IPR.group", "consistent", "p", "padjust", "sig", "which")
+          begin_longtable <- "\\begin{longtable}{lp{1.25in}ccccccccc}"
+          multicolumn <- "&  &  &  &  & \\multicolumn{3}{l}{normal} & \\multicolumn{3}{l}{compress} \\\\ "
+        }
+        
+        full_table <- full_table[, use_columns]
+ 
+        full_table$which <- factor(full_table$which, levels = c("normal", "compress"), ordered = TRUE)
+        full_table$description <- factor(full_table$description)
+        tmp_id <- as.character(full_table$id)
+        tmp_id <- factor(tmp_id, levels = tmp_id[1:(length(tmp_id)/2)], ordered = TRUE)
+        full_table$id <- tmp_id
+        full_table$description <- factor(as.character(full_table$description))
+        full_table$sig <- as.character(full_table$sig)
+        full_table$description <- as.character(full_table$description)
+        full_table$consistent <- as.character(full_table$consistent)
+        if (!is.null(full_table$metal)) {
+          full_table$metal <- as.character(full_table$metal)
+          out_table <- tabular(id ~ (description*Heading()*unique) + (type*Heading()*unique) + (IPR.group*Heading()*unique) + (consistent*Heading()*unique) + Heading()*which*(p + padjust + metal + perc + sig)*Heading()*identity, data = full_table)
+        } else {
+          out_table <- tabular(id ~ (description*Heading()*unique) + (type*Heading()*unique) + (IPR.group*Heading()*unique) + (consistent*Heading()*unique) + Heading()*which*(p + padjust + sig)*Heading()*identity, data = full_table)
+        }
+        
+        out_latex <- latex_tabular2(out_table)
+        out_latex[1] <- begin_longtable
+        
+        if (n_lig == "a") {
+          n_lig <- "all"
+        }
+        table_caption <- paste0("\\caption{Table S", table_number, ": ", iname, " ", 
+                                             n_lig, " ligands} \\\\")
+        out_latex_2 <- c(out_latex[1], table_caption, out_latex[2:length(out_latex)])
+        out_latex_2[4] <- multicolumn
+        out_latex_2 <- out_latex_2[1:(length(out_latex_2) - 2)]
+        out_latex_2[length(out_latex_2)] <- "\\end{longtable}"
+        cat(out_latex_2, sep = "\n", file = "")
+        
+        cat("\n", file = out_file, append = TRUE)
+        
+        cat("\n", paste0("Table S", table_number, ": ", iname, " ", n_lig, " ligands"), "\n", sep = "", file = out_file, append = TRUE)
+        write.table(tmp_table, file = out_file, sep = ",", col.names = TRUE, row.names = FALSE, 
+                    append = TRUE)
+        cat("\n", file = out_file, append = TRUE)
+        
+        table_number <- table_number + 1
+      }
+      #cat("### ", sub("_", ".", ligname), "\n\n", sep = "")
+      
+    }
+    
+    #readline()
+  }
+  cat("\n\n")
+}
+```
+

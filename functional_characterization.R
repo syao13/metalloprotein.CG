@@ -67,7 +67,8 @@ normal_clusters <- lapply(normal_cluster_names, function(in_cluster){
 names(normal_clusters) <- normal_cluster_names
 
 load("compressed_cluster_assg.RData")
-compressed_cluster_names <- paste("compressed", seq(2, 30), "clusters", sep = ".")
+maxNum <- sum(grepl("^compressed.[0-9]+.clusters", ls()))
+compressed_cluster_names <- paste("compressed", seq(2, maxNum), "clusters", sep = ".")
 compressed_clusters <- lapply(compressed_cluster_names, function(in_cluster){
   tmp <- eval(parse(text = in_cluster))
   split(tmp[,1], tmp[,2])

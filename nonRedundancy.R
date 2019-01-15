@@ -1,7 +1,14 @@
 #!/mlab/data/software/R-3.2.1-F22/bin/Rscript
 
+############################################################################################
+##
+##   Written by Sen Yao, 07/20/2016
+##   Copyright Sen Yao, Robert Flight, and Hunter Moseley, 07/20/2016. All rights reserved.
+##
+###########################################################################################
+
 ##!/usr/bin/Rscript
-##############  This program is to get non-redundant set of zinc ID list. ############## 
+##############  This program is to get non-redundant set of metal ID list. ############## 
 ## Non-redundant set is defined by the shell domain as well as binding ligand combination. 
 ## If the shell ligands spans over multi-chains, consider them all together.
 

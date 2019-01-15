@@ -86,11 +86,12 @@ distMats <- mclapply(1:30, function(x) {
 }, mc.cores=10)
 for (i in 1:30) { assign(paste("dist.struct.norm.", dim(distMats[[i]])[1],  sep=""), distMats[[i]])}
 
-distMats <- mclapply(1:30, function(x) {
+maxNum <- sum(grepl("^compressed.[0-9]+.clusters", ls()))
+distMats <- mclapply(1:maxNum, function(x) {
         clusters <- get(paste("compressed.",x,".clusters", sep=""))
         getDistM(angles.compressed, as.numeric(clusters[,2]))
 }, mc.cores=10)
-for (i in 1:30) { assign(paste("dist.struct.comp.", dim(distMats[[i]])[1],  sep=""), distMats[[i]])}
+for (i in 1:maxNum) { assign(paste("dist.struct.comp.", dim(distMats[[i]])[1],  sep=""), distMats[[i]])}
 
 distMats <- mclapply(1:30, function(x) {
         clusters <- get(paste("combined.",x,".clusters", sep=""))
@@ -99,7 +100,7 @@ distMats <- mclapply(1:30, function(x) {
 for (i in 1:30) { assign(paste("dist.struct.comb.", dim(distMats[[i]])[1],  sep=""), distMats[[i]])}
 
 save(list=sapply(1:30, function(x) paste("dist.struct.norm.", x,  sep="")), file="dists_struct_normal.RData")
-save(list=sapply(1:30, function(x) paste("dist.struct.comp.", x,  sep="")), file="dists_struct_compressed.RData")
+save(list=sapply(1:maxNum, function(x) paste("dist.struct.comp.", x,  sep="")), file="dists_struct_compressed.RData")
 save(list=sapply(1:30, function(x) paste("dist.struct.comb.", x,  sep="")), file="dists_struct_combined.RData")
 
 # for (x in 1:30) {assign(paste("dist.struct.norm.", x, sep=""), get(paste("dist.norm.", x, sep="")))}
@@ -178,11 +179,13 @@ rhop.2.norm <- rhopVsk(2, "norm", kVec)
 rhop.3.norm <- rhopVsk(3, "norm", kVec)
 rhop.4.norm <- rhopVsk(4, "norm", kVec)
 
+kVec <- 3:maxNum
 rhop.1.comp <- rhopVsk(1, "comp", kVec)
 rhop.2.comp <- rhopVsk(2, "comp", kVec)
 rhop.3.comp <- rhopVsk(3, "comp", kVec)
 rhop.4.comp <- rhopVsk(4, "comp", kVec)
 
+kVec <- 3:30
 rhop.1.all <- rhopVsk(1, "comb", kVec)
 rhop.2.all <- rhopVsk(2, "comb", kVec)
 rhop.3.all <- rhopVsk(3, "comb", kVec)

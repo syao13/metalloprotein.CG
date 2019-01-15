@@ -2,8 +2,8 @@
 
 ###########################################################################################
 #
-##   Written by Sen Yao, 07/09/2015
-##   Copyright Sen Yao, Robert Flight, and Hunter Moseley, 07/09/2015. All rights reserved.
+##   Written by Sen Yao, 07/09/2016
+##   Copyright Sen Yao, Robert Flight, and Hunter Moseley, 07/09/2016. All rights reserved.
 ##
 ##   Usage: ./center.prob.metallist.R directory normal_k compressed_k combined_k angle_space(6 for individual ligNum, 7 for combined)
 ##

@@ -151,10 +151,10 @@ sub readPDB
     #next if (! $shellsOfOnePDB );
 
     ## Calculating number of zinc clusters
-    #my $metal = scalar (grep {$_->{"element"} eq $element && substr($_->{chainID}, 0,1) ne "#";} (@$atoms)); 
-    #my $cluster = $metal - scalar @$shellsOfOnePDB;
-    #$self->{numCenter} += $metal;
-    #$self->{numCluster} += $cluster;
+    my $metal = scalar (grep {$_->{"element"} eq $element && substr($_->{chainID}, 0,1) ne "#";} (@$atoms)); 
+    my $cluster = $metal - scalar @$shellsOfOnePDB;
+    $self->{numCenter} += $metal;
+    $self->{numCluster} += $cluster;
     # print $$atoms[0]->{PDBid}, ": $metal zincs\n" if $metal > 15;
 
     my $residues = $pdb->{residues};
@@ -343,6 +343,7 @@ sub bindShellViaDist
   $self->{coordinations} = $coordinations;
   }
 
+## Single ligand detection statistical test
 sub shellViaAdjustDistStd
   {
   my $self = shift @_;
@@ -364,25 +365,31 @@ sub shellViaAdjustDistStd
       $$alternate{$ligand->resID()}{$ligand->{alternateLocation}} = 1;
       }
 
+    my $blDevSum;
     if (@altAtoms) ## If there are two alternate atoms
       {
       my $altByRes = {};
       foreach my $ligand (@{$shell->{shell}})
 	{
-	if (grep {(split(/\./, $_))[0] eq $ligand->resID()} (@altAtoms))
+	if (grep {(split(/\./, $_))[0] eq $ligand->resID()} (@altAtoms)) ## if it is one of the alternate atoms, flag for later tests
 	  {
 	  my $resolution = ($ligand->{resolution} == -1)? 2.5 : $ligand->{resolution};
           my $adjStd = ($resolution - $$blStats{$ligand->{element}}{resolutionAvg}) * $slope + $$blStats{$ligand->{element}}{standardDeviation};
           my $score = abs($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mean})/$adjStd;
+	  my $blDev = ($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mode})/$adjStd;
 	  $$altByRes{$ligand->resID()}{$ligand->{alternateLocation}}{"score"} += $score;
+          $$altByRes{$ligand->resID()}{$ligand->{alternateLocation}}{"blDev"} += $blDev;
           push @{$$altByRes{$ligand->resID()}{$ligand->{alternateLocation}}{"shells"}}, $ligand;
 	  }
-	else
+	else ## if not part of the alternate atoms, test the 2.5 bl-std rule 
 	  {
 	  my $resolution = ($ligand->{resolution} == -1)? 2.5 : $ligand->{resolution};
           my $adjStd = ($resolution - $$blStats{$ligand->{element}}{resolutionAvg}) * $slope + $$blStats{$ligand->{element}}{standardDeviation};
           if ( abs($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mean}) <= $adjStd * 2.5 )
-            { push @$finalShell, $ligand; }
+            { 
+	    push @$finalShell, $ligand; 
+            $blDevSum += ($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mode})/$adjStd;
+	    }
 	  }
  	}
 
@@ -392,7 +399,8 @@ sub shellViaAdjustDistStd
 	  { $$altByRes{$res}{$altID}{"score"} = $$altByRes{$res}{$altID}{"score"} / (scalar @{$$altByRes{$res}{$altID}{"shells"}}); }
 	my $minScore = (sort {$a <=> $b} (map {$$_{"score"}} (values %{$$altByRes{$res}})))[0];
 	my $best = (grep {$$_{"score"} == $minScore} (values %{$$altByRes{$res}}))[0];
-	push @$finalShell, @{$$best{"shells"}}
+	push @$finalShell, @{$$best{"shells"}};
+	$blDevSum += $$best{"blDev"};
 	}
       }	
     else ## No alternate atoms exist 
@@ -405,19 +413,32 @@ sub shellViaAdjustDistStd
         if ( abs($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mean}) <= $adjStd * 2.5 )
 	  { 
           push @$finalShell, $ligand;  
+	  $blDevSum += ($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mode})/$adjStd;
 	  }
         }
       }
+
+    ## remove too many or too little ligand numbers
+    my $numLig = @$finalShell;
+    next if ($numLig < 4 || $numLig > 10);
+
+    ## 'incorrect metal modeling' filter: if all ligands are constantly larger than mode, the density is likeyly to be too thin and the metal is probably incorrctly fill in.
+    if ($blDevSum/(scalar @$finalShell) > 0.91) 
+      {
+      next;
+      } 
 
     ## eliminate sites with too-close atoms
     my $smallestBL = (sort {$a <=> $b} (map {$shell->{center}->distance($_);} (@$finalShell)))[0];
     if (grep {$shell->{center}->distance($_) < $smallestBL;} (@{$shell->{shell}})) 
       {
-print $shell->metalID(), ", $smallestBL\n";
-      next;}
+      print $shell->metalID(), ", $smallestBL\n";
+      next;
+      }
 
 #print join(", ", "before", $shell->metalID(), map {$_->resID();} (@$finalShell)), "\n";
-    my $excludeInd = 0; ## eliminate ligands with unreasonable atom-atom distances
+    ## eliminate ligands with unreasonable atom-atom distances
+    my $excludeInd = 0; 
     for (my $x=0; $x < @$finalShell -1; $x++)
       {
       last if ($excludeInd);
@@ -434,8 +455,9 @@ print $shell->metalID(), ", $smallestBL\n";
       }
 
 #print "tooclose, ", $shell->metalID(), ": ", join (", ", map { $_->atomID().".". $_->{alternateLocation} } (@$finalShell)), "\n" if ($excludeInd);
+    ## eliminate symmetry related ligands that is not all water
     next if ($excludeInd);
-    foreach my $ligand (@$finalShell) ## eliminate symmetry related ligands that is not all water
+    foreach my $ligand (@$finalShell) 
       {
       if (substr ($ligand->{chainID}, 0, 1) eq "#" && $ligand->{residueName} ne "HOH")
 	{ 
@@ -447,12 +469,10 @@ print $shell->metalID(), ", $smallestBL\n";
     next if ($excludeInd);
     my @waters = grep {$_->{residueName} eq "HOH"} (@$finalShell); ## water cannot be the majority of the ligands
 #print "water, ", $shell->metalID(), ": ", join (", ", map { $_->atomID().".". $_->{alternateLocation} } (@$finalShell)), "\n" if ((scalar @waters) * 2 > (scalar @$finalShell));
+    $self->{water} += 1 if ((scalar @waters) * 2 > (scalar @$finalShell));
     next if ((scalar @waters) * 2 > (scalar @$finalShell));
 
 #print join(", ", "after", $shell->metalID(), map {$_->resID();} (@$finalShell)), "\n";
-    my $numLig = @$finalShell;
-    next if ($numLig < 4 || $numLig > 10);
-
     my $cg =  (grep {$$_{"num"} eq $numLig;} (@$cgRelations))[0];
     my $shellObj = AtomShell->new("center" => $shell->{center}, "shell" => $finalShell, "seqsOfPDB" => $shell->{seqsOfPDB});
     my $cgObj = $$cg{"name"}->new("shellObj" => $shellObj);
@@ -642,6 +662,7 @@ sub calcChiCoordination
   my $leaveOut = shift @_;
   my $stats = (@_)? (shift @_) : ($self->{stats});
   my $outFile = (@_)? (shift @_) : 0;
+  my $blStats = $$stats{"distance"};
 
   ## All CGs in the cgRelations on top, regardless of the major ones passed in from bootstrap. 
   ## It is a array now compared to a hash as above.
@@ -658,6 +679,16 @@ sub calcChiCoordination
       my $shell = $$self{"shells"}[$ind];
       my $relation = (grep {$$_{"name"} eq $cg } (@$cgRelations))[0];
       next if ($$relation{"num"} < $self->{minLigNum} || $$relation{"num"} > @{$shell->{shell}});
+
+      my $blDevSum; ## The incorrect modeling filter
+      foreach my $ligand (@{$shell->{shell}})
+        {
+        my $resolution = ($ligand->{resolution} == -1)? 2.5 : $ligand->{resolution};
+        my $adjStd = ($resolution - $$blStats{$ligand->{element}}{resolutionAvg}) * $slope + $$blStats{$ligand->{element}}{standardDeviation};
+        $blDevSum += ($shell->{center}->distance($ligand) - $$blStats{$ligand->{element}}{mode})/$adjStd;
+        }
+      if ($blDevSum/(scalar @{$shell->{shell}}) > 0.91)
+        { next; }
 
       my $cgObj = $cg->new("shellObj" => $shell);
       $cgObj->bestTestStatistic("chi", $control, $threshold, $leaveOut, $stats);
@@ -693,7 +724,7 @@ sub calcChiCoordination
     { $th->join(); }
 
   open (FID, ">", $outFile) or die $! if $outFile;
-  print FID  join ("\t", @allCGs), "\n" if $outFile;
+  print FID  "metalID\t", join ("\t", @allCGs), "\n" if $outFile;
   foreach my $i (0..(@{$self->{shells}}-1))
     {
     my $shell = $$self{"shells"}[$i];
@@ -959,7 +990,7 @@ sub calcDistStats
       my $stats = RawStatistics->new("variables" => $$elementDists{$element} ) ;
       my $statsRes = RawStatistics->new("variables" => $$elementRes{$element} ) ;
 
-      $$distStats{$element} = {"mean" => $stats->calcMean(), "variance" => $stats->calcVariance(), "count" => $stats->count(), "max" => $stats->max(), "min" => $stats->min(), "standardDeviation" => $stats->calcStd(), "resolutionAvg" => $statsRes->calcMean()};
+      $$distStats{$element} = {"mean" => $stats->calcMean(), "variance" => $stats->calcVariance(), "count" => $stats->count(), "mode" => $stats->mode(), "max" => $stats->max(), "min" => $stats->min(), "standardDeviation" => $stats->calcStd(), "resolutionAvg" => $statsRes->calcMean()};
       }
     }
 
@@ -970,7 +1001,7 @@ sub calcDistStats
   my $stats = RawStatistics->new("variables" => $$elementDists{"average"} ) ;
   my $statsRes = RawStatistics->new("variables" => $$elementRes{"average"} ) ;
 
-  $$distStats{"average"} = {"mean" => $stats->calcMean(), "variance" => $stats->calcVariance(), "count" => $stats->count(), "max" => $stats->max(), "min" => $stats->min(), "standardDeviation" => $stats->calcStd(), "resolutionAvg" => $statsRes->calcMean(), "pooledVar" => $pooledVar };
+  $$distStats{"average"} = {"mean" => $stats->calcMean(), "variance" => $stats->calcVariance(), "count" => $stats->count(), "mode" => $stats->mode(), "max" => $stats->max(), "min" => $stats->min(), "standardDeviation" => $stats->calcStd(), "resolutionAvg" => $statsRes->calcMean(), "pooledVar" => $pooledVar };
 
   return $distStats;
   }

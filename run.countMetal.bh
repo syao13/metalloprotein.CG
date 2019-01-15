@@ -1,5 +1,12 @@
 ##!/usr/bash
 
+############################################################################################
+###
+###   Written by Sen Yao, 07/20/2016
+###   Copyright Sen Yao, Robert Flight, and Hunter Moseley, 07/20/2016. All rights reserved.
+###
+############################################################################################
+
 for metal in Zn Mg Ca Fe Na Mn K Cu Ni Co Cd Hg Pt Mo Al V Ba Sr Ru Cs W Yb Au Y Li Pb Gd Tl Rb Sm Ir Pr Rh Eu Pd Ag Os Lu Ho Tb Cr Ga La Sb Ce Er In Bi Dy 
 do
 echo "$metal"

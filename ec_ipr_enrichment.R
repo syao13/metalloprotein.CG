@@ -1,4 +1,11 @@
 #!/usr/bin/Rscript
+############################################################################################
+##
+##   Written by Robert Flight, 07/20/2016
+##   Copyright Sen Yao, Robert Flight, and Hunter Moseley, 07/20/2016. All rights reserved.
+##
+###########################################################################################
+
 library(rex)
 library(categoryCompareANY)
 library(atom2seq)

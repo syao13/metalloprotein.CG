@@ -14,7 +14,7 @@ our @defaultDataMembers = (
                             "combos" => 0    # array of possible atom combinations for coordination 
 			    );
 
-our $slope = 0.0562;
+our $slope = 0.057;
 
 sub new
   {

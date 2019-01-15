@@ -1,5 +1,12 @@
 ## Octahedral.pm 
 
+############################################################################################
+###
+###   Written by Sen Yao, 07/20/2016
+###   Copyright Sen Yao, Robert Flight, and Hunter Moseley, 07/20/2016. All rights reserved.
+###
+############################################################################################
+
 package Octahedral;
 use strict;
 use AtomShell;

@@ -40,10 +40,10 @@ HELP
 #      OPTIONS:  ---
 # REQUIREMENTS:  ---
 #         BUGS:  ---
-#        NOTES:  ---
+#        NOTES:  Copyright Sen Yao, Robert Flight, and Hunter Moseley, 07/20/2016. All rights reserved. 
 #       AUTHOR:  Sen Yao 
 #      COMPANY:  
-#      VERSION:  0.1 
+#      VERSION:  2.0  
 #      CREATED:  1/15/2013 02:07:30 PM
 #     REVISION:  ---
 #===============================================================================

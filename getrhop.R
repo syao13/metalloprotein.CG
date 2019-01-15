@@ -4,7 +4,7 @@
 ## i.e.: Zn, all, normal, 7, 3
 args = commandArgs(trailingOnly=TRUE)
 
-#if (args[1] == "all") {args[1] <- "allMetal"}
+if (args[1] == "combined") {args[1] <- "all"}
 
 if (args[2] == "all" || args[2] == "combined") { setwd(paste("../output_", tolower(args[1]), "/allLig", sep=""))
 } else if (args[2] == "noheme") { setwd(paste("../output_", tolower(args[1]), "/noheme", sep=""))

@@ -1,0 +1,45 @@
+---
+title: ""
+author: ""
+date: ""
+output: pdf_document
+
+---
+
+```{r ratio_odds, echo = FALSE, fig.height = 7, fig.width = 5, message=FALSE}
+library(cowplot)
+use_data <- results_tables$all$all_a$all
+
+use_data <- dplyr::filter(use_data, (normal.counts >= 2) | (compress.counts >= 2))
+
+
+
+use_data$normal.logp <- -1 * log10(use_data$normal.p)
+use_data$compress.logp <- -1 * log10(use_data$compress.p)
+
+
+x_line <- data.frame(x = -1*log10(0.05),
+                     xend = -1*log10(0.05),
+                     y = 0,
+                     yend = -1 * log10(0.05))
+y_line <- data.frame(x = 0,
+                     xend = -1 * log10(0.05),
+                     y = -1 * log10(0.05),
+                     yend = -1 * log10(0.05))
+p <- ggplot(use_data, aes(x = normal.logp, y = compress.logp)) + geom_point() + 
+  xlab("-1*log10(normal p-value)") + ylab("-1*log10(compress p-value)") + 
+  geom_segment(data = x_line, aes(x = x, y = y, xend = xend, yend = yend), color = "red") +
+  geom_segment(data = y_line, aes(x = x, y = y, xend = xend, yend = yend), color = "red") + 
+  coord_equal() + ggtitle("All Metal - All Ligands Functional P-Values")
+
+
+q <- p + coord_equal(xlim = c(0, 5), ylim = c(0, 5))
+
+outplot <- plot_grid(p, q, nrow = 2, ncol = 1, labels = c("A", "B"))
+print(outplot)
+```
+
+Figure S29: Log10-transformed unadjusted p-values from both compressed and normal
+enrichments compared. A) Full range of p-values. B) Zoomed in view of A. Red lines
+indicate p-value of 0.05.
+

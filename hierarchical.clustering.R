@@ -44,7 +44,8 @@ plot(hc.str, main = paste("Normal, k=", normal.k, sep=""), ylab = "Structural Cl
 
 if (sum(is.na(dist.fun))) {
   aa <- as.matrix(dist.fun)
-  dist.fun <- as.dist(aa[! is.na(aa[1,]), ! is.na(aa[1,])])
+  idx <- apply(aa, 1, sum, na.rm=TRUE)
+  dist.fun <- as.dist(aa[idx != 0, idx != 0])
   }
 
 hc.fun <- hclust(dist.fun)
@@ -60,7 +61,7 @@ corVal
 pVal
 ggplot(distances, aes(x = struc, y = func)) + 
   geom_point(size = 4) + xlab("Structural") + ylab("Functional") + ggtitle(paste("Cluster Distances, normal ", normal.k, sep="")) +   
-  geom_text(data = NULL, aes(family="serif"), , size = 8, x=Inf, y = -Inf, vjust=-1, hjust=1,
+  geom_text(data = NULL, aes(family="serif"), size = 8, x=Inf, y = -Inf, vjust=-1, hjust=1,
             label = paste("rho = ", substr(as.character(corVal), 1, 4), " \n ", 
                           "p-value = ", signif(pVal,3), sep = "")) + 
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 18), plot.title = element_text(size = 20))
@@ -103,7 +104,8 @@ plot(hc.str, main = paste("Compressed, k=", compressed.k, sep=""), ylab = "Struc
 
 if (sum(is.na(dist.fun))) {
   aa <- as.matrix(dist.fun)
-  dist.fun <- as.dist(aa[! is.na(aa[1,]), ! is.na(aa[1,])])
+  idx <- apply(aa, 1, sum, na.rm=TRUE)                                                                                                                                
+  dist.fun <- as.dist(aa[idx != 0, idx != 0])
   }
 
 hc.fun <- hclust(dist.fun)
@@ -119,7 +121,7 @@ corVal
 pVal
 ggplot(distances, aes(x = struc, y = func)) + 
   geom_point(size = 4) + xlab("Structural") + ylab("Functional") + ggtitle(paste("Cluster Distances, compressed ", compressed.k, sep="")) +   
-  geom_text(data = NULL, aes(family="serif"), , size = 8, x=Inf, y = -Inf, vjust=-1, hjust=1,
+  geom_text(data = NULL, aes(family="serif"), size = 8, x=Inf, y = -Inf, vjust=-1, hjust=1,
             label = paste("rho = ", substr(as.character(corVal), 1, 4), " \n ", 
                           "p-value = ", signif(pVal,3), sep = "")) + 
   theme(axis.text = element_text(size = 14), axis.title = element_text(size = 18), plot.title = element_text(size = 20))

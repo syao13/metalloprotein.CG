@@ -160,7 +160,9 @@ for (i in 1:length(resultList)){
 }
 
 date()
-resultList <- mclapply(1:30, function(x) kmeansStab(angle.sorted.comp, x, nrep), mc.cores=10)
+maxNum <- 30
+if (nrow(angle.sorted.comp) < 31) {maxNum <- nrow(angle.sorted.comp)-1}
+resultList <- mclapply(1:maxNum, function(x) kmeansStab(angle.sorted.comp, x, nrep), mc.cores=10)
 for (i in 1:length(resultList)){
   k <- length(resultList[[i]]$mean)/nangle
 
@@ -185,7 +187,7 @@ for (i in 1:length(resultList)){
 date()
 
 save(list=sapply(1:30, function(x) paste0("normal.", x, ".clusters",  sep="")), file="normal_cluster_assg.RData")
-save(list=sapply(1:30, function(x) paste0("compressed.", x, ".clusters",  sep="")), file="compressed_cluster_assg.RData")
+save(list=sapply(1:maxNum, function(x) paste0("compressed.", x, ".clusters",  sep="")), file="compressed_cluster_assg.RData")
 save(list=sapply(1:30, function(x) paste0("combined.", x, ".clusters",  sep="")), file="combined_cluster_assg.RData")
 
 save(list=c("sumdiff.norm", "jaccard.norm", "sumdiff.comp", "jaccard.comp", "sumdiff.all", "jaccard.all"), file="two_measures_over_k.RData")

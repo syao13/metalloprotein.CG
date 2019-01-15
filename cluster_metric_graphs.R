@@ -54,8 +54,8 @@ dev.off()
 
 ### compressed clusters
 ### 
-compressed_jaccard <- data.frame(cluster = seq(1, 30), value = jaccard.comp, type = "jaccard", n_lig = "all")
-compressed_sumdiff <- data.frame(cluster = seq(1, 30), value = max(sumdiff.comp) - sumdiff.comp, type = "max - sumdiff", n_lig = "all")
+compressed_jaccard <- data.frame(cluster = seq(1, length(jaccard.comp)), value = jaccard.comp, type = "jaccard", n_lig = "all")
+compressed_sumdiff <- data.frame(cluster = seq(1, length(sumdiff.comp)), value = max(sumdiff.comp) - sumdiff.comp, type = "max - sumdiff", n_lig = "all")
 
 compressed_rho <- data.frame(cluster = rep(seq(5, 30), 4),
                              value = c(rhop.1.comp$rho[3:28],
@@ -64,20 +64,20 @@ compressed_rho <- data.frame(cluster = rep(seq(5, 30), 4),
                                        rhop.4.comp$rho[3:28]),
                              type = "rho",
                              n_lig = rep(c("1", "2", "3", "4"), each = 26))
-compressed_rho_0 <- data.frame(cluster = rep(seq(3, 30), 4),
+compressed_rho_0 <- data.frame(cluster = rep(seq(3, length(rhop.1.comp$rho)+2), 4),
                              value = c(rhop.1.comp$rho,
                                        rhop.2.comp$rho,
                                        rhop.3.comp$rho,
                                        rhop.4.comp$rho),
                              type = "rho",
-                             n_lig = rep(c("1", "2", "3", "4"), each = 28))
-compressed_p <- data.frame(cluster = rep(seq(3, 30), 4),
+                             n_lig = rep(c("1", "2", "3", "4"), each = length(rhop.1.comp$rho)))
+compressed_p <- data.frame(cluster = rep(seq(3, length(rhop.1.comp$rho)+2), 4),
                            value = c(rhop.1.comp$p_value,
                                      rhop.2.comp$p_value,
                                      rhop.3.comp$p_value,
                                      rhop.4.comp$p_value),
                            type = "-1 * log10(p)",
-                           n_lig = rep(c("1", "2", "3", "4"), each = 28))
+                           n_lig = rep(c("1", "2", "3", "4"), each = length(rhop.1.comp$rho)))
 compressed_p$value <- -1 * log10(compressed_p$value)
 
 compressed_metrics <- do.call(rbind, list(compressed_jaccard, compressed_sumdiff, compressed_rho_0, compressed_p))

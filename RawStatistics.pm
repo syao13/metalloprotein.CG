@@ -124,6 +124,30 @@ sub max
   return $max;
   }
 
+## Find the highest mode
+sub mode
+  {
+  my $self = shift @_;
+
+  return 0 if ($self->{variables} == 0) ;
+  my @variables = @{$self->{variables}} ;
+
+  my $max = $self->max();
+  my %seen = ();
+
+  foreach my $var (@variables)
+    {
+    $var = sprintf '%.2f', $var;
+    $seen{$var}++;
+    }
+ 
+  my $max_seen_count = (sort {$b <=> $a} (values %seen))[0];
+  my @modes = grep { $seen{$_} == $max_seen_count } keys %seen;
+  my $mode = $modes[0];
+
+  return $mode;
+
+  }
 
 
 
